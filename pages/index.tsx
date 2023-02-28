@@ -6,6 +6,7 @@ import { KanbanData } from "@/types/data";
 import Header from "@/components/Header";
 import BoardManager from "@/components/Sidebar/BoardManager";
 import { getData } from "@/util/http";
+import Board from "@/components/Board";
 
 interface Props {
   initialData: KanbanData;
@@ -15,6 +16,7 @@ export default function Kanban({ initialData }: Props) {
   const { theme, systemTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [activeBoard, setActiveBoard] = useState(initialData[0]);
+  const [showSidebar, setShowSidebar] = useState(true);
 
   /* Avoid hydration mismatch */
   useEffect(() => {
@@ -28,8 +30,6 @@ export default function Kanban({ initialData }: Props) {
   function handleThemeChange() {
     setTheme(currentTheme === "dark" ? "light" : "dark");
   }
-
-  console.log(initialData);
 
   return (
     <>
@@ -45,6 +45,8 @@ export default function Kanban({ initialData }: Props) {
       <Sidebar
         theme={currentTheme!}
         setTheme={handleThemeChange}
+        showSidebar={showSidebar}
+        setShowSidebar={setShowSidebar}
         boardManager={
           <BoardManager
             initialData={initialData}
@@ -53,10 +55,13 @@ export default function Kanban({ initialData }: Props) {
           />
         }
       />
-      <div>
-        <Header boardName={activeBoard.name} />
-        <h1 className="text-3xl text-center">Hello World!</h1>
-        {JSON.stringify(activeBoard)}
+      <div className="w-full">
+        <Header board={activeBoard} />
+        <Board
+          showSidebar={showSidebar}
+          setShowSidebar={setShowSidebar}
+          data={activeBoard}
+        />
       </div>
     </>
   );

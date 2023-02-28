@@ -1,11 +1,11 @@
-import { Board, KanbanData } from "@/types/data";
+import { IBoard, KanbanData } from "@/types/data";
 import { Dispatch, SetStateAction } from "react";
 import BoardIcon from "../UI/Icons/BoardIcon";
 
 type Props = {
   initialData: KanbanData;
-  activeBoard: Board;
-  setActiveBoard: Dispatch<SetStateAction<Board>>;
+  activeBoard: IBoard;
+  setActiveBoard: Dispatch<SetStateAction<IBoard>>;
 };
 
 const BoardManager = ({ initialData, activeBoard, setActiveBoard }: Props) => {

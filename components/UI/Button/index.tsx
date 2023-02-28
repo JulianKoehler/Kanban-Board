@@ -1,20 +1,20 @@
-import { ReactNode, ButtonHTMLAttributes } from "react";
-
 /**
  * The "large"-Prop refers to the height and fontSize of the button, not the width. The buttons
  * that are not large actually are the full-width buttons.
  */
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
   large?: boolean;
   variant?: "primary" | "secondary" | "destructive";
+  additionalClassNames?: string;
 }
 
 const Button = ({
   children,
   variant = "primary",
   large = false,
+  additionalClassNames = "",
   ...rest
 }: ButtonProps) => {
   const textColor = variant === "secondary" ? "text-purple-main" : "text-white";
@@ -38,7 +38,7 @@ const Button = ({
   return (
     <button
       {...rest}
-      className={`rounded-[2.4rem]  px-[1.8rem] font-bold ${textColor} ${fontSize} ${paddingY} ${width} ${getBgColor()}`}
+      className={`rounded-[2.4rem]  px-[1.8rem] font-bold ${textColor} ${fontSize} ${paddingY} ${width} ${getBgColor()} ${additionalClassNames}`}
     >
       {children}
     </button>

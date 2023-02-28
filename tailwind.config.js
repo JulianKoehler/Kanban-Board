@@ -23,6 +23,12 @@ module.exports = {
         "button-secondary-lightmode-idle": "rgba(99, 95, 199, 0.1)",
         "button-secondary-lightmode-hover": "rgba(99, 95, 199, 0.25)",
       },
+      transitionProperty: {
+        margin: "margin",
+      },
+      boxShadow: {
+        "md-dark": " 0px 4px 6px rgba(54, 78, 126, 0.101545);",
+      },
     },
     fontFamily: {
       plusJakartaSans: ["Plus Jakarta Sans", "sans-serif"],

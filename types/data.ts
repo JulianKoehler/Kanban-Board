@@ -1,22 +1,22 @@
-export type KanbanData = Board[];
+export type KanbanData = IBoard[];
 
-export interface Board {
+export interface IBoard {
   id: number;
   name: string;
-  columns: Column[];
+  columns: IColumn[];
 }
 
-export interface Column {
+export interface IColumn {
   //   id: number;
   name: string;
-  tasks: Task[];
+  tasks: ITask[];
 }
 
-export interface Task {
+export interface ITask {
   //   id: number;
   title: string;
   details: string;
-  status: Array<Column["name"]>;
+  status: Array<IColumn["name"]>;
   subtasks: Subtask[];
 }
 
