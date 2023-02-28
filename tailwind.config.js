@@ -22,12 +22,18 @@ module.exports = {
         "lines-light": "#E4EBFA",
         "button-secondary-lightmode-idle": "rgba(99, 95, 199, 0.1)",
         "button-secondary-lightmode-hover": "rgba(99, 95, 199, 0.25)",
+        "modal-backdrop": "rgba(0, 0, 0, 0.5)",
       },
       transitionProperty: {
         margin: "margin",
       },
       boxShadow: {
         "md-dark": " 0px 4px 6px rgba(54, 78, 126, 0.101545);",
+      },
+      backgroundImage: {
+        checkIcon: "url('/assets/icon-check.svg')",
+        dropDownArrowDown: "url('/assets/icon-chevron-down.svg')",
+        dropDownArrowUp: "url('/assets/icon-chevron-up.svg')",
       },
     },
     fontFamily: {

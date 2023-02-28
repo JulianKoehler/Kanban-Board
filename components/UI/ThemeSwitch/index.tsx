@@ -11,6 +11,7 @@ type Props = {
 const ThemeSwitcher = ({ theme, setTheme }: Props) => {
   const isDarkMode = theme === "dark";
   const isLightMode = theme === "light";
+
   return (
     <div className="mt-auto mb-[-4rem] flex h-[4.8rem] w-full max-w-[25.1rem] items-center justify-center rounded-md bg-grey-light dark:bg-grey-very-dark">
       <Image src={IconLightMode} alt="light-mode" />
@@ -25,7 +26,7 @@ const ThemeSwitcher = ({ theme, setTheme }: Props) => {
           onChange={setTheme}
         />
         <div
-          className={`w relative transition-transform duration-300 before:absolute before:top-[0.3rem] ${
+          className={`w relative transition-transform duration-[400ms] ease-in-out before:absolute before:top-[0.3rem] ${
             isDarkMode && "translate-x-[2.3rem]"
           } ${
             isLightMode && "translate-x-[0.3rem]"

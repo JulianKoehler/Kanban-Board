@@ -1,16 +1,12 @@
 import { IBoard } from "@/types/data";
-import UnhideIcon from "@/public/assets/icon-show-sidebar.svg";
-import Image from "next/image";
 import Column from "./Column";
 import Task from "./Task";
 
 type Props = {
   data: IBoard;
-  showSidebar: boolean;
-  setShowSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Board = ({ showSidebar, setShowSidebar, data }: Props) => {
+const Board = ({ data }: Props) => {
   return (
     <main
       className={`relative flex h-[calc(100vh-9.6rem)] w-full gap-[2.4rem] overflow-auto bg-grey-light pl-[2.4rem] pt-[2.4rem] pb-40 dark:bg-grey-very-dark`}
@@ -18,7 +14,7 @@ const Board = ({ showSidebar, setShowSidebar, data }: Props) => {
       {data.columns.map((column, index) => (
         <Column column={column} index={index}>
           {column.tasks?.map((task, index) => (
-            <Task task={task} index={index} />
+            <Task data={data} task={task} index={index} />
           ))}
         </Column>
       ))}

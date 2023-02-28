@@ -17,6 +17,12 @@
   font-size: 62.5%;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   font-size: 1.6rem;
   font-family: 'Plus Jakarta Sans', sans-serif;

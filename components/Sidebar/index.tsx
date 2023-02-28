@@ -28,9 +28,9 @@ const Sidebar = ({
     <aside
       className={`${
         !showSidebar && "ml-[-30rem]"
-      } relative flex h-screen flex-col gap-[5.4rem] border-r border-lines-light bg-white py-12 pl-[2.4rem] transition-margin duration-300 dark:border-lines-dark dark:bg-grey-dark`}
+      } relative flex h-screen flex-col gap-[5.4rem] border-r border-lines-light bg-white py-12 pl-[2.4rem] transition-margin duration-[400ms] dark:border-lines-dark dark:bg-grey-dark`}
     >
-      <Image src={logo} alt="kanban as logo" />
+      <Image src={logo} alt="kanban-logo" />
       {boardManager}
       <ThemeSwitcher setTheme={setTheme} theme={theme} />
       <button

@@ -56,12 +56,12 @@ export default function Kanban({ initialData }: Props) {
         }
       />
       <div className="w-full">
-        <Header board={activeBoard} />
-        <Board
+        <Header
           showSidebar={showSidebar}
-          setShowSidebar={setShowSidebar}
-          data={activeBoard}
+          theme={currentTheme!}
+          board={activeBoard}
         />
+        <Board data={activeBoard} />
       </div>
     </>
   );
