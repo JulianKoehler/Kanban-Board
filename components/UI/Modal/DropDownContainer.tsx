@@ -2,7 +2,6 @@ import React from "react";
 
 type Props = {
   additionalClassNames?: string;
-
   children: React.ReactNode;
 };
 
@@ -13,7 +12,7 @@ const DropDownContainer = React.forwardRef<Ref, Props>(
     return (
       <div
         ref={ref}
-        className={`z-10 flex h-fit w-fit min-w-[19.2rem] flex-col rounded-xl bg-white p-0 shadow-sm dark:bg-grey-very-dark ${additionalClassNames}`}
+        className={`z-10 flex h-fit w-fit flex-col rounded-xl bg-white p-0 shadow-sm dark:bg-grey-very-dark desktop:min-w-[41.6rem] ${additionalClassNames}`}
       >
         {children}
       </div>

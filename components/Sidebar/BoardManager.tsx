@@ -3,14 +3,14 @@ import { Dispatch, SetStateAction } from "react";
 import BoardIcon from "../UI/Icons/BoardIcon";
 
 type Props = {
-  initialData: KanbanData;
-  activeBoard: IBoard;
+  initialData: KanbanData | [];
+  activeBoard: IBoard | null;
   setActiveBoard: Dispatch<SetStateAction<IBoard>>;
 };
 
 const BoardManager = ({ initialData, activeBoard, setActiveBoard }: Props) => {
   const boards = initialData.map((board, index) => {
-    const active = activeBoard.name === board.name;
+    const active = activeBoard?.name === board.name;
 
     return (
       <button

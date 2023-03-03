@@ -7,13 +7,13 @@ export interface IBoard {
 }
 
 export interface IColumn {
-  //   id: number;
+  id: number;
   name: string;
   tasks: ITask[];
 }
 
 export interface ITask {
-  //   id: number;
+  id: number;
   title: string;
   details: string;
   status: Array<IColumn["name"]>;
@@ -21,7 +21,7 @@ export interface ITask {
 }
 
 export interface Subtask {
-  //   id: number;
+  id: number;
   title: string;
   isCompleted: boolean;
 }

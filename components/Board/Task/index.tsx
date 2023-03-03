@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import GenericModalContainer from "@/components/UI/Modal/GenericModalContainer";
 import Subtask from "../Subtask";
 import DropDownContainer from "../../UI/Modal/DropDownContainer";
-import DropDown from "./DropDown";
+import DropDown from "../../UI/InputFields/DropDown";
 import useMenuHandler from "@/hooks/useMenuHandler";
 
 type Props = {
@@ -98,7 +98,12 @@ const Task = ({ data, task, index }: Props) => {
               />
             ))}
           </div>
-          <DropDown task={task} columns={data.columns} />
+          <div className="flex flex-col gap-[1.6rem]">
+            <h4 className="text-sm font-bold text-grey-medium">
+              Current Status
+            </h4>
+            <DropDown task={task} columns={data.columns} />
+          </div>
         </GenericModalContainer>
       )}
     </>

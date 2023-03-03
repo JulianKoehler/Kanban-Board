@@ -34,6 +34,7 @@ module.exports = {
         checkIcon: "url('/assets/icon-check.svg')",
         dropDownArrowDown: "url('/assets/icon-chevron-down.svg')",
         dropDownArrowUp: "url('/assets/icon-chevron-up.svg')",
+        deleteIcon: "url('/assets/icon-cross.svg')",
       },
     },
     fontFamily: {

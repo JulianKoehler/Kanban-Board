@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
-import { KanbanData } from "@/types/data";
+import { IBoard, KanbanData } from "@/types/data";
 import Header from "@/components/Header";
 import BoardManager from "@/components/Sidebar/BoardManager";
 import { getData } from "@/util/http";
@@ -15,7 +15,9 @@ interface Props {
 export default function Kanban({ initialData }: Props) {
   const { theme, systemTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [activeBoard, setActiveBoard] = useState(initialData[0]);
+  const [activeBoard, setActiveBoard] = useState<IBoard | null>(
+    initialData ? initialData[0] : null
+  );
   const [showSidebar, setShowSidebar] = useState(true);
 
   /* Avoid hydration mismatch */
@@ -49,19 +51,23 @@ export default function Kanban({ initialData }: Props) {
         setShowSidebar={setShowSidebar}
         boardManager={
           <BoardManager
-            initialData={initialData}
-            activeBoard={activeBoard}
+            initialData={initialData ? initialData : []}
+            activeBoard={activeBoard || null}
             setActiveBoard={setActiveBoard}
           />
         }
       />
-      <div className="w-full">
+      <div
+        className={`transition-all duration-500 ${
+          showSidebar ? "desktop:w-[calc(100%-30rem)]" : "desktop:w-full"
+        }`}
+      >
         <Header
           showSidebar={showSidebar}
           theme={currentTheme!}
           board={activeBoard}
         />
-        <Board data={activeBoard} />
+        <Board data={activeBoard || null} />
       </div>
     </>
   );
