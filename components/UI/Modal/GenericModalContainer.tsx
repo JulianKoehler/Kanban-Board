@@ -7,7 +7,7 @@ type ContainerProps = {
 };
 
 type ModalProps = ContainerProps & {
-  onClose: VoidFunction;
+  onClose: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const Backdrop = ({ ...rest }) => {

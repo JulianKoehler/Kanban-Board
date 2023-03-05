@@ -1,27 +1,27 @@
 export type KanbanData = IBoard[];
 
 export interface IBoard {
-  id: number;
+  id: number | string;
   name: string;
   columns: IColumn[];
 }
 
 export interface IColumn {
-  id: number;
+  id: number | string;
   name: string;
   tasks: ITask[];
 }
 
 export interface ITask {
-  id: number;
+  id: number | string;
   title: string;
   details: string;
-  status: Array<IColumn["name"]>;
+  status: string;
   subtasks: Subtask[];
 }
 
 export interface Subtask {
-  id: number;
+  id: number | string;
   title: string;
   isCompleted: boolean;
 }

@@ -1,5 +1,6 @@
 import { IBoard, KanbanData } from "@/types/data";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+import AddOrEditBoardModal from "../Board/AddOrEditBoardModal";
 import BoardIcon from "../UI/Icons/BoardIcon";
 
 type Props = {
@@ -9,6 +10,8 @@ type Props = {
 };
 
 const BoardManager = ({ initialData, activeBoard, setActiveBoard }: Props) => {
+  const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
+
   const boards = initialData.map((board, index) => {
     const active = activeBoard?.name === board.name;
 
@@ -30,15 +33,23 @@ const BoardManager = ({ initialData, activeBoard, setActiveBoard }: Props) => {
   });
 
   return (
-    <div>
-      <h4 className="mb-8 pl-3 text-sm font-bold uppercase tracking-wide text-grey-medium">
-        all boards ({initialData.length})
-      </h4>
-      {boards}
-      <button className="flex items-center gap-[1.6rem] fill-purple-main py-[1.4rem] pl-3 text-lg font-bold text-purple-main">
-        <BoardIcon /> + Create New Board
-      </button>
-    </div>
+    <>
+      <div>
+        <h4 className="mb-8 pl-3 text-sm font-bold uppercase tracking-wide text-grey-medium">
+          all boards ({initialData.length})
+        </h4>
+        {boards}
+        <button
+          onClick={() => setShowCreateBoardModal(true)}
+          className="flex items-center gap-[1.6rem] fill-purple-main py-[1.4rem] pl-3 text-lg font-bold text-purple-main"
+        >
+          <BoardIcon /> + Create New Board
+        </button>
+      </div>
+      {showCreateBoardModal && (
+        <AddOrEditBoardModal onClose={() => setShowCreateBoardModal(false)} />
+      )}
+    </>
   );
 };
 

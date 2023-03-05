@@ -57,11 +57,7 @@ export default function Kanban({ initialData }: Props) {
           />
         }
       />
-      <div
-        className={`transition-all duration-500 ${
-          showSidebar ? "desktop:w-[calc(100%-30rem)]" : "desktop:w-full"
-        }`}
-      >
+      <div className="w-full overflow-hidden">
         <Header
           showSidebar={showSidebar}
           theme={currentTheme!}

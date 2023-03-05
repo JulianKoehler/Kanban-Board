@@ -5,9 +5,11 @@ import LogoDarkMode from "@/public/assets/logo-light.svg";
 import Button from "@/components/UI/Button";
 import OptionsIcon from "@/public/assets/icon-vertical-ellipsis.svg";
 import { useRef, useState } from "react";
-import DropDownContainer from "@/components/UI/Modal/DropDownContainer";
+import DropDownContainer from "@/components/UI/DropDown/DropDownContainer";
 import useMenuHandler from "@/hooks/useMenuHandler";
-import AddNewTaskModal from "./AddNewTaskModal";
+import AddOrEditTaskModal from "../Board/Task/AddOrEditTaskModal";
+import AddOrEditBoardModal from "../Board/AddOrEditBoardModal";
+import DeletionWarning from "../UI/Modal/DeletionWarning";
 
 type Props = {
   board: IBoard | null;
@@ -18,15 +20,17 @@ type Props = {
 const Header = ({ board, showSidebar, theme }: Props) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const [showAddNewTaskModal, setShowAddNewTaskModal] = useState(false);
+  const [showEditBoardModal, setShowEditBoardModal] = useState(false);
+  const [showDeletionWarning, setShowDeletionWarning] = useState(false);
   const { showElement: showMenu, setShowElement: setShowMenu } =
     useMenuHandler(menuRef);
 
   function handleEditCurrentBoard() {
-    // open EditBoardModal
+    setShowEditBoardModal(true);
   }
 
   function handleDeleteCurrentBoard() {
-    // open DeleteBoardModal
+    console.info("Sending a DELETE-Request to the database...");
   }
 
   function onAddNewTask() {
@@ -39,7 +43,7 @@ const Header = ({ board, showSidebar, theme }: Props) => {
 
   return (
     <>
-      <header className="flex h-[9.6rem] items-center justify-start border-b border-lines-light bg-white pr-[2.2rem] pl-[2.4rem] dark:border-lines-dark dark:bg-grey-dark">
+      <header className="flex h-[9.6rem] max-w-[100%] items-center justify-start border-b border-lines-light bg-white pr-[2.2rem] pl-[2.4rem] dark:border-lines-dark dark:bg-grey-dark">
         {!showSidebar && (
           <div className="flex h-full items-center border-r-[0.1rem] border-lines-light pr-[3.2rem] dark:border-lines-dark">
             <Image
@@ -52,9 +56,11 @@ const Header = ({ board, showSidebar, theme }: Props) => {
           {board?.name}
         </h1>
         <div className="relative ml-auto flex gap-[1rem]">
-          <Button large variant="primary" onClick={onAddNewTask}>
-            +Add New Task
-          </Button>
+          {board?.columns ? (
+            <Button large variant="primary" onClick={onAddNewTask}>
+              +Add New Task
+            </Button>
+          ) : null}
           <button
             onClick={() => setShowMenu((prevState) => !prevState)}
             className="px-[1rem]"
@@ -72,20 +78,36 @@ const Header = ({ board, showSidebar, theme }: Props) => {
               >
                 Edit Board
               </button>
-              <button
-                onClick={handleDeleteCurrentBoard}
-                className="rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
-              >
-                Delete Board
-              </button>
+              {board && (
+                <button
+                  onClick={() => setShowDeletionWarning(true)}
+                  className="rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
+                >
+                  Delete Board
+                </button>
+              )}
             </DropDownContainer>
           )}
         </div>
       </header>
       {showAddNewTaskModal && (
-        <AddNewTaskModal
-          statusOptions={board?.columns}
+        <AddOrEditTaskModal
+          statusOptions={board?.columns!}
           onClose={onCloseNewTask}
+        />
+      )}
+      {showEditBoardModal && (
+        <AddOrEditBoardModal
+          board={board}
+          onClose={() => setShowEditBoardModal(false)}
+        />
+      )}
+      {showDeletionWarning && (
+        <DeletionWarning
+          title={board!.name}
+          type="board"
+          onClose={() => setShowDeletionWarning(false)}
+          deleteFunction={handleDeleteCurrentBoard}
         />
       )}
     </>

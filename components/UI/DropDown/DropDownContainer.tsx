@@ -5,14 +5,14 @@ type Props = {
   children: React.ReactNode;
 };
 
-export type Ref = HTMLDivElement;
+export type RefDiv = HTMLDivElement;
 
-const DropDownContainer = React.forwardRef<Ref, Props>(
+const DropDownContainer = React.forwardRef<RefDiv, Props>(
   ({ children, additionalClassNames = "" }, ref) => {
     return (
       <div
         ref={ref}
-        className={`z-10 flex h-fit w-fit flex-col rounded-xl bg-white p-0 shadow-sm dark:bg-grey-very-dark desktop:min-w-[41.6rem] ${additionalClassNames}`}
+        className={`z-10 flex h-fit w-fit min-w-[19.2rem] flex-col rounded-xl bg-white p-0 shadow-sm dark:bg-grey-very-dark ${additionalClassNames}`}
       >
         {children}
       </div>

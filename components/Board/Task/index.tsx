@@ -4,23 +4,25 @@ import OptionsIcon from "@/public/assets/icon-vertical-ellipsis.svg";
 import { useRef, useState } from "react";
 import GenericModalContainer from "@/components/UI/Modal/GenericModalContainer";
 import Subtask from "../Subtask";
-import DropDownContainer from "../../UI/Modal/DropDownContainer";
+import DropDownContainer from "../../UI/DropDown/DropDownContainer";
 import DropDown from "../../UI/InputFields/DropDown";
 import useMenuHandler from "@/hooks/useMenuHandler";
+import AddOrEditTaskModal from "./AddOrEditTaskModal";
+import DeletionWarning from "@/components/UI/Modal/DeletionWarning";
 
 type Props = {
-  data: IBoard;
+  currentBoard: IBoard;
   task: ITask;
   index: number;
 };
 
-const Task = ({ data, task, index }: Props) => {
+const Task = ({ currentBoard, task, index }: Props) => {
   const [showTask, setShowTask] = useState(false);
+  const [showEditTaskModal, setShowEditTaskModal] = useState(false);
+  const [showDeletionWarning, setShowDeletionWarning] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const {
-    showElement: showEditTaskModal,
-    setShowElement: setShowEditTaskModal,
-  } = useMenuHandler(menuRef);
+  const { showElement: showEditTaskMenu, setShowElement: setShowEditTaskMenu } =
+    useMenuHandler(menuRef);
 
   const completedTasks = task.subtasks.reduce((completedTasks, task) => {
     if (task.isCompleted) {
@@ -30,11 +32,12 @@ const Task = ({ data, task, index }: Props) => {
   }, 0);
 
   function handleEditCurrentBoard() {
-    // open Edit Modal
+    setShowEditTaskModal(true);
+    setShowTask(false);
   }
 
   function handleDeleteCurrentBoard() {
-    // open Delete Modal
+    console.info("Sending a DELETE-Request to the server...");
   }
 
   return (
@@ -50,7 +53,7 @@ const Task = ({ data, task, index }: Props) => {
           {completedTasks} of {task.subtasks.length} subtasks completed
         </p>
       </div>
-      {showTask && (
+      {!showDeletionWarning && showTask && (
         <GenericModalContainer
           additionalClassNames="w-[48rem] gap-[2.4rem]"
           onClose={() => setShowTask(false)}
@@ -58,11 +61,11 @@ const Task = ({ data, task, index }: Props) => {
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold">{task.title}</h2>
             <button
-              onClick={() => setShowEditTaskModal((prevState) => !prevState)}
+              onClick={() => setShowEditTaskMenu((prevState) => !prevState)}
               className="relative h-fit w-12 px-[1rem]"
             >
               <Image src={OptionsIcon} alt="options" />
-              {showEditTaskModal && (
+              {showEditTaskMenu && (
                 <DropDownContainer
                   ref={menuRef}
                   additionalClassNames="absolute right-1/2 translate-x-1/2 top-16"
@@ -74,7 +77,7 @@ const Task = ({ data, task, index }: Props) => {
                     Edit Task
                   </button>
                   <button
-                    onClick={handleDeleteCurrentBoard}
+                    onClick={() => setShowDeletionWarning(true)}
                     className="rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
                     Delete Task
@@ -102,9 +105,24 @@ const Task = ({ data, task, index }: Props) => {
             <h4 className="text-sm font-bold text-grey-medium">
               Current Status
             </h4>
-            <DropDown task={task} columns={data.columns} />
+            <DropDown task={task} columns={currentBoard.columns} />
           </div>
         </GenericModalContainer>
+      )}
+      {showEditTaskModal && (
+        <AddOrEditTaskModal
+          task={task}
+          onClose={() => setShowEditTaskModal(false)}
+          statusOptions={currentBoard.columns}
+        />
+      )}
+      {showDeletionWarning && (
+        <DeletionWarning
+          type="task"
+          title={task.title}
+          onClose={() => setShowDeletionWarning(false)}
+          deleteFunction={handleDeleteCurrentBoard}
+        />
       )}
     </>
   );
