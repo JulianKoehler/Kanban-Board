@@ -108,13 +108,13 @@ export default function Kanban({ ssgData, error }: Props) {
 export async function getStaticProps() {
   try {
     const allBoardsResponse = await fetch(
-      "http://localhost:3000/api/getBoard/all"
+      "https://kanban-manager-theta.vercel.app/api/getBoard/all"
     );
     const allBoardsData = await allBoardsResponse.json();
     const firstBoardId = allBoardsData.boards[0].id;
 
     const firstBoardResponse = await fetch(
-      `http://localhost:3000/api/getBoard/${firstBoardId}`
+      `https://kanban-manager-theta.vercel.app/api/getBoard/${firstBoardId}`
     );
     const firstBoardData = await firstBoardResponse.json();
 
