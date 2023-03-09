@@ -18,11 +18,14 @@ type Props = {
 const AddOrEditBoardModal = ({ board, onClose }: Props) => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [name, setName] = useState(board?.name ?? "");
+  const boardId = board?.id ?? uuid();
   const [columns, setColumns] = useState<IColumn[]>(
     board?.columns ?? [
       {
         id: uuid(),
+        index: 0,
         name: "",
+        boardId,
         tasks: [],
       },
     ]
@@ -81,6 +84,8 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
       {
         id: uuid(),
         name: "",
+        index: columns.length,
+        boardId,
         tasks: [],
       },
     ]);

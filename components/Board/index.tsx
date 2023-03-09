@@ -13,7 +13,7 @@ type Props = {
   } | null;
   boardData: IBoard | null;
   isLoading: boolean;
-  hasError: boolean;
+  hasError: Error | boolean;
 };
 
 const Board = ({ currentBoard, boardData, isLoading, hasError }: Props) => {

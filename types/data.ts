@@ -10,6 +10,7 @@ export interface IColumn {
   id: string;
   index: number;
   name: string;
+  boardId: string;
   tasks?: ITask[];
 }
 
