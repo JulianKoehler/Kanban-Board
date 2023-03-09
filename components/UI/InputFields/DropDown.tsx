@@ -1,23 +1,23 @@
 import DropDownContainer from "@/components/UI/DropDown/DropDownContainer";
 import useMenuHandler from "@/hooks/useMenuHandler";
-import { IColumn, ITask } from "@/types/data";
+import { IBoard, IColumn, ITask } from "@/types/data";
 import { useRef, useState } from "react";
 
 type Props = {
   task?: ITask;
-  columns: IColumn[];
+  statusOptions: IColumn[];
   onStatusChange?: React.Dispatch<React.SetStateAction<IColumn>>;
 };
 
-const DropDown = ({ task, columns, onStatusChange }: Props) => {
+const DropDown = ({ task, statusOptions, onStatusChange }: Props) => {
   const dropDownRef = useRef<HTMLDivElement>(null);
   const { showElement: showDropDown, setShowElement: setShowDropDown } =
     useMenuHandler(dropDownRef);
   const [displayedStatus, setDisplayedStatus] = useState(
-    task?.status || columns[0].name
+    task?.status || statusOptions[0].name
   );
 
-  function handleSelectOption(selectedColumn: IColumn) {
+  async function handleSelectOption(selectedColumn: IColumn) {
     if (!task) {
       /**
        * If no task has been provided this Component is being used in the Add New Task Modal.
@@ -51,15 +51,15 @@ const DropDown = ({ task, columns, onStatusChange }: Props) => {
             : "pointer-events-none"
         }`}
       >
-        {columns.map((column, index) => (
+        {statusOptions.map((status, index) => (
           <p
             role="option"
-            onClick={() => handleSelectOption(column)}
+            onClick={() => handleSelectOption(status)}
             className={`px-[1.6rem] py-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800 ${
-              index === columns.length - 1 ? "rounded-b-xl" : ""
+              index === statusOptions.length - 1 ? "rounded-b-xl" : ""
             }`}
           >
-            {column.name}
+            {status.name}
           </p>
         ))}
       </DropDownContainer>

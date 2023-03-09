@@ -2,30 +2,60 @@ import Head from "next/head";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
-import { IBoard, KanbanData } from "@/types/data";
+import { IBoard } from "@/types/data";
 import Header from "@/components/Header";
 import BoardManager from "@/components/Sidebar/BoardManager";
-import { getData } from "@/util/http";
 import Board from "@/components/Board";
+import axios from "axios";
 
 interface Props {
-  initialData: KanbanData;
+  ssgData: {
+    allBoardsData: {
+      boards: Array<{
+        id: string;
+        name: string;
+      }>;
+    };
+    firstBoardData: IBoard;
+  };
+  error?: Error;
 }
 
-export default function Kanban({ initialData }: Props) {
+export default function Kanban({ ssgData, error }: Props) {
   const { theme, systemTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const [appIsMounted, setAppIsMounted] = useState(false);
   const [activeBoard, setActiveBoard] = useState<IBoard | null>(
-    initialData ? initialData[0] : null
+    ssgData?.allBoardsData.boards[0] ?? null
   );
+  const [boardData, setBoardData] = useState<IBoard | null>(null);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(error ?? false);
+
+  useEffect(() => {
+    (async function getData() {
+      setIsLoading(true);
+      try {
+        const { data } = await axios.get(
+          `http://localhost:3000/api/getBoard/${activeBoard?.id}`
+        );
+        setBoardData(data.board);
+        setIsLoading(false);
+        setHasError(false);
+      } catch (error) {
+        console.log(error);
+        setIsLoading(false);
+        setHasError(false);
+      }
+    })();
+  }, [activeBoard]);
 
   /* Avoid hydration mismatch */
   useEffect(() => {
-    setMounted(true);
+    setAppIsMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  if (!appIsMounted) return null;
 
   const currentTheme = theme === "system" ? systemTheme : theme;
 
@@ -51,7 +81,7 @@ export default function Kanban({ initialData }: Props) {
         setShowSidebar={setShowSidebar}
         boardManager={
           <BoardManager
-            initialData={initialData ? initialData : []}
+            initialData={ssgData?.allBoardsData.boards ?? []}
             activeBoard={activeBoard || null}
             setActiveBoard={setActiveBoard}
           />
@@ -61,22 +91,51 @@ export default function Kanban({ initialData }: Props) {
         <Header
           showSidebar={showSidebar}
           theme={currentTheme!}
-          board={activeBoard}
+          board={boardData}
+          boardName={activeBoard?.name || ""}
         />
-        <Board data={activeBoard || null} />
+        <Board
+          boardData={boardData}
+          currentBoard={activeBoard || null}
+          isLoading={isLoading}
+          hasError={hasError}
+        />
       </div>
     </>
   );
 }
 
 export async function getStaticProps() {
-  const data = await getData(
-    "https://kanban-9a84a-default-rtdb.europe-west1.firebasedatabase.app/boards.json"
-  );
+  try {
+    const allBoardsResponse = await fetch(
+      "http://localhost:3000/api/getBoard/all"
+    );
+    const allBoardsData = await allBoardsResponse.json();
+    const firstBoardId = allBoardsData.boards[0].id;
 
-  return {
-    props: {
-      initialData: data,
-    },
-  };
+    const firstBoardResponse = await fetch(
+      `http://localhost:3000/api/getBoard/${firstBoardId}`
+    );
+    const firstBoardData = await firstBoardResponse.json();
+
+    const data = {
+      allBoardsData,
+      firstBoardData,
+    };
+
+    return {
+      props: {
+        ssgData: data,
+      },
+    };
+  } catch (err) {
+    console.error(err);
+
+    return {
+      props: {
+        initialData: null,
+        error: true,
+      },
+    };
+  }
 }

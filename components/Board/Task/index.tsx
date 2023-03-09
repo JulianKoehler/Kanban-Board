@@ -1,4 +1,4 @@
-import { IBoard, ITask, KanbanData } from "@/types/data";
+import { IBoard, ITask } from "@/types/data";
 import Image from "next/image";
 import OptionsIcon from "@/public/assets/icon-vertical-ellipsis.svg";
 import { useRef, useState } from "react";
@@ -24,7 +24,7 @@ const Task = ({ currentBoard, task, index }: Props) => {
   const { showElement: showEditTaskMenu, setShowElement: setShowEditTaskMenu } =
     useMenuHandler(menuRef);
 
-  const completedTasks = task.subtasks.reduce((completedTasks, task) => {
+  const completedTasks = task?.subtasks?.reduce((completedTasks, task) => {
     if (task.isCompleted) {
       return completedTasks + 1;
     }
@@ -50,7 +50,7 @@ const Task = ({ currentBoard, task, index }: Props) => {
           {task.title}
         </h3>
         <p className="text-sm font-bold text-grey-medium">
-          {completedTasks} of {task.subtasks.length} subtasks completed
+          {completedTasks} of {task?.subtasks?.length} subtasks completed
         </p>
       </div>
       {!showDeletionWarning && showTask && (
@@ -91,9 +91,9 @@ const Task = ({ currentBoard, task, index }: Props) => {
           </p>
           <div className="flex flex-col gap-[0.8rem]">
             <h4 className="mb-[0.8rem] text-sm font-bold text-grey-medium">
-              Subtasks ({completedTasks} of {task.subtasks.length})
+              Subtasks ({completedTasks} of {task?.subtasks?.length})
             </h4>
-            {task.subtasks.map((subtask) => (
+            {task?.subtasks?.map((subtask) => (
               <Subtask
                 checked={subtask.isCompleted}
                 title={subtask.title}
@@ -105,7 +105,7 @@ const Task = ({ currentBoard, task, index }: Props) => {
             <h4 className="text-sm font-bold text-grey-medium">
               Current Status
             </h4>
-            <DropDown task={task} columns={currentBoard.columns} />
+            <DropDown task={task} statusOptions={currentBoard.columns!} />
           </div>
         </GenericModalContainer>
       )}
@@ -113,7 +113,7 @@ const Task = ({ currentBoard, task, index }: Props) => {
         <AddOrEditTaskModal
           task={task}
           onClose={() => setShowEditTaskModal(false)}
-          statusOptions={currentBoard.columns}
+          statusOptions={currentBoard.columns!}
         />
       )}
       {showDeletionWarning && (

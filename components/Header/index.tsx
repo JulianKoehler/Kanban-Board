@@ -13,17 +13,19 @@ import DeletionWarning from "../UI/Modal/DeletionWarning";
 
 type Props = {
   board: IBoard | null;
+  boardName: string;
   showSidebar: boolean;
   theme: string;
 };
 
-const Header = ({ board, showSidebar, theme }: Props) => {
+const Header = ({ board, boardName, showSidebar, theme }: Props) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const [showAddNewTaskModal, setShowAddNewTaskModal] = useState(false);
   const [showEditBoardModal, setShowEditBoardModal] = useState(false);
   const [showDeletionWarning, setShowDeletionWarning] = useState(false);
   const { showElement: showMenu, setShowElement: setShowMenu } =
     useMenuHandler(menuRef);
+  const columnsExist = board?.columns && board?.columns?.length > 0;
 
   function handleEditCurrentBoard() {
     setShowEditBoardModal(true);
@@ -53,40 +55,43 @@ const Header = ({ board, showSidebar, theme }: Props) => {
           </div>
         )}
         <h1 className={`text-2xl font-bold ${!showSidebar && "ml-[3.2rem]"}`}>
-          {board?.name}
+          {boardName}
         </h1>
         <div className="relative ml-auto flex gap-[1rem]">
-          {board?.columns ? (
+          {columnsExist ? (
             <Button large variant="primary" onClick={onAddNewTask}>
               +Add New Task
             </Button>
           ) : null}
-          <button
-            onClick={() => setShowMenu((prevState) => !prevState)}
-            className="px-[1rem]"
-          >
-            <Image src={OptionsIcon} alt="options" />
-          </button>
-          {showMenu && (
-            <DropDownContainer
-              additionalClassNames="absolute right-0 top-[6rem]"
-              ref={menuRef}
-            >
+          {board && (
+            <>
               <button
-                onClick={handleEditCurrentBoard}
-                className="w-full rounded-t-xl px-[1.6rem] pt-[1.6rem] pb-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
+                onClick={() => setShowMenu((prevState) => !prevState)}
+                className="px-[1rem]"
               >
-                Edit Board
+                <Image src={OptionsIcon} alt="options" />
               </button>
-              {board && (
-                <button
-                  onClick={() => setShowDeletionWarning(true)}
-                  className="rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
+              {showMenu && (
+                <DropDownContainer
+                  additionalClassNames="absolute right-0 top-[6rem]"
+                  ref={menuRef}
                 >
-                  Delete Board
-                </button>
+                  <button
+                    onClick={handleEditCurrentBoard}
+                    className="w-full rounded-t-xl px-[1.6rem] pt-[1.6rem] pb-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    Edit Board
+                  </button>
+
+                  <button
+                    onClick={() => setShowDeletionWarning(true)}
+                    className="rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    Delete Board
+                  </button>
+                </DropDownContainer>
               )}
-            </DropDownContainer>
+            </>
           )}
         </div>
       </header>

@@ -6,7 +6,7 @@ import BoardIcon from "../UI/Icons/BoardIcon";
 type Props = {
   initialData: KanbanData | [];
   activeBoard: IBoard | null;
-  setActiveBoard: Dispatch<SetStateAction<IBoard>>;
+  setActiveBoard: Dispatch<SetStateAction<IBoard | null>>;
 };
 
 const BoardManager = ({ initialData, activeBoard, setActiveBoard }: Props) => {

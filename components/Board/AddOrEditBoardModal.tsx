@@ -1,4 +1,4 @@
-import { IBoard } from "@/types/data";
+import { IBoard, IColumn } from "@/types/data";
 import checkFormValidity from "@/util/checkFormValidity";
 import React, { useState } from "react";
 import uuid from "react-uuid";
@@ -18,7 +18,7 @@ type Props = {
 const AddOrEditBoardModal = ({ board, onClose }: Props) => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [name, setName] = useState(board?.name ?? "");
-  const [columns, setColumns] = useState(
+  const [columns, setColumns] = useState<IColumn[]>(
     board?.columns ?? [
       {
         id: uuid(),
@@ -27,6 +27,8 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
       },
     ]
   );
+
+  console.log(board);
 
   const columnsInputFields = columns.map((column, index) => (
     <div key={column.id} className="relative flex gap-[1.6rem]">
@@ -125,7 +127,7 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
           )}
         </FormGroup>
         <FormGroup className="flex flex-col gap-[1.6rem]">
-          <H5>Subtasks</H5>
+          <H5>Columns</H5>
           <div className="flex max-h-[14.7rem] flex-col gap-[1.2rem] overflow-y-auto">
             {columnsInputFields}
           </div>

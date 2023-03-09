@@ -164,7 +164,7 @@ const AddOrEditTaskModal = ({ onClose, statusOptions, task = null }: Props) => {
           <H5>Status</H5>
           <DropDown
             onStatusChange={(selectedColumn) => setStatus(selectedColumn.name)}
-            columns={statusOptions}
+            statusOptions={statusOptions}
           />
         </FormGroup>
         <Button type="submit" variant="primary">
@@ -176,7 +176,3 @@ const AddOrEditTaskModal = ({ onClose, statusOptions, task = null }: Props) => {
 };
 
 export default AddOrEditTaskModal;
-
-/**
- * In order to avoid repetetive code I create this h5 since it always has the same styling
- */
