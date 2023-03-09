@@ -37,7 +37,7 @@ export default function Kanban({ ssgData, error }: Props) {
       setIsLoading(true);
       try {
         const { data } = await axios.get(
-          `http://localhost:3000/api/getBoard/${activeBoard?.id}`
+          `https://kanban-manager-theta.vercel.app/api/getBoard/${activeBoard?.id}`
         );
         setBoardData(data.board);
         setIsLoading(false);
