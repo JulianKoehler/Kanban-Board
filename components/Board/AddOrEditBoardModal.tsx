@@ -1,37 +1,46 @@
+import useHttpRequest from "@/hooks/useHttpRequest";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { addBoard, updateBoard } from "@/redux/slices/allBoardsSlice";
 import { IBoard, IColumn } from "@/types/data";
 import checkFormValidity from "@/util/checkFormValidity";
 import React, { useState } from "react";
 import uuid from "react-uuid";
-import Button from "../UI/Button";
-import Form from "../UI/Formelements/Form";
-import FormGroup from "../UI/Formelements/FormGroup";
-import H5 from "../UI/Headings/H5";
-import DeleteIcon from "../UI/Icons/DeleteIcon";
-import TextInput from "../UI/InputFields/TextInput";
-import GenericModalContainer from "../UI/Modal/GenericModalContainer";
+import Button from "@/components/UI/Button";
+import Form from "@/components/UI/Formelements/Form";
+import FormGroup from "@/components/UI/Formelements/FormGroup";
+import H5 from "@/components/UI/Headings/H5";
+import DeleteIcon from "@/components/UI/Icons/DeleteIcon";
+import TextInput from "@/components/UI/InputFields/TextInput";
+import GenericModalContainer from "@/components/UI/Modal/GenericModalContainer";
+import { LoadingSpinner_TailSpin as TailSpin } from "@/components/UI/LoadingSpinner";
 
 type Props = {
   onClose: VoidFunction;
-  board?: IBoard | null;
+  board?: IBoard;
 };
 
 const AddOrEditBoardModal = ({ board, onClose }: Props) => {
+  const dispatch = useAppDispatch();
+  const boardIndex =
+    board?.index ?? useAppSelector((state) => state.allBoards.allBoards).length;
+  const isEditMode = board ? true : false;
+  const { isLoading, hasError, sendData } = useHttpRequest();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [name, setName] = useState(board?.name ?? "");
+  const [boardName, setBoardName] = useState<string>(board ? board?.name : "");
   const boardId = board?.id ?? uuid();
   const [columns, setColumns] = useState<IColumn[]>(
-    board?.columns ?? [
-      {
-        id: uuid(),
-        index: 0,
-        name: "",
-        boardId,
-        tasks: [],
-      },
-    ]
+    isEditMode
+      ? (board?.columns as IColumn[])
+      : [
+          {
+            id: uuid(),
+            index: 0,
+            name: "",
+            boardId,
+            tasks: [],
+          },
+        ]
   );
-
-  console.log(board);
 
   const columnsInputFields = columns.map((column, index) => (
     <div key={column.id} className="relative flex gap-[1.6rem]">
@@ -63,7 +72,7 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
     index: number
   ) {
     setColumns((prevColumns) => {
-      let columns = [...prevColumns];
+      const columns = [...prevColumns];
 
       columns[index] = {
         ...columns[index],
@@ -91,17 +100,42 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
     ]);
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsFormSubmitted(true);
 
-    const toBeValidated = [name];
+    const toBeValidated = [boardName];
     columns.forEach((column) => {
       toBeValidated.push(column.name);
     });
     const isFormValid = checkFormValidity(toBeValidated);
 
-    if (isFormValid) {
+    if (!isFormValid) {
+      return;
+    }
+
+    const newBoardData = {
+      name: boardName,
+      id: boardId,
+      index: boardIndex,
+      columns: [...columns],
+    };
+
+    sendData(
+      isEditMode ? "PATCH" : "POST",
+      "/api/addOrEditBoard",
+      newBoardData
+    );
+
+    if (hasError) {
+      throw new Error("Something went wrong.");
+    }
+
+    isEditMode
+      ? dispatch(updateBoard(newBoardData))
+      : dispatch(addBoard(newBoardData));
+
+    if (!isLoading) {
       onClose();
     }
   }
@@ -113,19 +147,19 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
     >
       <Form onSubmit={handleSubmit}>
         <h2 className="text-xl font-bold">
-          {board ? "Edit Board" : "Add New Board"}
+          {isEditMode ? "Edit Board" : "Add New Board"}
         </h2>
         <FormGroup>
           <H5>Name</H5>
           <TextInput
             additionalClasses={
-              isFormSubmitted && name.length < 1 ? "input-error" : ""
+              isFormSubmitted && boardName.length < 1 ? "input-error" : ""
             }
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={boardName}
+            onChange={(e) => setBoardName(e.target.value)}
             placeholder="e.g. Web Design"
           />
-          {isFormSubmitted && name.length < 1 && (
+          {isFormSubmitted && boardName.length < 1 && (
             <p className="absolute bottom-[0.9rem] right-[1.6rem] text-base font-medium text-red">
               Can't be empty
             </p>
@@ -144,8 +178,12 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
             + Add New Column
           </Button>
         </FormGroup>
-        <Button type="submit" variant="primary">
-          {board ? "Save Changes" : "Create Board"}
+        <Button
+          type="submit"
+          variant="primary"
+          additionalClassNames="flex justify-center"
+        >
+          {isLoading ? TailSpin : isEditMode ? "Save Changes" : "Create Board"}
         </Button>
       </Form>
     </GenericModalContainer>

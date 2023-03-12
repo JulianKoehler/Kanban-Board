@@ -7,6 +7,9 @@ import Header from "@/components/Header";
 import BoardManager from "@/components/Sidebar/BoardManager";
 import Board from "@/components/Board";
 import axios from "axios";
+import { useAppDispatch } from "@/redux/hooks";
+import { setAllBoards } from "@/redux/slices/allBoardsSlice";
+import { setBoardData } from "@/redux/slices/activeBoardSlice";
 
 interface Props {
   ssgData: {
@@ -24,22 +27,15 @@ interface Props {
 }
 
 export default function Kanban({ ssgData, error }: Props) {
+  const dispatch = useAppDispatch();
   const { theme, systemTheme, setTheme } = useTheme();
   const [appIsMounted, setAppIsMounted] = useState(false);
-  const [activeBoard, setActiveBoard] = useState<IBoard | null>(
-    ssgData?.firstBoardData.board ?? null
+  const [activeBoard, setActiveBoard] = useState<IBoard | undefined>(
+    ssgData?.firstBoardData.board ?? undefined
   );
-  const [boardData, setBoardData] = useState<IBoard | null>(null);
   const [showSidebar, setShowSidebar] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(error ?? false);
-
-  /**
-   * This useEffect is getting the boardData each time the user changes the board. It needs to be
-   * in this file since we are using the information in both the Board AND the Header. I might consider
-   * using Redux to outsource the code a bit. I didn't want to use it in the first place to not
-   * over-engineer this app.
-   */
 
   useEffect(() => {
     const controller = new AbortController();
@@ -52,11 +48,11 @@ export default function Kanban({ ssgData, error }: Props) {
         const { data } = await axios.get(`/api/getBoard/${activeBoard?.id}`, {
           signal,
         });
-        setBoardData(data.board);
+        dispatch(setBoardData(data.board));
         setIsLoading(false);
         setHasError(false);
       } catch (err) {
-        console.log(err);
+        console.log("Error occured: ", err);
         setHasError(true);
       }
     })();
@@ -65,6 +61,10 @@ export default function Kanban({ ssgData, error }: Props) {
       controller.abort();
     };
   }, [activeBoard]);
+
+  useEffect(() => {
+    dispatch(setAllBoards(ssgData.allBoardsData.boards));
+  }, []);
 
   /* Avoid hydration mismatch */
   useEffect(() => {
@@ -97,7 +97,6 @@ export default function Kanban({ ssgData, error }: Props) {
         setShowSidebar={setShowSidebar}
         boardManager={
           <BoardManager
-            initialData={ssgData?.allBoardsData.boards ?? []}
             activeBoard={activeBoard || null}
             setActiveBoard={setActiveBoard}
           />
@@ -107,12 +106,10 @@ export default function Kanban({ ssgData, error }: Props) {
         <Header
           showSidebar={showSidebar}
           theme={currentTheme!}
-          board={boardData}
           boardName={activeBoard?.name || ""}
         />
         <Board
-          boardData={boardData}
-          currentBoard={activeBoard || null}
+          activeBoard={activeBoard}
           isLoading={isLoading}
           hasError={hasError}
         />

@@ -1,35 +1,21 @@
-import { IBoard } from "@/types/data";
+import { BoardListItem, IBoard } from "@/types/data";
 import { useEffect, useState } from "react";
 import Button from "../UI/Button";
 import AddOrEditBoardModal from "./AddOrEditBoardModal";
 import Column from "./Column";
 import Task from "./Task";
-import { ThreeDots } from "react-loader-spinner";
+import { LoadingSpinner_ThreeDots as LoadingSpinner } from "../UI/LoadingSpinner";
+import { useAppSelector } from "@/redux/hooks";
 
 type Props = {
-  currentBoard: {
-    id: string;
-    name: string;
-  } | null;
-  boardData: IBoard | null;
+  activeBoard: BoardListItem | undefined;
   isLoading: boolean;
   hasError: Error | boolean;
 };
 
-const Board = ({ currentBoard, boardData, isLoading, hasError }: Props) => {
+const Board = ({ activeBoard, isLoading, hasError }: Props) => {
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
-
-  const LoadingSpinner = (
-    <ThreeDots
-      height="80"
-      width="80"
-      radius="9"
-      color="#635FC7"
-      ariaLabel="three-dots-loading"
-      wrapperStyle={{}}
-      visible={true}
-    />
-  );
+  const boardData = useAppSelector((state) => state.activeBoard.board);
 
   return (
     <>
@@ -62,7 +48,7 @@ const Board = ({ currentBoard, boardData, isLoading, hasError }: Props) => {
             ) : (
               <div className="m-auto flex flex-col items-center justify-between gap-[4.7rem]">
                 <p className="font-xl font-bold text-grey-medium">
-                  {currentBoard
+                  {activeBoard
                     ? "This board is empty. Create a new column to get started."
                     : "You don't have any boards. Create one to get started."}
                 </p>
@@ -71,7 +57,7 @@ const Board = ({ currentBoard, boardData, isLoading, hasError }: Props) => {
                   variant="primary"
                   large
                 >
-                  {currentBoard ? "+ Add New Column" : "+ Create New Board"}
+                  {activeBoard ? "+ Add New Column" : "+ Create New Board"}
                 </Button>
               </div>
             )}

@@ -10,16 +10,17 @@ import useMenuHandler from "@/hooks/useMenuHandler";
 import AddOrEditTaskModal from "../Board/Task/AddOrEditTaskModal";
 import AddOrEditBoardModal from "../Board/AddOrEditBoardModal";
 import DeletionWarning from "../UI/Modal/DeletionWarning";
+import { useAppSelector } from "@/redux/hooks";
 
 type Props = {
-  board: IBoard | null;
   boardName: string;
   showSidebar: boolean;
   theme: string;
 };
 
-const Header = ({ board, boardName, showSidebar, theme }: Props) => {
+const Header = ({ boardName, showSidebar, theme }: Props) => {
   const menuRef = useRef<HTMLDivElement>(null);
+  const board = useAppSelector((state) => state.activeBoard.board);
   const [showAddNewTaskModal, setShowAddNewTaskModal] = useState(false);
   const [showEditBoardModal, setShowEditBoardModal] = useState(false);
   const [showDeletionWarning, setShowDeletionWarning] = useState(false);

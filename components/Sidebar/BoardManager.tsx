@@ -1,24 +1,25 @@
+import { useAppSelector } from "@/redux/hooks";
 import { IBoard, KanbanData } from "@/types/data";
 import { Dispatch, SetStateAction, useState } from "react";
 import AddOrEditBoardModal from "../Board/AddOrEditBoardModal";
 import BoardIcon from "../UI/Icons/BoardIcon";
 
 type Props = {
-  initialData: KanbanData | [];
   activeBoard: IBoard | null;
   setActiveBoard: Dispatch<SetStateAction<IBoard | null>>;
 };
 
-const BoardManager = ({ initialData, activeBoard, setActiveBoard }: Props) => {
+const BoardManager = ({ activeBoard, setActiveBoard }: Props) => {
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
+  const { allBoards } = useAppSelector((state) => state.allBoards);
 
-  const boards = initialData.map((board, index) => {
+  const boards = allBoards.map((board, index) => {
     const active = activeBoard?.name === board.name;
 
     return (
       <button
         key={board.id}
-        onClick={() => setActiveBoard(initialData[index])}
+        onClick={() => setActiveBoard(allBoards[index])}
         className={`relative left-[-2.4rem] flex gap-[1.6rem] rounded-r-[2.4rem] py-[1.4rem] pl-[3.2rem] text-lg font-bold transition-colors duration-300 desktop:min-w-[27.6rem] ${
           active && "bg-purple-main fill-white text-white"
         } ${
@@ -36,7 +37,7 @@ const BoardManager = ({ initialData, activeBoard, setActiveBoard }: Props) => {
     <>
       <div>
         <h4 className="mb-8 pl-3 text-sm font-bold uppercase tracking-wide text-grey-medium">
-          all boards ({initialData.length})
+          all boards ({allBoards.length})
         </h4>
         {boards}
         <button

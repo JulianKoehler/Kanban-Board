@@ -6,3 +6,8 @@ export default function checkFormValidity([...inputValues]: string[]): boolean {
   }
   return true;
 }
+
+/**
+ * I don't want to limit the user too much in how he wants to use the app but at least advise him to
+ * provide input for certain fields that are specified from outside the function.
+ */

@@ -4,6 +4,7 @@ export interface IBoard {
   id: string;
   name: string;
   columns?: IColumn[];
+  index: number;
 }
 
 export interface IColumn {
@@ -26,4 +27,11 @@ export interface Subtask {
   id: string;
   title: string;
   isCompleted: boolean;
+}
+
+export interface BoardListItem {
+  id: string;
+  name: string;
+  index: number;
+  columns?: IColumn[];
 }
