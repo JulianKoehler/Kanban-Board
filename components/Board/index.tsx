@@ -1,5 +1,4 @@
-import { BoardListItem, IBoard } from "@/types/data";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "../UI/Button";
 import AddOrEditBoardModal from "./AddOrEditBoardModal";
 import Column from "./Column";
@@ -11,24 +10,26 @@ import {
   selectactiveBoardData,
   selectBoardDataStatus,
   selectBoardList,
+  selectBoardListStatus,
   STATUS,
 } from "@/redux/slices/boardSlice";
 
 const Board = () => {
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
   const boardData = useAppSelector(selectactiveBoardData);
-  const status = useAppSelector(selectBoardDataStatus);
+  const boardDataStatus = useAppSelector(selectBoardDataStatus);
+  const boardListStatus = useAppSelector(selectBoardListStatus);
   const boardList = useAppSelector(selectBoardList);
   const activeBoard = useAppSelector(selectActiveBoard);
 
-  console.log(status);
+  console.log(boardDataStatus);
 
   return (
     <>
       <main
         className={`relative flex h-[calc(100vh-9.6rem)] gap-[2.4rem] overflow-auto bg-grey-light pl-[2.4rem] pt-[2.4rem] pb-40 dark:bg-grey-very-dark`}
       >
-        {status === STATUS.LOADING ? (
+        {boardDataStatus === STATUS.LOADING ? (
           <div className="m-auto">{LoadingSpinner}</div>
         ) : (
           <>
@@ -51,7 +52,7 @@ const Board = () => {
               >
                 + New Column
               </div>
-            ) : (
+            ) : boardListStatus === STATUS.SUCCESS ? (
               <div className="m-auto flex flex-col items-center justify-between gap-[4.7rem]">
                 <p className="font-xl font-bold text-grey-medium">
                   {activeBoard
@@ -66,7 +67,7 @@ const Board = () => {
                   {activeBoard ? "+ Add New Column" : "+ Create New Board"}
                 </Button>
               </div>
-            )}
+            ) : null}
           </>
         )}
       </main>
