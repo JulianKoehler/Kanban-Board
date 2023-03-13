@@ -6,23 +6,29 @@ import Column from "./Column";
 import Task from "./Task";
 import { LoadingSpinner_ThreeDots as LoadingSpinner } from "../UI/LoadingSpinner";
 import { useAppSelector } from "@/redux/hooks";
+import {
+  selectActiveBoard,
+  selectactiveBoardData,
+  selectBoardDataStatus,
+  selectBoardList,
+  STATUS,
+} from "@/redux/slices/boardSlice";
 
-type Props = {
-  activeBoard: BoardListItem | undefined;
-  isLoading: boolean;
-  hasError: Error | boolean;
-};
-
-const Board = ({ activeBoard, isLoading, hasError }: Props) => {
+const Board = () => {
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
-  const boardData = useAppSelector((state) => state.activeBoard.board);
+  const boardData = useAppSelector(selectactiveBoardData);
+  const status = useAppSelector(selectBoardDataStatus);
+  const boardList = useAppSelector(selectBoardList);
+  const activeBoard = useAppSelector(selectActiveBoard);
+
+  console.log(status);
 
   return (
     <>
       <main
         className={`relative flex h-[calc(100vh-9.6rem)] gap-[2.4rem] overflow-auto bg-grey-light pl-[2.4rem] pt-[2.4rem] pb-40 dark:bg-grey-very-dark`}
       >
-        {isLoading ? (
+        {status === STATUS.LOADING ? (
           <div className="m-auto">{LoadingSpinner}</div>
         ) : (
           <>

@@ -1,11 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import allBoardsReducer from "./slices/allBoardsSlice";
-import activeBoardReducer from "./slices/activeBoardSlice";
+import boardsReducer from "./slices/boardSlice";
 
 export const store = configureStore({
   reducer: {
-    allBoards: allBoardsReducer,
-    activeBoard: activeBoardReducer,
+    boards: boardsReducer,
   },
 });
 

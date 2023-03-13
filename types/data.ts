@@ -33,5 +33,4 @@ export interface BoardListItem {
   id: string;
   name: string;
   index: number;
-  columns?: IColumn[];
 }

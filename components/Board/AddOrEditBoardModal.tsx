@@ -1,6 +1,11 @@
 import useHttpRequest from "@/hooks/useHttpRequest";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { addBoard, updateBoard } from "@/redux/slices/allBoardsSlice";
+import {
+  addBoard,
+  selectBoardList,
+  setActiveBoard,
+  updateBoardList,
+} from "@/redux/slices/boardSlice";
 import { IBoard, IColumn } from "@/types/data";
 import checkFormValidity from "@/util/checkFormValidity";
 import React, { useState } from "react";
@@ -13,6 +18,7 @@ import DeleteIcon from "@/components/UI/Icons/DeleteIcon";
 import TextInput from "@/components/UI/InputFields/TextInput";
 import GenericModalContainer from "@/components/UI/Modal/GenericModalContainer";
 import { LoadingSpinner_TailSpin as TailSpin } from "@/components/UI/LoadingSpinner";
+import API_URLS from "@/util/API_URLs";
 
 type Props = {
   onClose: VoidFunction;
@@ -21,8 +27,8 @@ type Props = {
 
 const AddOrEditBoardModal = ({ board, onClose }: Props) => {
   const dispatch = useAppDispatch();
-  const boardIndex =
-    board?.index ?? useAppSelector((state) => state.allBoards.allBoards).length;
+  const boardList = useAppSelector(selectBoardList);
+  const boardIndex = board?.index ?? boardList[boardList.length - 1].index + 1;
   const isEditMode = board ? true : false;
   const { isLoading, hasError, sendData } = useHttpRequest();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
@@ -121,9 +127,9 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
       columns: [...columns],
     };
 
-    sendData(
+    await sendData(
       isEditMode ? "PATCH" : "POST",
-      "/api/addOrEditBoard",
+      API_URLS.addBoard,
       newBoardData
     );
 
@@ -132,10 +138,17 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
     }
 
     isEditMode
-      ? dispatch(updateBoard(newBoardData))
+      ? dispatch(updateBoardList(newBoardData))
       : dispatch(addBoard(newBoardData));
 
     if (!isLoading) {
+      dispatch(
+        setActiveBoard({
+          name: newBoardData.name,
+          id: newBoardData.id,
+          index: newBoardData.index,
+        })
+      );
       onClose();
     }
   }

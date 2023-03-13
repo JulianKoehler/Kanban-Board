@@ -12,7 +12,6 @@ import {
   getDocs,
   query,
   where,
-  onSnapshot,
   doc,
   getDoc,
   DocumentSnapshot,
@@ -20,11 +19,9 @@ import {
 import { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
-  board: {
-    id: string;
-    name: string;
-    columns: IColumn[];
-  };
+  id: string;
+  name: string;
+  columns: IColumn[];
 };
 
 export default async function requestHandler(
@@ -51,11 +48,9 @@ export default async function requestHandler(
     }
 
     res.status(200).json({
-      board: {
-        id: boardId,
-        name: board?.name ?? "Board not found",
-        columns: columns,
-      },
+      id: boardId,
+      name: board?.name ?? "Board not found",
+      columns: columns,
     });
   } catch (err) {
     console.error(err);

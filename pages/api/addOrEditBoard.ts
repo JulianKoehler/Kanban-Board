@@ -12,6 +12,7 @@ export default async function requestHandler(
     try {
       await setDoc(doc(db, "boards", req.body.id), {
         name: req.body.name,
+        index: req.body.index,
       });
 
       if (req.body.columns) {

@@ -11,16 +11,20 @@ import AddOrEditTaskModal from "../Board/Task/AddOrEditTaskModal";
 import AddOrEditBoardModal from "../Board/AddOrEditBoardModal";
 import DeletionWarning from "../UI/Modal/DeletionWarning";
 import { useAppSelector } from "@/redux/hooks";
+import {
+  selectActiveBoard,
+  selectactiveBoardData,
+} from "@/redux/slices/boardSlice";
 
 type Props = {
-  boardName: string;
   showSidebar: boolean;
   theme: string;
 };
 
-const Header = ({ boardName, showSidebar, theme }: Props) => {
+const Header = ({ showSidebar, theme }: Props) => {
   const menuRef = useRef<HTMLDivElement>(null);
-  const board = useAppSelector((state) => state.activeBoard.board);
+  const board = useAppSelector(selectactiveBoardData);
+  const activeBoard = useAppSelector(selectActiveBoard);
   const [showAddNewTaskModal, setShowAddNewTaskModal] = useState(false);
   const [showEditBoardModal, setShowEditBoardModal] = useState(false);
   const [showDeletionWarning, setShowDeletionWarning] = useState(false);
@@ -56,7 +60,7 @@ const Header = ({ boardName, showSidebar, theme }: Props) => {
           </div>
         )}
         <h1 className={`text-2xl font-bold ${!showSidebar && "ml-[3.2rem]"}`}>
-          {boardName}
+          {activeBoard?.name || ""}
         </h1>
         <div className="relative ml-auto flex gap-[1rem]">
           {columnsExist ? (
