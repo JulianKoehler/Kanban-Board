@@ -54,7 +54,6 @@ export const getActiveBoardData = createAsyncThunk(
 
       return response.data;
     } catch (err) {
-      console.log(err);
       if (err instanceof Error) throw new Error(err.message);
     }
   }
@@ -118,9 +117,12 @@ export const boardSlice = createSlice({
           state.activeBoardData = action.payload;
         }
       )
+      /* Errors from the Abort controller should not be treated as a failed request */
       .addCase(getActiveBoardData.rejected, (state, action) => {
-        state.boardDataStatus = STATUS.FAILED;
-        state.error = action.error.message;
+        if (action.error.message !== "canceled") {
+          state.boardDataStatus = STATUS.FAILED;
+          state.error = action.error.message;
+        }
       });
   },
 });

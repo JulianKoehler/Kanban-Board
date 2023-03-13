@@ -6,14 +6,9 @@ import {
   setActiveBoard,
   STATUS,
 } from "@/redux/slices/boardSlice";
-import { IBoard, KanbanData } from "@/types/data";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useState } from "react";
 import AddOrEditBoardModal from "../Board/AddOrEditBoardModal";
 import BoardIcon from "../UI/Icons/BoardIcon";
-
-type Props = {
-  activeBoard: IBoard | undefined;
-};
 
 const BoardManager = () => {
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
@@ -48,7 +43,7 @@ const BoardManager = () => {
         <h4 className="mb-8 pl-3 text-sm font-bold uppercase tracking-wide text-grey-medium">
           {status === STATUS.LOADING
             ? "loading boards..."
-            : `all boards (${boardList.length})`}
+            : `all boards (${boardList?.length ?? 0})`}
         </h4>
         {boards}
         <button

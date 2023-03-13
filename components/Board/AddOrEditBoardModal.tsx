@@ -28,7 +28,11 @@ type Props = {
 const AddOrEditBoardModal = ({ board, onClose }: Props) => {
   const dispatch = useAppDispatch();
   const boardList = useAppSelector(selectBoardList);
-  const boardIndex = board?.index ?? boardList[boardList.length - 1].index + 1;
+  const boardIndex = board
+    ? board.index
+    : boardList
+    ? boardList[boardList.length - 1].index + 1
+    : 0;
   const isEditMode = board ? true : false;
   const { isLoading, hasError, sendData } = useHttpRequest();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);

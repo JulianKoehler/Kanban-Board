@@ -9,6 +9,8 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   selectActiveBoard,
   getActiveBoardData,
+  getBoardList,
+  selectError,
 } from "@/redux/slices/boardSlice";
 
 export default function Kanban() {
@@ -16,7 +18,14 @@ export default function Kanban() {
   const { theme, systemTheme, setTheme } = useTheme();
   const [appIsMounted, setAppIsMounted] = useState(false);
   const activeBoard = useAppSelector(selectActiveBoard);
+  const error = useAppSelector(selectError);
   const [showSidebar, setShowSidebar] = useState(true);
+
+  console.log(error);
+
+  useEffect(() => {
+    dispatch(getBoardList());
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();

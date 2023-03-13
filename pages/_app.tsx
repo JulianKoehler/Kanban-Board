@@ -5,7 +5,7 @@ import { ThemeProvider } from "next-themes";
 import type { AppProps } from "next/app";
 import { Provider as Redux } from "react-redux";
 
-store.dispatch(getBoardList());
+// store.dispatch(getBoardList());
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
