@@ -2,7 +2,9 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   selectActiveBoard,
   selectBoardList,
+  selectBoardListStatus,
   setActiveBoard,
+  STATUS,
 } from "@/redux/slices/boardSlice";
 import { IBoard, KanbanData } from "@/types/data";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -17,6 +19,7 @@ const BoardManager = () => {
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
   const boardList = useAppSelector(selectBoardList);
   const activeBoard = useAppSelector(selectActiveBoard);
+  const status = useAppSelector(selectBoardListStatus);
   const dispatch = useAppDispatch();
 
   const boards = boardList?.map((board, index) => {
@@ -43,7 +46,9 @@ const BoardManager = () => {
     <>
       <div>
         <h4 className="mb-8 pl-3 text-sm font-bold uppercase tracking-wide text-grey-medium">
-          all boards ({boardList.length})
+          {status === STATUS.LOADING
+            ? "loading boards..."
+            : `all boards (${boardList.length})`}
         </h4>
         {boards}
         <button

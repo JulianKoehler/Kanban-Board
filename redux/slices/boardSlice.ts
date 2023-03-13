@@ -55,7 +55,7 @@ export const getActiveBoardData = createAsyncThunk(
       return response.data;
     } catch (err) {
       console.log(err);
-      if (err instanceof Error) return err.message;
+      if (err instanceof Error) throw new Error(err.message);
     }
   }
 );
