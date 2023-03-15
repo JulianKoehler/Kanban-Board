@@ -1,12 +1,15 @@
+import { IBoard, IColumn, ITask, Subtask } from "@/types/data";
+import axios from "axios";
 import { useState } from "react";
 
-type httpMethod = "POST" | "PATCH";
+type HttpMethod = "POST" | "PATCH";
+type RequestData = IBoard | IColumn | ITask | Subtask;
 
 const useHttpRequest = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  async function sendData(method: httpMethod, url: string, data: object) {
+  async function sendData(method: HttpMethod, url: string, data: RequestData) {
     try {
       setIsLoading(true);
       const response = await fetch(url, {
@@ -18,13 +21,32 @@ const useHttpRequest = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Could not post data.");
+        console.log(response);
+        throw new Error("Could not send data.");
       }
 
       setHasError(false);
-    } catch (err) {
-      console.log(err);
+    } catch (err: any) {
+      console.log(err.message);
       setHasError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function deleteData(url: string, data: RequestData) {
+    try {
+      setIsLoading(true);
+      const response = await axios.delete(url, {
+        data: data,
+      });
+
+      console.log(response);
+      setHasError(false);
+    } catch (err) {
+      setHasError(true);
+      console.log(err);
+      throw new Error("Could not delete data.");
     } finally {
       setIsLoading(false);
     }
@@ -34,6 +56,7 @@ const useHttpRequest = () => {
     isLoading,
     hasError,
     sendData,
+    deleteData,
   };
 };
 

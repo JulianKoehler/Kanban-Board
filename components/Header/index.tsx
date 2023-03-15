@@ -1,20 +1,25 @@
-import { IBoard } from "@/types/data";
+import { useRef, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import {
+  deleteBoardListItem,
+  selectActiveBoard,
+  selectactiveBoardData,
+  selectBoardList,
+  setActiveBoard,
+} from "@/redux/slices/boardSlice";
 import Image from "next/image";
 import LogoLightMode from "@/public/assets/logo-dark.svg";
 import LogoDarkMode from "@/public/assets/logo-light.svg";
 import Button from "@/components/UI/Button";
 import OptionsIcon from "@/public/assets/icon-vertical-ellipsis.svg";
-import { useRef, useState } from "react";
 import DropDownContainer from "@/components/UI/DropDown/DropDownContainer";
 import useMenuHandler from "@/hooks/useMenuHandler";
 import AddOrEditTaskModal from "../Board/Task/AddOrEditTaskModal";
 import AddOrEditBoardModal from "../Board/AddOrEditBoardModal";
 import DeletionWarning from "../UI/Modal/DeletionWarning";
-import { useAppSelector } from "@/redux/hooks";
-import {
-  selectActiveBoard,
-  selectactiveBoardData,
-} from "@/redux/slices/boardSlice";
+import useHttpRequest from "@/hooks/useHttpRequest";
+import API_URLS from "@/util/API_URLs";
+import { LoadingSpinner_TailSpin as Tailspin } from "@/components/UI/LoadingSpinner";
 
 type Props = {
   showSidebar: boolean;
@@ -22,6 +27,8 @@ type Props = {
 };
 
 const Header = ({ showSidebar, theme }: Props) => {
+  const dispatch = useAppDispatch();
+  const boardList = useAppSelector(selectBoardList);
   const menuRef = useRef<HTMLDivElement>(null);
   const board = useAppSelector(selectactiveBoardData);
   const activeBoard = useAppSelector(selectActiveBoard);
@@ -30,14 +37,25 @@ const Header = ({ showSidebar, theme }: Props) => {
   const [showDeletionWarning, setShowDeletionWarning] = useState(false);
   const { showElement: showMenu, setShowElement: setShowMenu } =
     useMenuHandler(menuRef);
+  const { isLoading, hasError, deleteData } = useHttpRequest();
   const columnsExist = board?.columns && board?.columns?.length > 0;
 
   function handleEditCurrentBoard() {
     setShowEditBoardModal(true);
   }
 
-  function handleDeleteCurrentBoard() {
-    console.info("Sending a DELETE-Request to the database...");
+  async function handleDeleteCurrentBoard() {
+    await deleteData(API_URLS.deleteBoard, board!);
+
+    if (hasError) {
+      throw new Error("Something went wrong.");
+    }
+
+    setShowDeletionWarning(false);
+    if (boardList.length > 0) {
+      dispatch(setActiveBoard(boardList[0]));
+    }
+    dispatch(deleteBoardListItem(board!.id));
   }
 
   function onAddNewTask() {
@@ -117,7 +135,15 @@ const Header = ({ showSidebar, theme }: Props) => {
           title={board!.name}
           type="board"
           onClose={() => setShowDeletionWarning(false)}
-          deleteFunction={handleDeleteCurrentBoard}
+          DeleteButton={
+            <Button
+              variant="destructive"
+              onClick={handleDeleteCurrentBoard}
+              additionalClassNames="flex justify-center"
+            >
+              {isLoading ? Tailspin : "Delete"}
+            </Button>
+          }
         />
       )}
     </>

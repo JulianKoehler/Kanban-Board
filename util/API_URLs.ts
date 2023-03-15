@@ -1,7 +1,8 @@
 enum API_URLS {
   getAllBoards = "/api/getBoard/all",
   getSpecificBoard = "/api/getBoard/",
-  addBoard = "/api/addOrEditBoard",
+  addOrEditBoard = "/api/addOrEditBoard",
+  deleteBoard = "/api/deleteBoard",
 }
 
 export default API_URLS;

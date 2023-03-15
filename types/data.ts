@@ -10,6 +10,7 @@ export interface IBoard {
 export interface IColumn {
   id: string;
   index: number;
+  markedForDeletion: boolean;
   name: string;
   boardId: string;
   tasks?: ITask[];

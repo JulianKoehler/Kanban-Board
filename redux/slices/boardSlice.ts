@@ -50,7 +50,6 @@ export const getActiveBoardData = createAsyncThunk(
       const response = await axios.get(API_URLS.getSpecificBoard + id, {
         signal: signal,
       });
-      console.log(response);
 
       return response.data;
     } catch (err) {
@@ -66,22 +65,27 @@ export const boardSlice = createSlice({
     setBoardList: (state, action: PayloadAction<BoardListItem[]>) => {
       state.boardList = action.payload;
     },
+    updateBoardList: (state, action: PayloadAction<BoardListItem>) => {
+      const boardListItem = state.boardList.find(
+        (board) => board.id === action.payload.id
+      );
+
+      if (boardListItem) {
+        boardListItem.id = action.payload.id;
+        boardListItem.name = action.payload.name;
+        boardListItem.index = action.payload.index;
+      }
+    },
+    deleteBoardListItem: (state, action: PayloadAction<string>) => {
+      state.boardList = state.boardList.filter(
+        (boardItem) => boardItem.id !== action.payload
+      );
+    },
     setActiveBoard: (state, action: PayloadAction<BoardListItem>) => {
       state.activeBoard = action.payload;
     },
     addBoard: (state, action: PayloadAction<BoardListItem>) => {
       state.boardList.push(action.payload);
-    },
-    updateBoardList: (state, action: PayloadAction<BoardListItem>) => {
-      const board = state.boardList.find(
-        (board) => board.id === action.payload.id
-      );
-
-      if (board) {
-        board.id = action.payload.id;
-        board.name = action.payload.name;
-        board.index = action.payload.index;
-      }
     },
     setBoardData: (state, action: PayloadAction<IBoard>) => {
       state.activeBoardData = action.payload;
@@ -134,6 +138,7 @@ export const {
   updateBoardList,
   setBoardData,
   updateColumns,
+  deleteBoardListItem,
 } = boardSlice.actions;
 
 export const selectBoardList = (state: RootState) => state.boards.boardList;

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/firebase/config";
-import { doc, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, setDoc } from "firebase/firestore";
 
 type Response = string;
 
@@ -15,8 +15,16 @@ export default async function requestHandler(
         index: req.body.index,
       });
 
-      if (req.body.columns) {
-        for (const column of req.body.columns) {
+      console.log(req.body.columns);
+
+      if (!req.body.columns) {
+        res.status(200).send("Successfully set/updated the board");
+      }
+
+      for (const column of req.body.columns) {
+        if (column.markedForDeletion) {
+          await deleteDoc(doc(db, "columns", column.id));
+        } else {
           await setDoc(doc(db, "columns", column.id), {
             board: req.body.id,
             index: column.index,

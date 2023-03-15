@@ -17,16 +17,11 @@ import {
   DocumentSnapshot,
 } from "firebase/firestore";
 import { NextApiRequest, NextApiResponse } from "next";
-
-type Data = {
-  id: string;
-  name: string;
-  columns: IColumn[];
-};
+import { IBoard } from "@/types/data";
 
 export default async function requestHandler(
   req: NextApiRequest,
-  res: NextApiResponse<Data | string>
+  res: NextApiResponse<IBoard | string>
 ) {
   try {
     if (req.method !== "GET") {
@@ -50,6 +45,7 @@ export default async function requestHandler(
     res.status(200).json({
       id: boardId,
       name: board?.name ?? "Board not found",
+      index: board?.index,
       columns: columns,
     });
   } catch (err) {

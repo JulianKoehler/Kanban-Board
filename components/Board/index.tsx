@@ -22,8 +22,6 @@ const Board = () => {
   const boardList = useAppSelector(selectBoardList);
   const activeBoard = useAppSelector(selectActiveBoard);
 
-  console.log(boardDataStatus);
-
   return (
     <>
       <main

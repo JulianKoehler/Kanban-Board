@@ -5,11 +5,11 @@ import GenericModalContainer from "./GenericModalContainer";
 type Props = {
   type: "board" | "task";
   title: string;
+  DeleteButton: React.ReactNode;
   onClose: VoidFunction;
-  deleteFunction: VoidFunction;
 };
 
-const DeletionWarning = ({ type, title, onClose, deleteFunction }: Props) => {
+const DeletionWarning = ({ type, title, DeleteButton, onClose }: Props) => {
   function getWarningMessage() {
     switch (type) {
       case "board":
@@ -18,6 +18,7 @@ const DeletionWarning = ({ type, title, onClose, deleteFunction }: Props) => {
         return `Are you sure you want to delete the "${title}" task and its subtasks? This action cannot be reversed.`;
     }
   }
+
   return (
     <GenericModalContainer
       additionalClassNames="w-[48rem] gap-[2.4rem]"
@@ -28,9 +29,7 @@ const DeletionWarning = ({ type, title, onClose, deleteFunction }: Props) => {
         {getWarningMessage()}
       </p>
       <div className="flex w-full gap-[1.6rem]">
-        <Button variant="destructive" onClick={deleteFunction}>
-          Delete
-        </Button>
+        {DeleteButton}
         <Button onClick={onClose} variant="secondary">
           Cancel
         </Button>

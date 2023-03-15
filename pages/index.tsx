@@ -21,8 +21,6 @@ export default function Kanban() {
   const error = useAppSelector(selectError);
   const [showSidebar, setShowSidebar] = useState(true);
 
-  console.log(error);
-
   useEffect(() => {
     dispatch(getBoardList());
   }, []);

@@ -4,6 +4,7 @@ import {
   addBoard,
   selectBoardList,
   setActiveBoard,
+  setBoardData,
   updateBoardList,
 } from "@/redux/slices/boardSlice";
 import { IBoard, IColumn } from "@/types/data";
@@ -45,6 +46,7 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
           {
             id: uuid(),
             index: 0,
+            markedForDeletion: false,
             name: "",
             boardId,
             tasks: [],
@@ -52,30 +54,32 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
         ]
   );
 
-  const columnsInputFields = columns.map((column, index) => (
-    <div key={column.id} className="relative flex gap-[1.6rem]">
-      <TextInput
-        value={column.name}
-        additionalClasses={
-          isFormSubmitted && column.name.length < 1 ? "input-error" : ""
-        }
-        onChange={(e) => handleColumnInput(e, index)}
-        placeholder="e.g. Backlog"
-      />
-      <button
-        type="button"
-        onClick={() => onDeleteColumnInput(column.id)}
-        className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
-      >
-        <DeleteIcon />
-      </button>
-      {column.name.length < 1 && isFormSubmitted && (
-        <p className="absolute bottom-[0.9rem] right-[4.6rem] text-base font-medium text-red">
-          Can't be empty
-        </p>
-      )}
-    </div>
-  ));
+  const columnsInputFields = columns.map((column, index) => {
+    return column.markedForDeletion ? null : (
+      <div key={column.id} className="relative flex gap-[1.6rem]">
+        <TextInput
+          value={column.name}
+          additionalClasses={
+            isFormSubmitted && column.name.length < 1 ? "input-error" : ""
+          }
+          onChange={(e) => handleColumnInput(e, index)}
+          placeholder="e.g. Backlog"
+        />
+        <button
+          type="button"
+          onClick={() => onDeleteColumnInput(index)}
+          className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
+        >
+          <DeleteIcon />
+        </button>
+        {column.name.length < 1 && isFormSubmitted && (
+          <p className="absolute bottom-[0.9rem] right-[4.6rem] text-base font-medium text-red">
+            Can't be empty
+          </p>
+        )}
+      </div>
+    );
+  });
 
   function handleColumnInput(
     e: React.ChangeEvent<HTMLInputElement>,
@@ -93,16 +97,26 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
     });
   }
 
-  function onDeleteColumnInput(id: string | number) {
-    setColumns((prev) => prev.filter((column) => column.id !== id));
+  function onDeleteColumnInput(index: number) {
+    setColumns((prevColumns) => {
+      const columns = [...prevColumns];
+
+      columns[index] = {
+        ...columns[index],
+        markedForDeletion: true,
+      };
+
+      return columns;
+    });
   }
 
   function onAddNewColumnInput() {
-    setColumns((prev) => [
-      ...prev,
+    setColumns((prevColumns) => [
+      ...prevColumns,
       {
         id: uuid(),
         name: "",
+        markedForDeletion: false,
         index: columns.length,
         boardId,
         tasks: [],
@@ -110,13 +124,17 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
     ]);
   }
 
+  console.log(columns);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsFormSubmitted(true);
 
     const toBeValidated = [boardName];
     columns.forEach((column) => {
-      toBeValidated.push(column.name);
+      if (!column.markedForDeletion) {
+        toBeValidated.push(column.name);
+      }
     });
     const isFormValid = checkFormValidity(toBeValidated);
 
@@ -133,7 +151,7 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
 
     await sendData(
       isEditMode ? "PATCH" : "POST",
-      API_URLS.addBoard,
+      API_URLS.addOrEditBoard,
       newBoardData
     );
 
@@ -141,9 +159,18 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
       throw new Error("Something went wrong.");
     }
 
-    isEditMode
-      ? dispatch(updateBoardList(newBoardData))
-      : dispatch(addBoard(newBoardData));
+    if (isEditMode) {
+      dispatch(
+        updateBoardList({
+          id: boardId,
+          name: boardName,
+          index: boardIndex,
+        })
+      );
+      dispatch(setBoardData(newBoardData));
+    } else {
+      dispatch(addBoard(newBoardData));
+    }
 
     if (!isLoading) {
       dispatch(
