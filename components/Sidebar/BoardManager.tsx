@@ -19,7 +19,6 @@ const BoardManager = () => {
 
   const boards = boardList?.map((board, index) => {
     const active = activeBoard?.id === board.id;
-    console.log(board);
 
     return (
       <button

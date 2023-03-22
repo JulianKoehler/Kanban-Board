@@ -1,7 +1,7 @@
-import { IBoard, ITask } from "@/types/data";
+import { IBoard, ITask, ISubtask } from "@/types/data";
 import Image from "next/image";
 import OptionsIcon from "@/public/assets/icon-vertical-ellipsis.svg";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import GenericModalContainer from "@/components/UI/Modal/GenericModalContainer";
 import Subtask from "../Subtask";
 import DropDownContainer from "../../UI/DropDown/DropDownContainer";
@@ -9,23 +9,25 @@ import DropDown from "../../UI/InputFields/DropDown";
 import useMenuHandler from "@/hooks/useMenuHandler";
 import AddOrEditTaskModal from "./AddOrEditTaskModal";
 import DeletionWarning from "@/components/UI/Modal/DeletionWarning";
+import useHttpRequest from "@/hooks/useHttpRequest";
+import API_URLS from "@/util/API_URLs";
 
 type Props = {
   currentBoard: IBoard;
   task: ITask;
-  index: number;
 };
 
-const Task = ({ currentBoard, task, index }: Props) => {
-  const [showTask, setShowTask] = useState(false);
+const Task = ({ currentBoard, task }: Props) => {
+  const [showTaskModal, setShowTaskModal] = useState(false);
   const [showEditTaskModal, setShowEditTaskModal] = useState(false);
   const [showDeletionWarning, setShowDeletionWarning] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { showElement: showEditTaskMenu, setShowElement: setShowEditTaskMenu } =
     useMenuHandler(menuRef);
-
-  const completedTasks = task?.subtasks?.reduce((completedTasks, task) => {
-    if (task.isCompleted) {
+  const { isLoading, hasError, deleteData } = useHttpRequest();
+  const [subtasks, setSubtasks] = useState(task.subtasks);
+  const completedTasks = subtasks.reduce((completedTasks, subtask) => {
+    if (subtask.isCompleted) {
       return completedTasks + 1;
     }
     return completedTasks;
@@ -33,17 +35,38 @@ const Task = ({ currentBoard, task, index }: Props) => {
 
   function handleEditCurrentBoard() {
     setShowEditTaskModal(true);
-    setShowTask(false);
+    setShowTaskModal(false);
   }
 
-  function handleDeleteCurrentBoard() {
-    console.info("Sending a DELETE-Request to the server...");
+  async function handleDeleteCurrentTask() {
+    await deleteData(API_URLS.deleteTask, { id: task.id });
+
+    if (hasError) {
+      throw new Error("Could not delete Task, please try again later.");
+    }
+
+    setShowDeletionWarning(false);
+
+    // Update UI
   }
+
+  function onSubtaskChange(updatedSubtask: ISubtask, index: number) {
+    setSubtasks((prevSubtasks) => {
+      const subtasks = [...prevSubtasks];
+      subtasks[index] = updatedSubtask;
+
+      return subtasks;
+    });
+  }
+
+  useEffect(() => {
+    setSubtasks(task.subtasks);
+  }, [task.subtasks]);
 
   return (
     <>
       <div
-        onClick={() => setShowTask(true)}
+        onClick={() => setShowTaskModal(true)}
         className="group flex max-w-[28rem] cursor-pointer flex-col gap-[0.8rem] rounded-xl bg-white py-[2.3rem] px-[1.6rem] shadow-md hover:z-30 dark:bg-grey-dark dark:shadow-md-dark"
       >
         <h3 className="text-lg font-bold group-hover:text-purple-main ">
@@ -53,10 +76,10 @@ const Task = ({ currentBoard, task, index }: Props) => {
           {completedTasks} of {task?.subtasks?.length} subtasks completed
         </p>
       </div>
-      {!showDeletionWarning && showTask && (
+      {!showDeletionWarning && showTaskModal && (
         <GenericModalContainer
           additionalClassNames="w-[48rem] gap-[2.4rem]"
-          onClose={() => setShowTask(false)}
+          onClose={() => setShowTaskModal(false)}
         >
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold">{task.title}</h2>
@@ -93,11 +116,16 @@ const Task = ({ currentBoard, task, index }: Props) => {
             <h4 className="mb-[0.8rem] text-sm font-bold text-grey-medium">
               Subtasks ({completedTasks} of {task?.subtasks?.length})
             </h4>
-            {task?.subtasks?.map((subtask) => (
+            {subtasks.map((subtask, index) => (
               <Subtask
+                key={subtask.id}
+                id={subtask.id}
                 checked={subtask.isCompleted}
                 title={subtask.title}
-                id={subtask.title}
+                taskId={task.id}
+                updateSubtask={(updatedSubtask) =>
+                  onSubtaskChange(updatedSubtask, index)
+                }
               />
             ))}
           </div>
@@ -105,15 +133,20 @@ const Task = ({ currentBoard, task, index }: Props) => {
             <h4 className="text-sm font-bold text-grey-medium">
               Current Status
             </h4>
-            <DropDown task={task} statusOptions={currentBoard.columns!} />
+            <DropDown
+              editMode={false}
+              task={task}
+              dropDownOptions={currentBoard.columns!}
+            />
           </div>
         </GenericModalContainer>
       )}
       {showEditTaskModal && (
         <AddOrEditTaskModal
           task={task}
-          onClose={() => setShowEditTaskModal(false)}
           statusOptions={currentBoard.columns!}
+          subtaskList={subtasks}
+          onClose={() => setShowEditTaskModal(false)}
         />
       )}
       {showDeletionWarning && (
@@ -121,7 +154,8 @@ const Task = ({ currentBoard, task, index }: Props) => {
           type="task"
           title={task.title}
           onClose={() => setShowDeletionWarning(false)}
-          deleteFunction={handleDeleteCurrentBoard}
+          deleteFunction={handleDeleteCurrentTask}
+          isLoading={isLoading}
         />
       )}
     </>

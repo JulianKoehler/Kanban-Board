@@ -1,15 +1,23 @@
 import React from "react";
 import Button from "../Button";
 import GenericModalContainer from "./GenericModalContainer";
+import { LoadingSpinner_TailSpin as Tailspin } from "@/components/UI/LoadingSpinner";
 
 type Props = {
   type: "board" | "task";
   title: string;
-  DeleteButton: React.ReactNode;
+  isLoading: boolean;
+  deleteFunction: VoidFunction;
   onClose: VoidFunction;
 };
 
-const DeletionWarning = ({ type, title, DeleteButton, onClose }: Props) => {
+const DeletionWarning = ({
+  type,
+  title,
+  isLoading,
+  deleteFunction,
+  onClose,
+}: Props) => {
   function getWarningMessage() {
     switch (type) {
       case "board":
@@ -29,7 +37,13 @@ const DeletionWarning = ({ type, title, DeleteButton, onClose }: Props) => {
         {getWarningMessage()}
       </p>
       <div className="flex w-full gap-[1.6rem]">
-        {DeleteButton}
+        <Button
+          variant="destructive"
+          onClick={deleteFunction}
+          additionalClassNames="flex justify-center"
+        >
+          {isLoading ? Tailspin : "Delete"}
+        </Button>
         <Button onClick={onClose} variant="secondary">
           Cancel
         </Button>

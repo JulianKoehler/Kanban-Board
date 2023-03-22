@@ -18,13 +18,15 @@ export interface IColumn {
 
 export interface ITask {
   id: string;
+  column: string;
+  index?: number;
   title: string;
   details: string;
-  status: string;
-  subtasks: Subtask[];
+  status: IStatus;
+  subtasks: ISubtask[];
 }
 
-export interface Subtask {
+export interface ISubtask {
   id: string;
   title: string;
   isCompleted: boolean;
@@ -34,4 +36,9 @@ export interface BoardListItem {
   id: string;
   name: string;
   index: number;
+}
+
+export interface IStatus {
+  name: string;
+  columnID: string;
 }

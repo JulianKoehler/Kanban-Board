@@ -1,29 +1,42 @@
 import DropDownContainer from "@/components/UI/DropDown/DropDownContainer";
 import useMenuHandler from "@/hooks/useMenuHandler";
-import { IBoard, IColumn, ITask } from "@/types/data";
+import { IColumn, ITask } from "@/types/data";
 import { useRef, useState } from "react";
 
+interface IOption {
+  name: string;
+  id: string;
+}
+
 type Props = {
+  editMode: boolean;
   task?: ITask;
-  statusOptions: IColumn[];
-  onStatusChange?: React.Dispatch<React.SetStateAction<IColumn>>;
+  dropDownOptions: Array<IOption>;
+  onStatusChange?: (column: IOption) => void;
 };
 
-const DropDown = ({ task, statusOptions, onStatusChange }: Props) => {
+const DropDown = ({
+  editMode,
+  task,
+  dropDownOptions,
+  onStatusChange,
+}: Props) => {
   const dropDownRef = useRef<HTMLDivElement>(null);
   const { showElement: showDropDown, setShowElement: setShowDropDown } =
     useMenuHandler(dropDownRef);
   const [displayedStatus, setDisplayedStatus] = useState(
-    task?.status || statusOptions[0].name
+    task?.status.name || dropDownOptions[0].name
   );
 
-  async function handleSelectOption(selectedColumn: IColumn) {
-    if (!task) {
+  async function handleSelectOption(selectedColumn: IOption) {
+    if (editMode) {
       /**
-       * If no task has been provided this Component is being used in the Add New Task Modal.
+       * If no task has been provided this Component is being used in the AddOrEditTaskModal.
        * In that case we don't want to trigger the Post Request when clicking on the drop down
        * but rather lift up the selected Column to make it available in the Parent Component.
        */
+      console.log(selectedColumn);
+
       onStatusChange!(selectedColumn);
       setDisplayedStatus(selectedColumn.name);
       setShowDropDown(false);
@@ -51,12 +64,12 @@ const DropDown = ({ task, statusOptions, onStatusChange }: Props) => {
             : "pointer-events-none"
         }`}
       >
-        {statusOptions.map((status, index) => (
+        {dropDownOptions.map((status, index) => (
           <p
             role="option"
             onClick={() => handleSelectOption(status)}
             className={`px-[1.6rem] py-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800 ${
-              index === statusOptions.length - 1 ? "rounded-b-xl" : ""
+              index === dropDownOptions.length - 1 ? "rounded-b-xl" : ""
             }`}
           >
             {status.name}

@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { BoardListItem, IBoard } from "@/types/data";
+import { BoardListItem, IBoard, ITask } from "@/types/data";
 import axios, { GenericAbortSignal } from "axios";
 import { RootState } from "../store";
 import API_URLS from "@/util/API_URLs";
+import findColumn from "@/util/findColumn";
 
 export enum STATUS {
   IDLE,
@@ -11,8 +12,7 @@ export enum STATUS {
   SUCCESS,
   FAILED,
 }
-
-interface BoardsState {
+export interface BoardsState {
   boardList: BoardListItem[];
   activeBoard: BoardListItem | undefined;
   activeBoardData: IBoard | undefined;
@@ -74,6 +74,8 @@ export const boardSlice = createSlice({
         boardListItem.id = action.payload.id;
         boardListItem.name = action.payload.name;
         boardListItem.index = action.payload.index;
+      } else {
+        throw new Error(`Boardlist item ${action.payload.name} not found.`);
       }
     },
     deleteBoardListItem: (state, action: PayloadAction<string>) => {
@@ -92,6 +94,34 @@ export const boardSlice = createSlice({
     },
     updateColumns: (state, action: PayloadAction<IBoard>) => {
       state.activeBoardData!.columns = action.payload.columns;
+    },
+    addNewTask: (state, action: PayloadAction<ITask>) => {
+      const task = action.payload;
+      const column = findColumn(state, action.payload);
+
+      column?.tasks?.push(task);
+    },
+    updateExistingTask: (state, action: PayloadAction<ITask>) => {
+      const oldColumn = state.activeBoardData!.columns!.find(
+        (column) => column.id === action.payload.column
+      );
+      const newColumn = state.activeBoardData!.columns!.find(
+        (column) => column.id === action.payload.status.columnID
+      );
+
+      if (oldColumn) {
+        oldColumn.tasks = oldColumn.tasks?.filter(
+          (task) => task.id !== action.payload.id
+        );
+      } else {
+        throw new Error("Could not find the old column with the ID provided");
+      }
+
+      if (newColumn) {
+        newColumn?.tasks?.push(action.payload);
+      } else {
+        throw new Error("Could not find the new column with the ID provided");
+      }
     },
   },
   extraReducers(builder) {
@@ -121,12 +151,13 @@ export const boardSlice = createSlice({
           state.activeBoardData = action.payload;
         }
       )
-      /* Errors from the Abort controller should not be treated as a failed request */
       .addCase(getActiveBoardData.rejected, (state, action) => {
-        if (action.error.message !== "canceled") {
-          state.boardDataStatus = STATUS.FAILED;
-          state.error = action.error.message;
+        /* Errors from the Abort controller should not be treated as a failed request */
+        if (action.error.message === "canceled") {
+          return;
         }
+        state.boardDataStatus = STATUS.FAILED;
+        state.error = action.error.message;
       });
   },
 });
@@ -139,6 +170,8 @@ export const {
   setBoardData,
   updateColumns,
   deleteBoardListItem,
+  addNewTask,
+  updateExistingTask,
 } = boardSlice.actions;
 
 export const selectBoardList = (state: RootState) => state.boards.boardList;

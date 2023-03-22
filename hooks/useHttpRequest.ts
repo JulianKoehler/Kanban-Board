@@ -3,7 +3,7 @@ import axios from "axios";
 import { useState } from "react";
 
 type HttpMethod = "POST" | "PATCH";
-type RequestData = IBoard | IColumn | ITask | Subtask;
+type RequestData = object;
 
 const useHttpRequest = () => {
   const [isLoading, setIsLoading] = useState(false);

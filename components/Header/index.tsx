@@ -4,8 +4,10 @@ import {
   deleteBoardListItem,
   selectActiveBoard,
   selectactiveBoardData,
+  selectBoardDataStatus,
   selectBoardList,
   setActiveBoard,
+  STATUS,
 } from "@/redux/slices/boardSlice";
 import Image from "next/image";
 import LogoLightMode from "@/public/assets/logo-dark.svg";
@@ -19,7 +21,6 @@ import AddOrEditBoardModal from "../Board/AddOrEditBoardModal";
 import DeletionWarning from "../UI/Modal/DeletionWarning";
 import useHttpRequest from "@/hooks/useHttpRequest";
 import API_URLS from "@/util/API_URLs";
-import { LoadingSpinner_TailSpin as Tailspin } from "@/components/UI/LoadingSpinner";
 
 type Props = {
   showSidebar: boolean;
@@ -29,6 +30,7 @@ type Props = {
 const Header = ({ showSidebar, theme }: Props) => {
   const dispatch = useAppDispatch();
   const boardList = useAppSelector(selectBoardList);
+  const boardDataStatus = useAppSelector(selectBoardDataStatus);
   const menuRef = useRef<HTMLDivElement>(null);
   const board = useAppSelector(selectactiveBoardData);
   const activeBoard = useAppSelector(selectActiveBoard);
@@ -81,12 +83,12 @@ const Header = ({ showSidebar, theme }: Props) => {
           {activeBoard?.name || ""}
         </h1>
         <div className="relative ml-auto flex gap-[1rem]">
-          {columnsExist ? (
+          {boardDataStatus === STATUS.SUCCESS && columnsExist ? (
             <Button large variant="primary" onClick={onAddNewTask}>
               +Add New Task
             </Button>
           ) : null}
-          {board && (
+          {boardDataStatus === STATUS.SUCCESS && (
             <>
               <button
                 onClick={() => setShowMenu((prevState) => !prevState)}
@@ -135,15 +137,8 @@ const Header = ({ showSidebar, theme }: Props) => {
           title={board!.name}
           type="board"
           onClose={() => setShowDeletionWarning(false)}
-          DeleteButton={
-            <Button
-              variant="destructive"
-              onClick={handleDeleteCurrentBoard}
-              additionalClassNames="flex justify-center"
-            >
-              {isLoading ? Tailspin : "Delete"}
-            </Button>
-          }
+          deleteFunction={handleDeleteCurrentBoard}
+          isLoading={isLoading}
         />
       )}
     </>

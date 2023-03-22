@@ -1,40 +1,72 @@
-import { IColumn, ITask } from "@/types/data";
+import { IColumn, IStatus, ISubtask, ITask } from "@/types/data";
 import { useState } from "react";
 import GenericModalContainer from "@/components/UI/Modal/GenericModalContainer";
 import TextInput from "@/components/UI/InputFields/TextInput";
 import DeleteIcon from "@/components/UI/Icons/DeleteIcon";
 import Button from "@/components/UI/Button";
 import DropDown from "@/components/UI/InputFields/DropDown";
+import { LoadingSpinner_TailSpin as TailSpin } from "@/components/UI/LoadingSpinner";
 import uuid from "react-uuid";
 import checkFormValidity from "@/util/checkFormValidity";
 import H5 from "@/components/UI/Headings/H5";
 import Form from "@/components/UI/Formelements/Form";
 import FormGroup from "@/components/UI/Formelements/FormGroup";
+import { useAppDispatch } from "@/redux/hooks";
+import { addNewTask, updateExistingTask } from "@/redux/slices/boardSlice";
+import useHttpRequest from "@/hooks/useHttpRequest";
+import API_URLS from "@/util/API_URLs";
 
 type Props = {
-  onClose: VoidFunction;
   statusOptions: IColumn[];
-  task?: ITask | null;
+  task?: ITask;
+  onClose: VoidFunction;
+  subtaskList?: ISubtask[];
 };
 
-const AddOrEditTaskModal = ({ onClose, statusOptions, task = null }: Props) => {
+const AddOrEditTaskModal = ({
+  onClose,
+  statusOptions,
+  task = undefined,
+  subtaskList = undefined,
+}: Props) => {
+  const dispatch = useAppDispatch();
+  const isEditing = task ? true : false;
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  const taskID = task?.id ?? uuid();
   const [title, setTitle] = useState(task?.title ?? "");
   const [description, setDescription] = useState(task?.details ?? "");
   const [subtasks, setSubtasks] = useState(
-    task?.subtasks ?? [
-      {
-        id: uuid(),
-        title: "",
-        isCompleted: false,
-      },
-    ]
+    isEditing
+      ? subtaskList
+      : [
+          {
+            id: uuid(),
+            title: "",
+            isCompleted: false,
+          },
+        ]
   );
-  const [status, setStatus] = useState<string>(
-    task?.status ?? statusOptions[0].name
+  const [status, setStatus] = useState<IStatus>(
+    task
+      ? {
+          name: task.status.name,
+          columnID: task.column,
+        }
+      : {
+          name: statusOptions[0].name,
+          columnID: statusOptions[0].id,
+        }
   );
+  // const taskIndex = task ? task?.index : board?.columns;
+  const { isLoading, hasError, sendData } = useHttpRequest();
+  const dropDownOptions = statusOptions.map((option) => {
+    return {
+      name: option.name,
+      id: option.id,
+    };
+  });
 
-  const subtaskInputFields = subtasks.map((subtask, index) => (
+  const subtaskInputFields = subtasks!.map((subtask, index) => (
     <div key={subtask.id} className="relative flex gap-[1.6rem]">
       <TextInput
         value={subtask.title}
@@ -64,7 +96,7 @@ const AddOrEditTaskModal = ({ onClose, statusOptions, task = null }: Props) => {
     index: number
   ) {
     setSubtasks((prevSubtasks) => {
-      let subtasks = [...prevSubtasks];
+      let subtasks = [...prevSubtasks!];
 
       subtasks[index] = {
         ...subtasks[index],
@@ -75,14 +107,14 @@ const AddOrEditTaskModal = ({ onClose, statusOptions, task = null }: Props) => {
     });
   }
 
-  function onDeleteSubtaskInput(id: string | number) {
-    if (subtasks.length <= 1) return; // There should always be at least 1 input field visible
-    setSubtasks((prev) => prev.filter((subtask) => subtask.id !== id));
+  function onDeleteSubtaskInput(id: string) {
+    if (subtasks!.length <= 1) return; // There should always be at least 1 input field visible
+    setSubtasks((prev) => prev!.filter((subtask) => subtask.id !== id));
   }
 
   function onAddNewSubtaskInput() {
-    setSubtasks((prev) => [
-      ...prev,
+    setSubtasks((prevSubtasks) => [
+      ...prevSubtasks!,
       {
         id: uuid(),
         title: "",
@@ -91,19 +123,47 @@ const AddOrEditTaskModal = ({ onClose, statusOptions, task = null }: Props) => {
     ]);
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsFormSubmitted(true);
 
-    const toBeValidated = [title, status];
-    subtasks.forEach((subtask) => {
+    const toBeValidated = [title, status.name];
+    subtasks!.forEach((subtask) => {
       toBeValidated.push(subtask.title);
     });
+
     const isFormValid = checkFormValidity(toBeValidated);
 
-    if (isFormValid) {
-      onClose();
+    if (!isFormValid) {
+      return;
     }
+
+    const newTaskData: ITask = {
+      id: taskID,
+      column: status.columnID,
+      title,
+      details: description,
+      status: status,
+      subtasks: subtasks!,
+    };
+
+    await sendData(
+      isEditing ? "PATCH" : "POST",
+      API_URLS.addOrEditTask,
+      newTaskData
+    );
+
+    if (hasError) {
+      throw new Error("Could not create task.");
+    }
+
+    if (!isLoading) {
+      isEditing
+        ? dispatch(updateExistingTask(newTaskData))
+        : dispatch(addNewTask(newTaskData));
+    }
+
+    onClose();
   }
 
   return (
@@ -136,16 +196,9 @@ const AddOrEditTaskModal = ({ onClose, statusOptions, task = null }: Props) => {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className={`h-[11.2rem] w-full resize-none rounded-[0.4rem] border-[0.1rem] border-[#828fa340] bg-white px-[1.6rem] py-[0.9rem] text-base invalid:border-red focus:border-purple-main focus:outline-none dark:bg-grey-dark ${
-              isFormSubmitted && description.length < 1 ? "input-error" : ""
-            }`}
+            className="h-[11.2rem] w-full resize-none rounded-[0.4rem] border-[0.1rem] border-[#828fa340] bg-white px-[1.6rem] py-[0.9rem] text-base invalid:border-red focus:border-purple-main focus:outline-none dark:bg-grey-dark"
             placeholder="e.g. It's always good to take a break. This 15 minute break will recharge the batteries a little."
           />
-          {isFormSubmitted && description.length < 1 && (
-            <p className="absolute bottom-[0.9rem] right-[1.6rem] text-base font-medium text-red">
-              Can't be empty
-            </p>
-          )}
         </FormGroup>
         <FormGroup className="flex flex-col gap-[1.6rem]">
           <H5>Subtasks</H5>
@@ -163,12 +216,23 @@ const AddOrEditTaskModal = ({ onClose, statusOptions, task = null }: Props) => {
         <FormGroup className="flex flex-col gap-[0.8rem]">
           <H5>Status</H5>
           <DropDown
-            onStatusChange={(selectedColumn) => setStatus(selectedColumn.name)}
-            statusOptions={statusOptions}
+            editMode
+            onStatusChange={(selectedColumn) =>
+              setStatus({
+                name: selectedColumn.name,
+                columnID: selectedColumn.id,
+              })
+            }
+            dropDownOptions={dropDownOptions}
+            task={task}
           />
         </FormGroup>
-        <Button type="submit" variant="primary">
-          {task ? "Save Changes" : "Create Task"}
+        <Button
+          type="submit"
+          variant="primary"
+          additionalClassNames="flex justify-center"
+        >
+          {isLoading ? TailSpin : isEditing ? "Save Changes" : "Create Task"}
         </Button>
       </Form>
     </GenericModalContainer>

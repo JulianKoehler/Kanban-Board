@@ -22,10 +22,6 @@ export default function Kanban() {
   const [showSidebar, setShowSidebar] = useState(true);
 
   useEffect(() => {
-    dispatch(getBoardList());
-  }, []);
-
-  useEffect(() => {
     const controller = new AbortController();
     const { signal } = controller;
 

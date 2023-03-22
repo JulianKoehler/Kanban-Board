@@ -6,7 +6,7 @@
  */
 
 import { db } from "@/firebase/config";
-import { IColumn, ITask, Subtask } from "@/types/data";
+import { IColumn, ITask, ISubtask } from "@/types/data";
 import {
   collection,
   getDocs,
@@ -99,7 +99,7 @@ async function getAssociatedTasks(id: string) {
 
 async function getAssociatedSubtasks(
   taskDoc: DocumentSnapshot
-): Promise<Array<Subtask>> {
+): Promise<Array<ISubtask>> {
   const subtasksRef = collection(taskDoc.ref, "subtasks");
   const subtasksQuerySnapshot = await getDocs(subtasksRef);
   return subtasksQuerySnapshot.docs.map(
@@ -107,6 +107,6 @@ async function getAssociatedSubtasks(
       ({
         id: subtaskDoc.id,
         ...subtaskDoc.data(),
-      } as Subtask)
+      } as ISubtask)
   );
 }

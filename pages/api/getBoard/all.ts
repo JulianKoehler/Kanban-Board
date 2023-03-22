@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/firebase/config";
-import { IBoard, IColumn, ITask, Subtask } from "@/types/data";
+import { IBoard, IColumn, ITask, ISubtask } from "@/types/data";
 import { collection, getDocs } from "firebase/firestore";
 
 type Data = {
   boards: IBoard[];
 };
 
-export type CollectionTypes = IBoard | IColumn | ITask | Subtask;
+export type CollectionTypes = IBoard | IColumn | ITask | ISubtask;
 
 export default async function requestHandler(
   req: NextApiRequest,

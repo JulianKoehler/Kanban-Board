@@ -22,6 +22,8 @@ const Board = () => {
   const boardList = useAppSelector(selectBoardList);
   const activeBoard = useAppSelector(selectActiveBoard);
 
+  console.log(boardData);
+
   return (
     <>
       <main
@@ -33,13 +35,8 @@ const Board = () => {
           <>
             {boardData?.columns?.map((column, index) => (
               <Column key={column.id} column={column} index={index}>
-                {column.tasks?.map((task, index) => (
-                  <Task
-                    key={task.id}
-                    currentBoard={boardData}
-                    task={task}
-                    index={index}
-                  />
+                {column.tasks?.map((task) => (
+                  <Task key={task.id} currentBoard={boardData} task={task} />
                 ))}
               </Column>
             ))}

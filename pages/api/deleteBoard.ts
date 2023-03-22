@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/firebase/config";
-import { deleteDoc, doc, setDoc } from "firebase/firestore";
+import { deleteDoc, doc } from "firebase/firestore";
 
 type Response = string;
 
@@ -20,6 +20,8 @@ export default async function requestHandler(
     }
 
     for (const column of req.body.columns) {
+      await deleteDoc(doc(db, "columns", column.id));
+
       if (!column.tasks || column.tasks.length < 1) {
         continue;
       }
@@ -27,8 +29,6 @@ export default async function requestHandler(
       for (const task of column.tasks) {
         await deleteDoc(doc(db, "tasks", task.id));
       }
-
-      await deleteDoc(doc(db, "columns", column.id));
     }
 
     res.status(200).send(`The board with ID ${req.body.id} has been deleted`);
