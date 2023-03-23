@@ -1,4 +1,4 @@
-import { IBoard, ITask, ISubtask } from "@/types/data";
+import { IBoard, ITask, ISubtask, IColumn } from "@/types/data";
 import Image from "next/image";
 import OptionsIcon from "@/public/assets/icon-vertical-ellipsis.svg";
 import { useEffect, useRef, useState } from "react";
@@ -11,6 +11,8 @@ import AddOrEditTaskModal from "./AddOrEditTaskModal";
 import DeletionWarning from "@/components/UI/Modal/DeletionWarning";
 import useHttpRequest from "@/hooks/useHttpRequest";
 import API_URLS from "@/util/API_URLs";
+import { useAppDispatch } from "@/redux/hooks";
+import { updateExistingTask } from "@/redux/slices/boardSlice";
 
 type Props = {
   currentBoard: IBoard;
@@ -18,13 +20,14 @@ type Props = {
 };
 
 const Task = ({ currentBoard, task }: Props) => {
+  const dispatch = useAppDispatch();
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showEditTaskModal, setShowEditTaskModal] = useState(false);
   const [showDeletionWarning, setShowDeletionWarning] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { showElement: showEditTaskMenu, setShowElement: setShowEditTaskMenu } =
     useMenuHandler(menuRef);
-  const { isLoading, hasError, deleteData } = useHttpRequest();
+  const { isLoading, hasError, deleteData, sendData } = useHttpRequest();
   const [subtasks, setSubtasks] = useState(task.subtasks);
   const completedTasks = subtasks.reduce((completedTasks, subtask) => {
     if (subtask.isCompleted) {
@@ -57,6 +60,36 @@ const Task = ({ currentBoard, task }: Props) => {
 
       return subtasks;
     });
+  }
+
+  async function handleStatusChange(newStatus: IColumn) {
+    const updatedTaskData = {
+      ...task,
+      column: newStatus.id,
+      status: {
+        name: newStatus.name,
+        columnID: newStatus.id,
+      },
+    };
+    // Send the PATCH Request to the server
+    await sendData("PATCH", API_URLS.addOrEditTask, updatedTaskData);
+    console.log(updatedTaskData);
+
+    // Update the UI
+
+    if (!isLoading && hasError) {
+      // For now I am generating an alert, want to replace it with Push Notes soon
+      window.alert("Could not change the status! Check the console.");
+    }
+
+    if (!isLoading && !hasError) {
+      dispatch(
+        updateExistingTask({
+          ...updatedTaskData,
+          oldColumnId: task.column,
+        })
+      );
+    }
   }
 
   useEffect(() => {
@@ -135,9 +168,11 @@ const Task = ({ currentBoard, task }: Props) => {
               Current Status
             </h4>
             <DropDown
-              editMode={false}
               task={task}
               dropDownOptions={currentBoard.columns!}
+              onStatusChange={(selectedColumn) =>
+                handleStatusChange(selectedColumn)
+              }
             />
           </div>
         </GenericModalContainer>

@@ -4,18 +4,12 @@ import { IColumn, ITask } from "@/types/data";
 import { useRef, useState } from "react";
 
 type Props = {
-  editMode: boolean;
   task?: ITask;
   dropDownOptions: Array<IColumn>;
-  onStatusChange?: (column: IColumn) => void;
+  onStatusChange: (column: IColumn) => void;
 };
 
-const DropDown = ({
-  editMode,
-  task,
-  dropDownOptions,
-  onStatusChange,
-}: Props) => {
+const DropDown = ({ task, dropDownOptions, onStatusChange }: Props) => {
   const dropDownRef = useRef<HTMLDivElement>(null);
   const { showElement: showDropDown, setShowElement: setShowDropDown } =
     useMenuHandler(dropDownRef);
@@ -24,20 +18,8 @@ const DropDown = ({
   );
 
   async function handleSelectOption(selectedColumn: IColumn) {
-    if (editMode) {
-      /**
-       * If no task has been provided this Component is being used in the AddOrEditTaskModal.
-       * In that case we don't want to trigger the Post Request when clicking on the drop down
-       * but rather lift up the selected Column to make it available in the Parent Component.
-       */
-      console.log(selectedColumn);
-
-      onStatusChange!(selectedColumn);
-      setDisplayedStatus(selectedColumn.name);
-      setShowDropDown(false);
-      return;
-    }
-    // Send Request to server that changes the column
+    onStatusChange!(selectedColumn);
+    setDisplayedStatus(selectedColumn.name);
     setShowDropDown(false);
   }
 

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/firebase/config";
-import { deleteDoc, doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 
 type Response = string;
 
@@ -9,8 +9,6 @@ export default async function requestHandler(
   res: NextApiResponse<Response>
 ) {
   if (req.method === "PATCH" || req.method === "POST") {
-    console.log(req.body);
-
     try {
       await setDoc(doc(db, "tasks", req.body.id), {
         id: req.body.id,

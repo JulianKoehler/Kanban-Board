@@ -231,7 +231,6 @@ const AddOrEditTaskModal = ({
         <FormGroup className="flex flex-col gap-[0.8rem]">
           <H5>Status</H5>
           <DropDown
-            editMode
             onStatusChange={(selectedColumn) =>
               handleStatusChange(selectedColumn)
             }

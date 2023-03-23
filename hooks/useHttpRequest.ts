@@ -21,7 +21,7 @@ const useHttpRequest = () => {
 
       if (!response.ok) {
         console.log(response);
-        throw new Error("Could not send data.");
+        throw new Error("Could not send data: " + response.statusText);
       }
 
       setHasError(false);
@@ -45,7 +45,9 @@ const useHttpRequest = () => {
     } catch (err) {
       setHasError(true);
       console.log(err);
-      throw new Error("Could not delete data.");
+      if (err instanceof Error) {
+        throw new Error("Could not delete data: " + err.message);
+      }
     } finally {
       setIsLoading(false);
     }
