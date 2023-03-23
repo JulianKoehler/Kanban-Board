@@ -3,13 +3,12 @@ import Button from "../UI/Button";
 import AddOrEditBoardModal from "./AddOrEditBoardModal";
 import Column from "./Column";
 import Task from "./Task";
-import { LoadingSpinner_ThreeDots as LoadingSpinner } from "../UI/LoadingSpinner";
+import { LoadingSpinner_ThreeDots as LoadingSpinner } from "@/components/UI/LoadingSpinner";
 import { useAppSelector } from "@/redux/hooks";
 import {
   selectActiveBoard,
   selectactiveBoardData,
   selectBoardDataStatus,
-  selectBoardList,
   selectBoardListStatus,
   STATUS,
 } from "@/redux/slices/boardSlice";
@@ -19,7 +18,6 @@ const Board = () => {
   const boardData = useAppSelector(selectactiveBoardData);
   const boardDataStatus = useAppSelector(selectBoardDataStatus);
   const boardListStatus = useAppSelector(selectBoardListStatus);
-  const boardList = useAppSelector(selectBoardList);
   const activeBoard = useAppSelector(selectActiveBoard);
 
   console.log(boardData);

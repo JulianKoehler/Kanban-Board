@@ -31,6 +31,8 @@ const AddOrEditTaskModal = ({
 }: Props) => {
   const dispatch = useAppDispatch();
   const isEditing = task ? true : false;
+  const currentColumn = task?.column;
+  const { isLoading, hasError, sendData } = useHttpRequest();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const taskID = task?.id ?? uuid();
   const [title, setTitle] = useState(task?.title ?? "");
@@ -50,7 +52,7 @@ const AddOrEditTaskModal = ({
     task
       ? {
           name: task.status.name,
-          columnID: task.column,
+          columnID: task.status.columnID,
         }
       : {
           name: statusOptions[0].name,
@@ -58,7 +60,6 @@ const AddOrEditTaskModal = ({
         }
   );
   // const taskIndex = task ? task?.index : board?.columns;
-  const { isLoading, hasError, sendData } = useHttpRequest();
   const dropDownOptions = statusOptions.map((option) => {
     return {
       name: option.name,
@@ -159,7 +160,12 @@ const AddOrEditTaskModal = ({
 
     if (!isLoading) {
       isEditing
-        ? dispatch(updateExistingTask(newTaskData))
+        ? dispatch(
+            updateExistingTask({
+              ...newTaskData,
+              oldColumnId: currentColumn!,
+            })
+          )
         : dispatch(addNewTask(newTaskData));
     }
 

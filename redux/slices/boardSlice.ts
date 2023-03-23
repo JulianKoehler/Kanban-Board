@@ -6,6 +6,10 @@ import { RootState } from "../store";
 import API_URLS from "@/util/API_URLs";
 import findColumn from "@/util/findColumn";
 
+type UpdatedTask = ITask & {
+  oldColumnId: string;
+};
+
 export enum STATUS {
   IDLE,
   LOADING,
@@ -101,9 +105,9 @@ export const boardSlice = createSlice({
 
       column?.tasks?.push(task);
     },
-    updateExistingTask: (state, action: PayloadAction<ITask>) => {
+    updateExistingTask: (state, action: PayloadAction<UpdatedTask>) => {
       const oldColumn = state.activeBoardData!.columns!.find(
-        (column) => column.id === action.payload.column
+        (column) => column.id === action.payload.oldColumnId
       );
       const newColumn = state.activeBoardData!.columns!.find(
         (column) => column.id === action.payload.status.columnID
