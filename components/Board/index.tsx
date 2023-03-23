@@ -33,7 +33,7 @@ const Board = () => {
           <>
             {boardData?.columns?.map((column, index) => (
               <Column key={column.id} column={column} index={index}>
-                {column.tasks?.map((task) => (
+                {column.tasks?.map((task, index) => (
                   <Task key={task.id} currentBoard={boardData} task={task} />
                 ))}
               </Column>

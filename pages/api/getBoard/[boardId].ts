@@ -94,7 +94,7 @@ async function getAssociatedTasks(id: string) {
     } as ITask);
   }
 
-  return tasks;
+  return tasks.sort((a: ITask, b: ITask) => a.index - b.index);
 }
 
 async function getAssociatedSubtasks(
@@ -102,11 +102,18 @@ async function getAssociatedSubtasks(
 ): Promise<Array<ISubtask>> {
   const subtasksRef = collection(taskDoc.ref, "subtasks");
   const subtasksQuerySnapshot = await getDocs(subtasksRef);
-  return subtasksQuerySnapshot.docs.map(
+  const subtasks = subtasksQuerySnapshot.docs.map(
     (subtaskDoc) =>
       ({
         id: subtaskDoc.id,
         ...subtaskDoc.data(),
       } as ISubtask)
   );
+
+  /* The following 3 lines of code are only a workaround until there is an index for each existing subtask implemented */
+  if (subtasks[0].index && subtasks[0].index >= 0) {
+    return subtasks.sort((a: ISubtask, b: ISubtask) => a.index! - b.index!);
+  }
+
+  return subtasks;
 }

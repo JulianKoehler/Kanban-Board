@@ -120,6 +120,7 @@ const Task = ({ currentBoard, task }: Props) => {
               <Subtask
                 key={subtask.id}
                 id={subtask.id}
+                index={index}
                 checked={subtask.isCompleted}
                 title={subtask.title}
                 taskId={task.id}

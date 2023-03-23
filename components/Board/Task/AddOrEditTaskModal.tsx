@@ -31,7 +31,7 @@ const AddOrEditTaskModal = ({
 }: Props) => {
   const dispatch = useAppDispatch();
   const isEditing = task ? true : false;
-  const currentColumn = task?.column;
+  const currentColumnId = task?.column ?? statusOptions[0].id;
   const { isLoading, hasError, sendData } = useHttpRequest();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const taskID = task?.id ?? uuid();
@@ -59,13 +59,7 @@ const AddOrEditTaskModal = ({
           columnID: statusOptions[0].id,
         }
   );
-  // const taskIndex = task ? task?.index : board?.columns;
-  const dropDownOptions = statusOptions.map((option) => {
-    return {
-      name: option.name,
-      id: option.id,
-    };
-  });
+  let taskIndex = task?.index ?? statusOptions[0].tasks?.length ?? 0;
 
   const subtaskInputFields = subtasks!.map((subtask, index) => (
     <div key={subtask.id} className="relative flex gap-[1.6rem]">
@@ -124,6 +118,13 @@ const AddOrEditTaskModal = ({
     ]);
   }
 
+  function handleStatusChange(selectedColumn: IColumn) {
+    setStatus({
+      name: selectedColumn.name,
+      columnID: selectedColumn.id,
+    });
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsFormSubmitted(true);
@@ -139,8 +140,16 @@ const AddOrEditTaskModal = ({
       return;
     }
 
+    if (currentColumnId !== status.columnID) {
+      const columnToBeInsertedTo = statusOptions.find(
+        (option) => option.id === status.columnID
+      );
+      taskIndex = columnToBeInsertedTo?.tasks?.length ?? 0;
+    }
+
     const newTaskData: ITask = {
       id: taskID,
+      index: taskIndex,
       column: status.columnID,
       title,
       details: description,
@@ -163,7 +172,7 @@ const AddOrEditTaskModal = ({
         ? dispatch(
             updateExistingTask({
               ...newTaskData,
-              oldColumnId: currentColumn!,
+              oldColumnId: currentColumnId!,
             })
           )
         : dispatch(addNewTask(newTaskData));
@@ -224,12 +233,9 @@ const AddOrEditTaskModal = ({
           <DropDown
             editMode
             onStatusChange={(selectedColumn) =>
-              setStatus({
-                name: selectedColumn.name,
-                columnID: selectedColumn.id,
-              })
+              handleStatusChange(selectedColumn)
             }
-            dropDownOptions={dropDownOptions}
+            dropDownOptions={statusOptions}
             task={task}
           />
         </FormGroup>

@@ -19,7 +19,7 @@ export interface IColumn {
 export interface ITask {
   id: string;
   column: string;
-  index?: number;
+  index: number;
   title: string;
   details: string;
   status: IStatus;
@@ -28,6 +28,7 @@ export interface ITask {
 
 export interface ISubtask {
   id: string;
+  index?: number;
   title: string;
   isCompleted: boolean;
 }

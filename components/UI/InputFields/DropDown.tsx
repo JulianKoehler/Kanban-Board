@@ -3,16 +3,11 @@ import useMenuHandler from "@/hooks/useMenuHandler";
 import { IColumn, ITask } from "@/types/data";
 import { useRef, useState } from "react";
 
-interface IOption {
-  name: string;
-  id: string;
-}
-
 type Props = {
   editMode: boolean;
   task?: ITask;
-  dropDownOptions: Array<IOption>;
-  onStatusChange?: (column: IOption) => void;
+  dropDownOptions: Array<IColumn>;
+  onStatusChange?: (column: IColumn) => void;
 };
 
 const DropDown = ({
@@ -28,7 +23,7 @@ const DropDown = ({
     task?.status.name || dropDownOptions[0].name
   );
 
-  async function handleSelectOption(selectedColumn: IOption) {
+  async function handleSelectOption(selectedColumn: IColumn) {
     if (editMode) {
       /**
        * If no task has been provided this Component is being used in the AddOrEditTaskModal.

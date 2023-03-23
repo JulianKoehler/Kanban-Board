@@ -6,12 +6,20 @@ import React, { useEffect, useRef, useState } from "react";
 type Props = {
   checked: boolean;
   id: string;
+  index: number;
   title: string;
   taskId: string;
   updateSubtask: (updatedSubtask: ISubtask) => void;
 };
 
-const Subtask = ({ checked, id, title, taskId, updateSubtask }: Props) => {
+const Subtask = ({
+  checked,
+  id,
+  index,
+  title,
+  taskId,
+  updateSubtask,
+}: Props) => {
   const [isCompleted, setIsCompleted] = useState(checked);
   const { sendData } = useHttpRequest();
 
@@ -26,12 +34,14 @@ const Subtask = ({ checked, id, title, taskId, updateSubtask }: Props) => {
      */
     updateSubtask({
       id,
+      index,
       title,
       isCompleted: !isCompleted,
     });
 
     sendData("PATCH", API_URLS.checkSubtask, {
       taskId,
+      index,
       subtaskId: id,
       isCompleted: !isCompleted,
     });

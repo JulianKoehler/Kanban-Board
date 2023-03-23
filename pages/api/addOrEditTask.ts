@@ -14,6 +14,7 @@ export default async function requestHandler(
     try {
       await setDoc(doc(db, "tasks", req.body.id), {
         id: req.body.id,
+        index: req.body.index,
         column: req.body.status.columnID,
         title: req.body.title,
         details: req.body.details,
