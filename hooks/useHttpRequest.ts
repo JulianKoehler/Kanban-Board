@@ -1,4 +1,3 @@
-import { IBoard, IColumn, ITask, Subtask } from "@/types/data";
 import axios from "axios";
 import { useState } from "react";
 
