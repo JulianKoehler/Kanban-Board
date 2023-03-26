@@ -12,7 +12,7 @@ import DeletionWarning from "@/components/UI/Modal/DeletionWarning";
 import useHttpRequest from "@/hooks/useHttpRequest";
 import API_URLS from "@/util/API_URLs";
 import { useAppDispatch } from "@/redux/hooks";
-import { updateExistingTask } from "@/redux/slices/boardSlice";
+import { deleteTask, updateExistingTask } from "@/redux/slices/boardSlice";
 
 type Props = {
   currentBoard: IBoard;
@@ -48,9 +48,8 @@ const Task = ({ currentBoard, task }: Props) => {
       throw new Error("Could not delete Task, please try again later.");
     }
 
+    dispatch(deleteTask(task));
     setShowDeletionWarning(false);
-
-    // Update UI
   }
 
   function onSubtaskChange(updatedSubtask: ISubtask, index: number) {
@@ -65,6 +64,7 @@ const Task = ({ currentBoard, task }: Props) => {
   async function handleStatusChange(newStatus: IColumn) {
     const updatedTaskData = {
       ...task,
+      subtasks,
       column: newStatus.id,
       status: {
         name: newStatus.name,

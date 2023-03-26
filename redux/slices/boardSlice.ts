@@ -127,6 +127,16 @@ export const boardSlice = createSlice({
         throw new Error("Could not find the new column with the ID provided");
       }
     },
+    deleteTask: (state, action: PayloadAction<ITask>) => {
+      const column = state.activeBoardData?.columns?.find(
+        (column) => column.id === action.payload.column
+      );
+      if (column) {
+        column.tasks = column.tasks?.filter(
+          (task) => task.id !== action.payload.id
+        );
+      }
+    },
   },
   extraReducers(builder) {
     builder
@@ -176,6 +186,7 @@ export const {
   deleteBoardListItem,
   addNewTask,
   updateExistingTask,
+  deleteTask,
 } = boardSlice.actions;
 
 export const selectBoardList = (state: RootState) => state.boards.boardList;

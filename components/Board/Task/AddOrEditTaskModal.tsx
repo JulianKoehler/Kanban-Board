@@ -91,7 +91,7 @@ const AddOrEditTaskModal = ({
     index: number
   ) {
     setSubtasks((prevSubtasks) => {
-      let subtasks = [...prevSubtasks!];
+      const subtasks = [...prevSubtasks!];
 
       subtasks[index] = {
         ...subtasks[index],
