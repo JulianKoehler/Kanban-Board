@@ -30,7 +30,7 @@ const Task = ({ currentBoard, task }: Props) => {
   const { isLoading, hasError, deleteData, sendData } = useHttpRequest();
   const [subtasks, setSubtasks] = useState(task.subtasks);
   const completedTasks = subtasks.reduce((completedTasks, subtask) => {
-    if (subtask.isCompleted) {
+    if (subtask.isCompleted && !subtask.markedForDeletion) {
       return completedTasks + 1;
     }
     return completedTasks;

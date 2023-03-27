@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/firebase/config";
-import { doc, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, setDoc } from "firebase/firestore";
+import { ISubtask } from "@/types/data";
 
 type Response = string;
 
@@ -26,11 +27,17 @@ export default async function requestHandler(
       }
 
       for (const subtask of req.body.subtasks) {
-        await setDoc(doc(db, "tasks", req.body.id, "subtasks", subtask.id), {
-          id: subtask.id,
-          isCompleted: subtask.isCompleted,
-          title: subtask.title,
-        });
+        if (subtask.markedForDeletion) {
+          await deleteDoc(
+            doc(db, "tasks", req.body.id, "subtasks", subtask.id)
+          );
+        } else {
+          await setDoc(doc(db, "tasks", req.body.id, "subtasks", subtask.id), {
+            id: subtask.id,
+            isCompleted: subtask.isCompleted,
+            title: subtask.title,
+          });
+        }
       }
 
       res.status(200).send("Successfully set/updated the task");

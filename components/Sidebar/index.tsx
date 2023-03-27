@@ -27,10 +27,10 @@ const Sidebar = ({
   return (
     <aside
       className={`${
-        !showSidebar && "ml-[-30rem]"
-      } relative flex h-screen flex-col gap-[5.4rem] border-r border-lines-light bg-white py-12 pl-[2.4rem] transition-margin duration-[400ms] dark:border-lines-dark dark:bg-grey-dark desktop:min-w-[30rem]`}
+        !showSidebar && "tablet:ml-[-26.4rem] desktop:ml-[-32.4rem]"
+      } relative flex h-screen flex-col gap-[5.4rem] border-r border-lines-light bg-white py-12 px-[1.2rem] transition-margin duration-[400ms] dark:border-lines-dark dark:bg-grey-dark desktop:min-w-[30rem] desktop:px-[2.4rem]`}
     >
-      <Image src={logo} alt="kanban-logo" />
+      <Image src={logo} alt="kanban-logo" className="h-[2.5rem] pl-[1.2rem]" />
       {boardManager}
       <ThemeSwitcher setTheme={setTheme} theme={theme} />
       <button

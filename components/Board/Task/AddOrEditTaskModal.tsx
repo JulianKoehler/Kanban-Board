@@ -37,14 +37,16 @@ const AddOrEditTaskModal = ({
   const taskID = task?.id ?? uuid();
   const [title, setTitle] = useState(task?.title ?? "");
   const [description, setDescription] = useState(task?.details ?? "");
-  const [subtasks, setSubtasks] = useState(
+  const [subtasks, setSubtasks] = useState<ISubtask[]>(
     isEditing
-      ? subtaskList
+      ? (subtaskList as ISubtask[])
       : [
           {
             id: uuid(),
+            index: 0,
             title: "",
             isCompleted: false,
+            markedForDeletion: false,
           },
         ]
   );
@@ -61,30 +63,32 @@ const AddOrEditTaskModal = ({
   );
   let taskIndex = task?.index ?? statusOptions[0].tasks?.length ?? 0;
 
-  const subtaskInputFields = subtasks!.map((subtask, index) => (
-    <div key={subtask.id} className="relative flex gap-[1.6rem]">
-      <TextInput
-        value={subtask.title}
-        additionalClasses={
-          isFormSubmitted && subtask.title.length < 1 ? "input-error" : ""
-        }
-        onChange={(e) => handleSubtaskInput(e, index)}
-        placeholder="e.g. Make coffee"
-      />
-      <button
-        type="button"
-        onClick={() => onDeleteSubtaskInput(subtask.id)}
-        className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
-      >
-        <DeleteIcon />
-      </button>
-      {subtask.title.length < 1 && isFormSubmitted && (
-        <p className="absolute bottom-[0.9rem] right-[4.6rem] text-base font-medium text-red">
-          Can't be empty
-        </p>
-      )}
-    </div>
-  ));
+  const subtaskInputFields = subtasks.map((subtask, index) => {
+    return subtask.markedForDeletion ? null : (
+      <div key={subtask.id} className="relative flex gap-[1.6rem]">
+        <TextInput
+          value={subtask.title}
+          additionalClasses={
+            isFormSubmitted && subtask.title.length < 1 ? "input-error" : ""
+          }
+          onChange={(e) => handleSubtaskInput(e, index)}
+          placeholder="e.g. Make coffee"
+        />
+        <button
+          type="button"
+          onClick={() => onDeleteSubtaskInput(index)}
+          className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
+        >
+          <DeleteIcon />
+        </button>
+        {subtask.title.length < 1 && isFormSubmitted && (
+          <p className="absolute bottom-[0.9rem] right-[4.6rem] text-base font-medium text-red">
+            Can't be empty
+          </p>
+        )}
+      </div>
+    );
+  });
 
   function handleSubtaskInput(
     e: React.ChangeEvent<HTMLInputElement>,
@@ -102,9 +106,18 @@ const AddOrEditTaskModal = ({
     });
   }
 
-  function onDeleteSubtaskInput(id: string) {
-    if (subtasks!.length <= 1) return; // There should always be at least 1 input field visible
-    setSubtasks((prev) => prev!.filter((subtask) => subtask.id !== id));
+  function onDeleteSubtaskInput(index: number) {
+    if (subtasks.length <= 1) return; // There should always be at least 1 input field visible
+    setSubtasks((prevSubtasks) => {
+      const subtasks = [...prevSubtasks!];
+
+      subtasks[index] = {
+        ...subtasks[index],
+        markedForDeletion: true,
+      };
+
+      return subtasks;
+    });
   }
 
   function onAddNewSubtaskInput() {
@@ -112,8 +125,10 @@ const AddOrEditTaskModal = ({
       ...prevSubtasks!,
       {
         id: uuid(),
+        index: subtasks.length,
         title: "",
         isCompleted: false,
+        markedForDeletion: false,
       },
     ]);
   }
@@ -124,6 +139,8 @@ const AddOrEditTaskModal = ({
       columnID: selectedColumn.id,
     });
   }
+
+  console.log(subtasks);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -154,7 +171,7 @@ const AddOrEditTaskModal = ({
       title,
       details: description,
       status: status,
-      subtasks: subtasks!,
+      subtasks,
     };
 
     await sendData(
@@ -164,7 +181,7 @@ const AddOrEditTaskModal = ({
     );
 
     if (hasError) {
-      throw new Error("Could not create task.");
+      return;
     }
 
     if (!isLoading) {
@@ -172,6 +189,9 @@ const AddOrEditTaskModal = ({
         ? dispatch(
             updateExistingTask({
               ...newTaskData,
+              subtasks: subtasks.filter(
+                (subtask) => !subtask.markedForDeletion
+              ),
               oldColumnId: currentColumnId!,
             })
           )

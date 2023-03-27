@@ -28,9 +28,10 @@ export interface ITask {
 
 export interface ISubtask {
   id: string;
-  index?: number;
+  index: number;
   title: string;
   isCompleted: boolean;
+  markedForDeletion: boolean;
 }
 
 export interface BoardListItem {
