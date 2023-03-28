@@ -157,6 +157,7 @@ const Task = ({ currentBoard, task }: Props) => {
                 checked={subtask.isCompleted}
                 title={subtask.title}
                 taskId={task.id}
+                markedForDeletion={subtask.markedForDeletion}
                 updateSubtask={(updatedSubtask) =>
                   onSubtaskChange(updatedSubtask, index)
                 }

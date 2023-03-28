@@ -56,7 +56,7 @@ export const getActiveBoardData = createAsyncThunk(
 
       return response.data;
     } catch (err) {
-      if (err instanceof Error) throw new Error("ERR_BOARDDATA");
+      if (err instanceof Error) throw new Error(err.message);
     }
   }
 );
@@ -148,6 +148,7 @@ export const boardSlice = createSlice({
           state.boardListStatus = STATUS.SUCCESS;
           state.boardList = action.payload;
           state.activeBoard = action.payload[0] ?? undefined;
+          state.error = undefined;
         }
       )
       .addCase(getBoardList.rejected, (state) => {
@@ -162,10 +163,13 @@ export const boardSlice = createSlice({
         (state, action: PayloadAction<IBoard>) => {
           state.boardDataStatus = STATUS.SUCCESS;
           state.activeBoardData = action.payload;
+          state.error = undefined;
         }
       )
       .addCase(getActiveBoardData.rejected, (state, action) => {
         /* Errors from the Abort controller should not be treated as a failed request */
+        console.log(action.error);
+
         if (action.error.message === "canceled") {
           return;
         }

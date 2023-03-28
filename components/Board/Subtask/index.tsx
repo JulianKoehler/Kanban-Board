@@ -9,12 +9,14 @@ type Props = {
   index: number;
   title: string;
   taskId: string;
+  markedForDeletion: boolean;
   updateSubtask: (updatedSubtask: ISubtask) => void;
 };
 
 const Subtask = ({
   checked,
   id,
+  markedForDeletion,
   index,
   title,
   taskId,
@@ -36,6 +38,7 @@ const Subtask = ({
       id,
       index,
       title,
+      markedForDeletion,
       isCompleted: !isCompleted,
     });
 
