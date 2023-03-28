@@ -41,8 +41,7 @@ export const getBoardList = createAsyncThunk(
       const response = await axios.get(API_URLS.getAllBoards);
       return response.data.boards;
     } catch (err) {
-      console.log(err);
-      if (err instanceof Error) return err.message;
+      if (err instanceof Error) throw new Error("ERR_BOARDLIST");
     }
   }
 );
@@ -57,7 +56,7 @@ export const getActiveBoardData = createAsyncThunk(
 
       return response.data;
     } catch (err) {
-      if (err instanceof Error) throw new Error(err.message);
+      if (err instanceof Error) throw new Error("ERR_BOARDDATA");
     }
   }
 );
@@ -151,9 +150,9 @@ export const boardSlice = createSlice({
           state.activeBoard = action.payload[0] ?? undefined;
         }
       )
-      .addCase(getBoardList.rejected, (state, action) => {
+      .addCase(getBoardList.rejected, (state) => {
         state.boardListStatus = STATUS.FAILED;
-        state.error = action.error.message;
+        state.error = "ERR_BOARDLIST";
       })
       .addCase(getActiveBoardData.pending, (state) => {
         state.boardDataStatus = STATUS.LOADING;
@@ -171,7 +170,7 @@ export const boardSlice = createSlice({
           return;
         }
         state.boardDataStatus = STATUS.FAILED;
-        state.error = action.error.message;
+        state.error = "ERR_BOARDDATA";
       });
   },
 });

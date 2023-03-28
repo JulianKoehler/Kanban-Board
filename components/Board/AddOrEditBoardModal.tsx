@@ -31,7 +31,7 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
   const boardList = useAppSelector(selectBoardList);
   const boardIndex = board
     ? board.index
-    : boardList
+    : boardList.length > 0
     ? boardList[boardList.length - 1].index + 1
     : 0;
   const isEditMode = board ? true : false;

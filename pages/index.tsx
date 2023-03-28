@@ -9,7 +9,6 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   selectActiveBoard,
   getActiveBoardData,
-  getBoardList,
   selectError,
 } from "@/redux/slices/boardSlice";
 
@@ -25,12 +24,14 @@ export default function Kanban() {
     const controller = new AbortController();
     const { signal } = controller;
 
-    dispatch(
-      getActiveBoardData({
-        id: activeBoard?.id ?? "",
-        signal,
-      })
-    );
+    if (error === undefined) {
+      dispatch(
+        getActiveBoardData({
+          id: activeBoard?.id ?? "",
+          signal,
+        })
+      );
+    }
 
     return () => {
       controller.abort();

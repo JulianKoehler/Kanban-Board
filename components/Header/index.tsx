@@ -58,6 +58,7 @@ const Header = ({ showSidebar, theme }: Props) => {
       dispatch(setActiveBoard(boardList[0]));
     }
     dispatch(deleteBoardListItem(board!.id));
+    dispatch(setActiveBoard(boardList[0] || null));
   }
 
   function onAddNewTask() {

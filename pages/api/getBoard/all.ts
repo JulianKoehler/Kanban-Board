@@ -3,9 +3,11 @@ import { db } from "@/firebase/config";
 import { IBoard, IColumn, ITask, ISubtask } from "@/types/data";
 import { collection, getDocs } from "firebase/firestore";
 
-type Data = {
-  boards: IBoard[];
-};
+type Data =
+  | {
+      boards: IBoard[];
+    }
+  | string;
 
 export type CollectionTypes = IBoard | IColumn | ITask | ISubtask;
 
@@ -17,12 +19,18 @@ export default async function requestHandler(
     throw new Error("Only GET Requests allowed!");
   }
 
-  const boards = (await getCollection("boards")) as IBoard[];
-  const sortedByIndex = boards.sort(
-    (a: IBoard, b: IBoard) => a.index - b.index
-  );
+  try {
+    const boards = (await getCollection("boards")) as IBoard[];
+    const sortedByIndex = boards.sort(
+      (a: IBoard, b: IBoard) => a.index - b.index
+    );
 
-  res.status(200).json({ boards: sortedByIndex });
+    res.status(200).json({ boards: sortedByIndex });
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).send(err.message);
+    }
+  }
 }
 
 async function getCollection(collectionName: string) {
@@ -32,7 +40,7 @@ async function getCollection(collectionName: string) {
   const snapshot = await getDocs(collectionRef);
 
   if (snapshot.empty) {
-    throw new Error("No boards available!");
+    return [];
   }
 
   snapshot.forEach((doc) => {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../UI/Button";
 import AddOrEditBoardModal from "./AddOrEditBoardModal";
 import Column from "./Column";
@@ -10,17 +10,45 @@ import {
   selectactiveBoardData,
   selectBoardDataStatus,
   selectBoardListStatus,
+  selectError,
   STATUS,
 } from "@/redux/slices/boardSlice";
+import ErrorFeedback from "../UI/UserFeedback/ErrorFeedback";
 
 const Board = () => {
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const boardData = useAppSelector(selectactiveBoardData);
   const boardDataStatus = useAppSelector(selectBoardDataStatus);
   const boardListStatus = useAppSelector(selectBoardListStatus);
   const activeBoard = useAppSelector(selectActiveBoard);
+  const error = useAppSelector(selectError);
+  const [errorHeaderMessage, setErrorHeaderMessage] = useState<
+    undefined | string
+  >();
+  const [errorDescriptionMessage, setErrorDescriptionMessage] = useState<
+    undefined | string
+  >();
 
-  console.log(boardData);
+  console.log(boardDataStatus);
+
+  useEffect(() => {
+    if (error) setShowErrorMessage(true);
+    console.log(error);
+
+    if (error === "ERR_BOARDLIST") {
+      setErrorHeaderMessage("Failed to load Boardlist!");
+      setErrorDescriptionMessage(
+        "We are sorry, but currently we are not able to load your boards. Please try again later."
+      );
+    }
+    if (error === "ERR_BOARDDATA") {
+      setErrorHeaderMessage("Failed to load this Board!");
+      setErrorDescriptionMessage(
+        "We are sorry, but currently we are not able to load this board. Please try again later."
+      );
+    }
+  }, [error]);
 
   return (
     <>
@@ -29,6 +57,12 @@ const Board = () => {
       >
         {boardDataStatus === STATUS.LOADING ? (
           <div className="m-auto">{LoadingSpinner}</div>
+        ) : boardListStatus === STATUS.FAILED && showErrorMessage ? (
+          <ErrorFeedback
+            header={errorHeaderMessage}
+            description={errorDescriptionMessage}
+            onClose={() => setShowErrorMessage(false)}
+          />
         ) : (
           <>
             {boardData?.columns?.map((column, index) => (
