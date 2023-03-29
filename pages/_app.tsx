@@ -1,4 +1,4 @@
-import { getActiveBoardData, getBoardList } from "@/redux/slices/boardSlice";
+import { getBoardList } from "@/redux/slices/boardSlice";
 import { store } from "@/redux/store";
 import "@/styles/globals.css";
 import { ThemeProvider } from "next-themes";

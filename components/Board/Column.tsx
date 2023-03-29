@@ -27,7 +27,7 @@ const Column = ({ column, index, children }: Props) => {
         <div
           className={`${getDotColor()} mr-5 inline-block h-6 w-6 rounded-full align-middle`}
         />
-        {column.name}({column?.tasks?.length || 0})
+        {column.name}({column.tasks?.length || 0})
       </h4>
       <div className="flex flex-col gap-8">{children}</div>
     </div>

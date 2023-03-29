@@ -37,7 +37,7 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
   const isEditMode = board ? true : false;
   const { isLoading, hasError, sendData } = useHttpRequest();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [boardName, setBoardName] = useState<string>(board ? board?.name : "");
+  const [boardName, setBoardName] = useState<string>(board ? board.name : "");
   const boardId = board?.id ?? uuid();
   const [columns, setColumns] = useState<IColumn[]>(
     isEditMode
@@ -110,6 +110,8 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
     });
   }
 
+  console.log(columns);
+
   function onAddNewColumnInput() {
     setColumns((prevColumns) => [
       ...prevColumns,
@@ -123,8 +125,6 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
       },
     ]);
   }
-
-  console.log(columns);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -146,7 +146,7 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
       name: boardName,
       id: boardId,
       index: boardIndex,
-      columns: [...columns],
+      columns,
     };
 
     await sendData(

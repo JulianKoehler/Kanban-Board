@@ -15,10 +15,6 @@ export default async function requestHandler(
         index: req.body.index,
       });
 
-      if (!req.body.columns) {
-        res.status(200).send("Successfully set/updated the board");
-      }
-
       for (const column of req.body.columns) {
         if (column.markedForDeletion) {
           await deleteDoc(doc(db, "columns", column.id));

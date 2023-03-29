@@ -124,7 +124,7 @@ export const boardSlice = createSlice({
       }
 
       if (newColumn) {
-        newColumn?.tasks?.push(action.payload);
+        newColumn.tasks?.push(action.payload);
       } else {
         throw new Error("Could not find the new column with the ID provided");
       }

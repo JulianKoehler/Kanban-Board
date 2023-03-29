@@ -107,7 +107,7 @@ const Task = ({ currentBoard, task }: Props) => {
           {task.title}
         </h3>
         <p className="text-sm font-bold text-grey-medium">
-          {completedTasks} of {task?.subtasks?.length} subtasks completed
+          {completedTasks} of {task.subtasks?.length} subtasks completed
         </p>
       </div>
       {!showDeletionWarning && showTaskModal && (
@@ -148,7 +148,7 @@ const Task = ({ currentBoard, task }: Props) => {
           </p>
           <div className="flex flex-col gap-[0.8rem]">
             <h4 className="mb-[0.8rem] text-sm font-bold text-grey-medium">
-              Subtasks ({completedTasks} of {task?.subtasks?.length})
+              Subtasks ({completedTasks} of {task.subtasks.length})
             </h4>
             {subtasks.map((subtask, index) => (
               <Subtask
