@@ -1,7 +1,7 @@
 import useHttpRequest from "@/hooks/useHttpRequest";
 import { ISubtask } from "@/types/data";
 import API_URLS from "@/util/API_URLs";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 
 type Props = {
   checked: boolean;
@@ -44,7 +44,6 @@ const Subtask = ({
 
     sendData("PATCH", API_URLS.checkSubtask, {
       taskId,
-      index,
       subtaskId: id,
       isCompleted: !isCompleted,
     });

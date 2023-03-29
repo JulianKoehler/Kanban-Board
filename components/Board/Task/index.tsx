@@ -35,6 +35,7 @@ const Task = ({ currentBoard, task }: Props) => {
     }
     return completedTasks;
   }, 0);
+  let timestamp = task.timestamp;
 
   function handleEditCurrentBoard() {
     setShowEditTaskModal(true);
@@ -52,7 +53,7 @@ const Task = ({ currentBoard, task }: Props) => {
     setShowDeletionWarning(false);
   }
 
-  function onSubtaskChange(updatedSubtask: ISubtask, index: number) {
+  function onSubtaskCheck(updatedSubtask: ISubtask, index: number) {
     setSubtasks((prevSubtasks) => {
       const subtasks = [...prevSubtasks];
       subtasks[index] = updatedSubtask;
@@ -62,8 +63,11 @@ const Task = ({ currentBoard, task }: Props) => {
   }
 
   async function handleStatusChange(newStatus: IColumn) {
+    timestamp = new Date().getTime();
+
     const updatedTaskData = {
       ...task,
+      timestamp,
       subtasks,
       column: newStatus.id,
       status: {
@@ -71,11 +75,8 @@ const Task = ({ currentBoard, task }: Props) => {
         columnID: newStatus.id,
       },
     };
-    // Send the PATCH Request to the server
-    await sendData("PATCH", API_URLS.addOrEditTask, updatedTaskData);
-    console.log(updatedTaskData);
 
-    // Update the UI
+    await sendData("PATCH", API_URLS.addOrEditTask, updatedTaskData);
 
     if (!isLoading && hasError) {
       // For now I am generating an alert, want to replace it with Push Notes soon
@@ -159,7 +160,7 @@ const Task = ({ currentBoard, task }: Props) => {
                 taskId={task.id}
                 markedForDeletion={subtask.markedForDeletion}
                 updateSubtask={(updatedSubtask) =>
-                  onSubtaskChange(updatedSubtask, index)
+                  onSubtaskCheck(updatedSubtask, index)
                 }
               />
             ))}

@@ -43,6 +43,7 @@ const DropDown = ({ task, dropDownOptions, onStatusChange }: Props) => {
       >
         {dropDownOptions.map((status, index) => (
           <p
+            key={status.id}
             role="option"
             onClick={() => handleSelectOption(status)}
             className={`px-[1.6rem] py-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800 ${

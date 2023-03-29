@@ -34,7 +34,6 @@ const Board = () => {
 
   useEffect(() => {
     if (error) setShowErrorMessage(true);
-    console.log(error);
 
     if (error === "ERR_BOARDLIST") {
       setErrorHeaderMessage("Failed to load Boardlist!");
@@ -67,7 +66,7 @@ const Board = () => {
           <>
             {boardData?.columns?.map((column, index) => (
               <Column key={column.id} column={column} index={index}>
-                {column.tasks?.map((task, index) => (
+                {column.tasks?.map((task) => (
                   <Task key={task.id} currentBoard={boardData} task={task} />
                 ))}
               </Column>

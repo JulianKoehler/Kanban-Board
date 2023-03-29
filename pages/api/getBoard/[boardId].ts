@@ -50,7 +50,7 @@ export default async function requestHandler(
     });
   } catch (err) {
     console.error(err);
-    res.status(500).send("ERR_BOARDDATA");
+    res.status(502).send("ERR_BOARDDATA");
   }
 }
 
@@ -94,7 +94,7 @@ async function getAssociatedTasks(id: string) {
     } as ITask);
   }
 
-  return tasks.sort((a: ITask, b: ITask) => a.index - b.index);
+  return tasks.sort((a: ITask, b: ITask) => a.timestamp - b.timestamp);
 }
 
 async function getAssociatedSubtasks(

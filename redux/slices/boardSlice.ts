@@ -85,6 +85,9 @@ export const boardSlice = createSlice({
       state.boardList = state.boardList.filter(
         (boardItem) => boardItem.id !== action.payload
       );
+      if (state.boardList.length < 1) {
+        state.activeBoardData = undefined;
+      }
     },
     setActiveBoard: (state, action: PayloadAction<BoardListItem>) => {
       state.activeBoard = action.payload;
@@ -168,8 +171,6 @@ export const boardSlice = createSlice({
       )
       .addCase(getActiveBoardData.rejected, (state, action) => {
         /* Errors from the Abort controller should not be treated as a failed request */
-        console.log(action.error);
-
         if (action.error.message === "canceled") {
           return;
         }

@@ -13,7 +13,7 @@ export default async function requestHandler(
   }
 
   try {
-    // Will not delete the subcollections
+    // Will not delete the subcollections, not possible with Firebase
     await setDoc(
       doc(db, "tasks", req.body.taskId, "subtasks", req.body.subtaskId),
       {
@@ -24,10 +24,10 @@ export default async function requestHandler(
 
     res
       .status(200)
-      .send(`The subtask with ID ${req.body.id} has been updated!`);
+      .send(`The subtask with ID ${req.body.subtaskId} has been updated!`);
   } catch (err) {
     if (err instanceof Error) {
-      res.status(500).send(err.message);
+      res.status(502).send(err.message);
     }
   }
 }

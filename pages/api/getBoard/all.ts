@@ -28,7 +28,7 @@ export default async function requestHandler(
     res.status(200).json({ boards: sortedByIndex });
   } catch (err) {
     if (err instanceof Error) {
-      res.status(500).send(err.message);
+      res.status(502).send(err.message);
     }
   }
 }

@@ -15,8 +15,6 @@ export default async function requestHandler(
         index: req.body.index,
       });
 
-      console.log(req.body.columns);
-
       if (!req.body.columns) {
         res.status(200).send("Successfully set/updated the board");
       }

@@ -19,7 +19,7 @@ export interface IColumn {
 export interface ITask {
   id: string;
   column: string;
-  index: number;
+  timestamp: number;
   title: string;
   details: string;
   status: IStatus;

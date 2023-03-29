@@ -28,7 +28,7 @@ const Sidebar = ({
     <aside
       className={`${
         !showSidebar && "tablet:ml-[-26rem] desktop:ml-[-30rem]"
-      } relative flex h-screen flex-col gap-[5.4rem] border-r border-lines-light bg-white py-12 px-[1.2rem] transition-margin duration-[400ms] dark:border-lines-dark dark:bg-grey-dark tablet:min-w-[26rem] desktop:min-w-[30rem] desktop:px-[2.4rem]`}
+      } relative flex h-screen flex-col gap-[5.4rem] border-r border-lines-light bg-white py-12 px-[1.2rem] transition-margin duration-[400ms] dark:border-lines-dark dark:bg-grey-dark tablet:w-[26rem] tablet:min-w-[26rem] desktop:w-[30rem] desktop:min-w-[30rem] desktop:px-[2.4rem]`}
     >
       <Image src={logo} alt="kanban-logo" className="h-[2.5rem] pl-[1.2rem]" />
       {boardManager}

@@ -35,6 +35,7 @@ const AddOrEditTaskModal = ({
   const { isLoading, hasError, sendData } = useHttpRequest();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const taskID = task?.id ?? uuid();
+  let timestamp = task?.timestamp ?? new Date().getTime();
   const [title, setTitle] = useState(task?.title ?? "");
   const [description, setDescription] = useState(task?.details ?? "");
   const [subtasks, setSubtasks] = useState<ISubtask[]>(
@@ -61,7 +62,6 @@ const AddOrEditTaskModal = ({
           columnID: statusOptions[0].id,
         }
   );
-  let taskIndex = task?.index ?? statusOptions[0].tasks?.length ?? 0;
 
   const subtaskInputFields = subtasks.map((subtask, index) => {
     return subtask.markedForDeletion ? null : (
@@ -140,15 +140,15 @@ const AddOrEditTaskModal = ({
     });
   }
 
-  console.log(subtasks);
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsFormSubmitted(true);
 
     const toBeValidated = [title, status.name];
-    subtasks!.forEach((subtask) => {
-      toBeValidated.push(subtask.title);
+    subtasks.forEach((subtask) => {
+      if (!subtask.markedForDeletion) {
+        toBeValidated.push(subtask.title);
+      }
     });
 
     const isFormValid = checkFormValidity(toBeValidated);
@@ -157,16 +157,13 @@ const AddOrEditTaskModal = ({
       return;
     }
 
-    if (currentColumnId !== status.columnID) {
-      const columnToBeInsertedTo = statusOptions.find(
-        (option) => option.id === status.columnID
-      );
-      taskIndex = columnToBeInsertedTo?.tasks?.length ?? 0;
+    if (isEditing) {
+      timestamp = new Date().getTime();
     }
 
     const newTaskData: ITask = {
       id: taskID,
-      index: taskIndex,
+      timestamp: timestamp,
       column: status.columnID,
       title,
       details: description,
@@ -184,18 +181,25 @@ const AddOrEditTaskModal = ({
       return;
     }
 
+    const subtasksNotMarkedForDeletion = subtasks.filter(
+      (subtask) => !subtask.markedForDeletion
+    );
+
     if (!isLoading) {
       isEditing
         ? dispatch(
             updateExistingTask({
               ...newTaskData,
-              subtasks: subtasks.filter(
-                (subtask) => !subtask.markedForDeletion
-              ),
+              subtasks: subtasksNotMarkedForDeletion,
               oldColumnId: currentColumnId!,
             })
           )
-        : dispatch(addNewTask(newTaskData));
+        : dispatch(
+            addNewTask({
+              ...newTaskData,
+              subtasks: subtasksNotMarkedForDeletion,
+            })
+          );
     }
 
     onClose();

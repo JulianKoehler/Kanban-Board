@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/firebase/config";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
-import { ISubtask } from "@/types/data";
 
 type Response = string;
 
@@ -13,7 +12,7 @@ export default async function requestHandler(
     try {
       await setDoc(doc(db, "tasks", req.body.id), {
         id: req.body.id,
-        index: req.body.index,
+        timestamp: req.body.timestamp,
         column: req.body.status.columnID,
         title: req.body.title,
         details: req.body.details,
@@ -34,6 +33,7 @@ export default async function requestHandler(
         } else {
           await setDoc(doc(db, "tasks", req.body.id, "subtasks", subtask.id), {
             id: subtask.id,
+            index: subtask.index,
             isCompleted: subtask.isCompleted,
             title: subtask.title,
           });
