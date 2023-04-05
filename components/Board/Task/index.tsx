@@ -35,6 +35,7 @@ const Task = ({ currentBoard, task }: Props) => {
     }
     return completedTasks;
   }, 0);
+  const taskDescription = task.details.replace(/\n/g, "<br>");
   let timestamp = task.timestamp;
 
   function handleEditCurrentBoard() {
@@ -143,9 +144,12 @@ const Task = ({ currentBoard, task }: Props) => {
               )}
             </button>
           </div>
-          <p className="text-base font-medium text-grey-medium">
-            {task.details || "No further details available"}
-          </p>
+          <p
+            className="text-base font-medium text-grey-medium"
+            dangerouslySetInnerHTML={{
+              __html: taskDescription || "No further details available",
+            }}
+          ></p>
           <div className="flex flex-col gap-[0.8rem]">
             <h4 className="mb-[0.8rem] text-sm font-bold text-grey-medium">
               Subtasks ({completedTasks} of {task.subtasks.length})

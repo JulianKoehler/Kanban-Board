@@ -30,8 +30,6 @@ const Board = () => {
     undefined | string
   >();
 
-  console.log(boardData);
-
   useEffect(() => {
     if (error) setShowErrorMessage(true);
 

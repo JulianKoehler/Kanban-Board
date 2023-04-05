@@ -63,6 +63,8 @@ const AddOrEditTaskModal = ({
         }
   );
 
+  console.log(description);
+
   const subtaskInputFields = subtasks.map((subtask, index) => {
     return subtask.markedForDeletion ? null : (
       <div key={subtask.id} className="relative flex gap-[1.6rem]">
@@ -157,7 +159,7 @@ const AddOrEditTaskModal = ({
       return;
     }
 
-    if (isEditing) {
+    if (isEditing && currentColumnId !== status.columnID) {
       timestamp = new Date().getTime();
     }
 
@@ -185,22 +187,20 @@ const AddOrEditTaskModal = ({
       (subtask) => !subtask.markedForDeletion
     );
 
-    if (!isLoading) {
-      isEditing
-        ? dispatch(
-            updateExistingTask({
-              ...newTaskData,
-              subtasks: subtasksNotMarkedForDeletion,
-              oldColumnId: currentColumnId!,
-            })
-          )
-        : dispatch(
-            addNewTask({
-              ...newTaskData,
-              subtasks: subtasksNotMarkedForDeletion,
-            })
-          );
-    }
+    isEditing
+      ? dispatch(
+          updateExistingTask({
+            ...newTaskData,
+            subtasks: subtasksNotMarkedForDeletion,
+            oldColumnId: currentColumnId!,
+          })
+        )
+      : dispatch(
+          addNewTask({
+            ...newTaskData,
+            subtasks: subtasksNotMarkedForDeletion,
+          })
+        );
 
     onClose();
   }

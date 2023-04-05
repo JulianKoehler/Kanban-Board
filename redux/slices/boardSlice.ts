@@ -115,6 +115,13 @@ export const boardSlice = createSlice({
         (column) => column.id === action.payload.status.columnID
       );
 
+      if (oldColumn?.id === newColumn?.id) {
+        oldColumn?.tasks?.find((task) => {
+          task.id === action.payload.id ? (task = action.payload) : null;
+        });
+        return;
+      }
+
       if (oldColumn) {
         oldColumn.tasks = oldColumn.tasks?.filter(
           (task) => task.id !== action.payload.id
