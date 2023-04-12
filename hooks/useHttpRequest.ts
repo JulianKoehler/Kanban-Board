@@ -46,6 +46,7 @@ const useHttpRequest = () => {
       });
 
       setHasError(false);
+      return response;
     } catch (err) {
       setHasError(true);
       console.log(err);

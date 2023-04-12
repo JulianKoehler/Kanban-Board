@@ -77,6 +77,7 @@ export default function Kanban() {
               style: {
                 borderRadius: "4rem",
                 background: theme === "dark" ? "#2B2C37" : "#F4F7FD",
+                color: theme === "dark" ? "white" : "black",
               },
             }}
           />

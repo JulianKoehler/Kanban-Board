@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { IBoard, ITask, ISubtask, IColumn } from "@/types/data";
 import Image from "next/image";
 import OptionsIcon from "@/public/assets/icon-vertical-ellipsis.svg";
@@ -21,6 +22,7 @@ type Props = {
 
 const Task = ({ currentBoard, task }: Props) => {
   const dispatch = useAppDispatch();
+  const [subtasks, setSubtasks] = useState(task.subtasks);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showEditTaskModal, setShowEditTaskModal] = useState(false);
   const [showDeletionWarning, setShowDeletionWarning] = useState(false);
@@ -28,7 +30,6 @@ const Task = ({ currentBoard, task }: Props) => {
   const { showElement: showEditTaskMenu, setShowElement: setShowEditTaskMenu } =
     useMenuHandler(menuRef);
   const { isLoading, hasError, deleteData, sendData } = useHttpRequest();
-  const [subtasks, setSubtasks] = useState(task.subtasks);
   const completedTasks = subtasks.reduce((completedTasks, subtask) => {
     if (subtask.isCompleted && !subtask.markedForDeletion) {
       return completedTasks + 1;
@@ -44,7 +45,15 @@ const Task = ({ currentBoard, task }: Props) => {
   }
 
   async function handleDeleteCurrentTask() {
-    await deleteData(API_URLS.deleteTask, { id: task.id });
+    const response = deleteData(API_URLS.deleteTask, { id: task.id });
+
+    toast.promise(response, {
+      loading: "Sending...",
+      success: `Successfully deleted your task`,
+      error: (err) => `Could not delete your task: ${err.toString()}`,
+    });
+
+    await response;
 
     if (hasError) {
       throw new Error("Could not delete Task, please try again later.");

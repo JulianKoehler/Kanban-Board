@@ -178,7 +178,7 @@ const AddOrEditTaskModal = ({
 
     toast.promise(response, {
       loading: "Sending...",
-      success: `Successfully ${isEditing ? "updated" : "created"} your task!`,
+      success: `Your task has been ${isEditing ? "updated" : "created"}!`,
       error: (err) =>
         `Could not ${
           isEditing ? "update" : "create"

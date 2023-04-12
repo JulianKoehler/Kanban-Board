@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   deleteBoardListItem,
@@ -47,7 +48,15 @@ const Header = ({ showSidebar, theme }: Props) => {
   }
 
   async function handleDeleteCurrentBoard() {
-    await deleteData(API_URLS.deleteBoard, board!);
+    const response = deleteData(API_URLS.deleteBoard, board!);
+
+    toast.promise(response, {
+      loading: "Sending...",
+      success: `Successfully deleted your board`,
+      error: (err) => `Could not delete your board: ${err.toString()}`,
+    });
+
+    await response;
 
     if (hasError) {
       throw new Error("Something went wrong.");

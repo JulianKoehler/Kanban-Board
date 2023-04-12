@@ -156,7 +156,7 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
 
     toast.promise(response, {
       loading: "Sending...",
-      success: `Successfully ${isEditMode ? "updated" : "created"} your board!`,
+      success: `Your board has been ${isEditMode ? "updated" : "created"}!`,
       error: (err) =>
         `Could not ${
           isEditMode ? "update" : "create"
