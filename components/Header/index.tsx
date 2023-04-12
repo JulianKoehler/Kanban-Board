@@ -13,6 +13,8 @@ import {
 import Image from "next/image";
 import LogoLightMode from "@/public/assets/logo-dark.svg";
 import LogoDarkMode from "@/public/assets/logo-light.svg";
+import LogoMobile from "@/public/assets/logo-mobile.svg";
+import AddIcon from "@/public/assets/icon-add-task-mobile.svg";
 import Button from "@/components/UI/Button";
 import OptionsIcon from "@/public/assets/icon-vertical-ellipsis.svg";
 import DropDownContainer from "@/components/UI/DropDown/DropDownContainer";
@@ -22,6 +24,7 @@ import AddOrEditBoardModal from "../Board/CreateOrEditBoardModal";
 import DeletionWarning from "../UI/Modal/DeletionWarning";
 import useHttpRequest from "@/hooks/useHttpRequest";
 import API_URLS from "@/util/API_URLs";
+import useViewport from "@/hooks/useViewport";
 
 type Props = {
   showSidebar: boolean;
@@ -42,6 +45,7 @@ const Header = ({ showSidebar, theme }: Props) => {
     useMenuHandler(menuRef);
   const { isLoading, hasError, deleteData } = useHttpRequest();
   const columnsExist = board?.columns && board?.columns?.length > 0;
+  const isMobile = useViewport();
 
   function handleEditCurrentBoard() {
     setShowEditBoardModal(true);
@@ -52,7 +56,7 @@ const Header = ({ showSidebar, theme }: Props) => {
 
     toast.promise(response, {
       loading: "Sending...",
-      success: `Successfully deleted your board`,
+      success: `Your board has been deleted`,
       error: (err) => `Could not delete your board: ${err.toString()}`,
     });
 
@@ -63,9 +67,6 @@ const Header = ({ showSidebar, theme }: Props) => {
     }
 
     setShowDeletionWarning(false);
-    if (boardList.length > 0) {
-      dispatch(setActiveBoard(boardList[0]));
-    }
     dispatch(deleteBoardListItem(board!.id));
     dispatch(setActiveBoard(boardList[0] || null));
   }
@@ -80,8 +81,12 @@ const Header = ({ showSidebar, theme }: Props) => {
 
   return (
     <>
-      <header className="flex h-[9.6rem] max-w-[100%] items-center justify-start border-b border-lines-light bg-white pr-[2.2rem] pl-[2.4rem] dark:border-lines-dark dark:bg-grey-dark">
-        {!showSidebar && (
+      <header
+        className={`flex ${
+          isMobile ? "h-[6.4rem]" : "h-[9.6rem]"
+        } max-w-[100%] items-center justify-start border-b border-lines-light bg-white pr-[2.2rem] pl-[2.4rem] dark:border-lines-dark dark:bg-grey-dark`}
+      >
+        {!showSidebar && !isMobile && (
           <div className="flex h-full items-center border-r-[0.1rem] border-lines-light pr-[3.2rem] dark:border-lines-dark">
             <Image
               src={theme === "dark" ? LogoDarkMode : LogoLightMode}
@@ -89,13 +94,28 @@ const Header = ({ showSidebar, theme }: Props) => {
             />
           </div>
         )}
-        <h1 className={`text-2xl font-bold ${!showSidebar && "ml-[3.2rem]"}`}>
+        {isMobile && (
+          <div className="mr-[1.6rem]">
+            <Image src={LogoMobile} alt="kanban-logo" />
+          </div>
+        )}
+        <h1
+          className={`font-bold ${isMobile ? "text-xl" : "text-2xl"} ${
+            !showSidebar && !isMobile && "ml-[3.2rem]"
+          }`}
+        >
           {activeBoard?.name || ""}
         </h1>
         <div className="relative ml-auto flex gap-[1rem]">
-          {boardDataStatus === STATUS.SUCCESS && columnsExist ? (
-            <Button large variant="primary" onClick={onAddNewTask}>
-              +Add New Task
+          {boardDataStatus === STATUS.SUCCESS ? (
+            <Button
+              large
+              variant="primary"
+              additionalClassNames={isMobile ? "py-[1rem] px-[1.8rem]" : ""}
+              onClick={onAddNewTask}
+              disabled={!columnsExist}
+            >
+              {isMobile ? <Image src={AddIcon} alt="add" /> : "+Add New Task"}
             </Button>
           ) : null}
           {boardDataStatus === STATUS.SUCCESS && (

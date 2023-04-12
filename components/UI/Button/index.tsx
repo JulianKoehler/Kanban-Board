@@ -25,7 +25,7 @@ const Button = ({
   const getBgColor = () => {
     switch (variant) {
       case "primary":
-        return "bg-purple-main hover:bg-purple-main-hover";
+        return "bg-purple-main hover:bg-purple-main-hover disabled:bg-purple-main";
       case "secondary":
         return "dark:bg-white bg-button-secondary-lightmode-idle hover:bg-button-secondary-lightmode-hover";
       case "destructive":
@@ -38,7 +38,7 @@ const Button = ({
   return (
     <button
       {...rest}
-      className={`rounded-[2.4rem]  px-[1.8rem] font-bold ${textColor} ${fontSize} ${paddingY} ${width} ${getBgColor()} ${additionalClassNames}`}
+      className={`rounded-[2.4rem] px-[1.8rem]  font-bold ${textColor} ${fontSize} ${paddingY} ${width} ${getBgColor()} disabled:opacity-25 ${additionalClassNames}`}
     >
       {children}
     </button>
