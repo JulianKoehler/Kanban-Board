@@ -8,7 +8,11 @@ const useHttpRequest = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  async function sendData(method: HttpMethod, url: string, data: RequestData) {
+  async function sendData(
+    method: HttpMethod,
+    url: string,
+    data: RequestData
+  ): Promise<Response> {
     try {
       setIsLoading(true);
       const response = await fetch(url, {
@@ -20,14 +24,15 @@ const useHttpRequest = () => {
       });
 
       if (!response.ok) {
-        console.log(response);
         throw new Error("Could not send data: " + response.statusText);
       }
 
       setHasError(false);
+      return response;
     } catch (err: any) {
       console.log(err.message);
       setHasError(true);
+      return err;
     } finally {
       setIsLoading(false);
     }
@@ -40,7 +45,6 @@ const useHttpRequest = () => {
         data: data,
       });
 
-      console.log(response);
       setHasError(false);
     } catch (err) {
       setHasError(true);

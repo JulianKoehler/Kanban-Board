@@ -11,6 +11,7 @@ import {
   getActiveBoardData,
   selectError,
 } from "@/redux/slices/boardSlice";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Kanban() {
   const dispatch = useAppDispatch();
@@ -70,6 +71,16 @@ export default function Kanban() {
         boardManager={<BoardManager />}
       />
       <div className="w-full overflow-hidden">
+        <div>
+          <Toaster
+            toastOptions={{
+              style: {
+                borderRadius: "4rem",
+                background: theme === "dark" ? "#2B2C37" : "#F4F7FD",
+              },
+            }}
+          />
+        </div>
         <Header showSidebar={showSidebar} theme={currentTheme!} />
         <Board />
       </div>

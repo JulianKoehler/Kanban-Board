@@ -1,3 +1,7 @@
+import React, { useState } from "react";
+import uuid from "react-uuid";
+import toast from "react-hot-toast";
+import { IBoard, IColumn } from "@/types/data";
 import useHttpRequest from "@/hooks/useHttpRequest";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
@@ -7,10 +11,7 @@ import {
   setBoardData,
   updateBoardList,
 } from "@/redux/slices/boardSlice";
-import { IBoard, IColumn } from "@/types/data";
 import checkFormValidity from "@/util/checkFormValidity";
-import React, { useState } from "react";
-import uuid from "react-uuid";
 import Button from "@/components/UI/Button";
 import Form from "@/components/UI/Formelements/Form";
 import FormGroup from "@/components/UI/Formelements/FormGroup";
@@ -110,8 +111,6 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
     });
   }
 
-  console.log(columns);
-
   function onAddNewColumnInput() {
     setColumns((prevColumns) => [
       ...prevColumns,
@@ -149,11 +148,22 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
       columns,
     };
 
-    await sendData(
+    const response = sendData(
       isEditMode ? "PATCH" : "POST",
       API_URLS.addOrEditBoard,
       newBoardData
     );
+
+    toast.promise(response, {
+      loading: "Sending...",
+      success: `Successfully ${isEditMode ? "updated" : "created"} your board!`,
+      error: (err) =>
+        `Could not ${
+          isEditMode ? "update" : "create"
+        } your board: ${err.toString()}`,
+    });
+
+    await response;
 
     if (hasError) {
       throw new Error("Something went wrong.");

@@ -7,7 +7,7 @@ import {
   STATUS,
 } from "@/redux/slices/boardSlice";
 import { useState } from "react";
-import AddOrEditBoardModal from "../Board/AddOrEditBoardModal";
+import AddOrEditBoardModal from "../Board/CreateOrEditBoardModal";
 import BoardIcon from "../UI/Icons/BoardIcon";
 
 const BoardManager = () => {

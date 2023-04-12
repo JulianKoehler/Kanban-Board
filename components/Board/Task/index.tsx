@@ -7,7 +7,7 @@ import Subtask from "../Subtask";
 import DropDownContainer from "../../UI/DropDown/DropDownContainer";
 import DropDown from "../../UI/InputFields/DropDown";
 import useMenuHandler from "@/hooks/useMenuHandler";
-import AddOrEditTaskModal from "./AddOrEditTaskModal";
+import AddOrEditTaskModal from "./CreateOrEditTaskModal";
 import DeletionWarning from "@/components/UI/Modal/DeletionWarning";
 import useHttpRequest from "@/hooks/useHttpRequest";
 import API_URLS from "@/util/API_URLs";

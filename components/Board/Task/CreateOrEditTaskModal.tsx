@@ -1,20 +1,21 @@
-import { IColumn, IStatus, ISubtask, ITask } from "@/types/data";
 import { useState } from "react";
+import uuid from "react-uuid";
+import toast from "react-hot-toast";
+import { useAppDispatch } from "@/redux/hooks";
+import { addNewTask, updateExistingTask } from "@/redux/slices/boardSlice";
+import useHttpRequest from "@/hooks/useHttpRequest";
+import { IColumn, IStatus, ISubtask, ITask } from "@/types/data";
+import API_URLS from "@/util/API_URLs";
 import GenericModalContainer from "@/components/UI/Modal/GenericModalContainer";
 import TextInput from "@/components/UI/InputFields/TextInput";
 import DeleteIcon from "@/components/UI/Icons/DeleteIcon";
 import Button from "@/components/UI/Button";
 import DropDown from "@/components/UI/InputFields/DropDown";
-import { LoadingSpinner_TailSpin as TailSpin } from "@/components/UI/LoadingSpinner";
-import uuid from "react-uuid";
-import checkFormValidity from "@/util/checkFormValidity";
 import H5 from "@/components/UI/Headings/H5";
 import Form from "@/components/UI/Formelements/Form";
 import FormGroup from "@/components/UI/Formelements/FormGroup";
-import { useAppDispatch } from "@/redux/hooks";
-import { addNewTask, updateExistingTask } from "@/redux/slices/boardSlice";
-import useHttpRequest from "@/hooks/useHttpRequest";
-import API_URLS from "@/util/API_URLs";
+import checkFormValidity from "@/util/checkFormValidity";
+import { LoadingSpinner_TailSpin as TailSpin } from "@/components/UI/LoadingSpinner";
 
 type Props = {
   statusOptions: IColumn[];
@@ -62,8 +63,6 @@ const AddOrEditTaskModal = ({
           columnID: statusOptions[0].id,
         }
   );
-
-  console.log(description);
 
   const subtaskInputFields = subtasks.map((subtask, index) => {
     return subtask.markedForDeletion ? null : (
@@ -152,9 +151,7 @@ const AddOrEditTaskModal = ({
         toBeValidated.push(subtask.title);
       }
     });
-
     const isFormValid = checkFormValidity(toBeValidated);
-
     if (!isFormValid) {
       return;
     }
@@ -165,19 +162,30 @@ const AddOrEditTaskModal = ({
 
     const newTaskData: ITask = {
       id: taskID,
-      timestamp: timestamp,
+      timestamp,
       column: status.columnID,
       title,
       details: description,
-      status: status,
+      status,
       subtasks,
     };
 
-    await sendData(
+    const response = sendData(
       isEditing ? "PATCH" : "POST",
       API_URLS.addOrEditTask,
       newTaskData
     );
+
+    toast.promise(response, {
+      loading: "Sending...",
+      success: `Successfully ${isEditing ? "updated" : "created"} your task!`,
+      error: (err) =>
+        `Could not ${
+          isEditing ? "update" : "create"
+        } your task: ${err.toString()}`,
+    });
+
+    await response;
 
     if (hasError) {
       return;
@@ -206,10 +214,7 @@ const AddOrEditTaskModal = ({
   }
 
   return (
-    <GenericModalContainer
-      onClose={onClose}
-      additionalClassNames="w-[48rem] max-h-[71rem]"
-    >
+    <GenericModalContainer additionalClassNames="w-[48rem] max-h-[71rem]">
       <Form onSubmit={handleSubmit}>
         <h2 className="text-xl font-bold">
           {task ? "Edit Task" : "Add New Task"}
@@ -262,13 +267,18 @@ const AddOrEditTaskModal = ({
             task={task}
           />
         </FormGroup>
-        <Button
-          type="submit"
-          variant="primary"
-          additionalClassNames="flex justify-center"
-        >
-          {isLoading ? TailSpin : isEditing ? "Save Changes" : "Create Task"}
-        </Button>
+        <div className="flex gap-4">
+          <Button
+            type="submit"
+            variant="primary"
+            additionalClassNames="flex justify-center"
+          >
+            {isLoading ? TailSpin : isEditing ? "Save Changes" : "Create Task"}
+          </Button>
+          <Button onClick={onClose} type="button" variant="secondary">
+            Discard Changes
+          </Button>
+        </div>
       </Form>
     </GenericModalContainer>
   );

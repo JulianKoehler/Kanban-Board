@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Button from "../UI/Button";
-import AddOrEditBoardModal from "./AddOrEditBoardModal";
+import AddOrEditBoardModal from "./CreateOrEditBoardModal";
 import Column from "./Column";
 import Task from "./Task";
 import { LoadingSpinner_ThreeDots as LoadingSpinner } from "@/components/UI/LoadingSpinner";
