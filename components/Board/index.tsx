@@ -30,6 +30,8 @@ const Board = () => {
     undefined | string
   >();
 
+  console.log(boardData);
+
   useEffect(() => {
     if (error) setShowErrorMessage(true);
 
@@ -50,7 +52,7 @@ const Board = () => {
   return (
     <>
       <main
-        className={`relative flex h-[calc(100vh-9.6rem)] gap-[2.4rem] overflow-auto bg-grey-light pl-[2.4rem] pt-[2.4rem] pb-40 dark:bg-grey-very-dark`}
+        className={`relative flex h-[calc(100vh-6.4rem)] gap-[2.4rem] overflow-auto bg-grey-light px-[1.6rem] pt-[2.4rem] dark:bg-grey-very-dark tablet:h-[calc(100vh-9.6rem)] tablet:pl-[2.4rem] tablet:pb-40`}
       >
         {boardDataStatus === STATUS.LOADING ? (
           <div className="m-auto">{LoadingSpinner}</div>
@@ -78,7 +80,7 @@ const Board = () => {
               </div>
             ) : boardListStatus === STATUS.SUCCESS ? (
               <div className="m-auto flex flex-col items-center justify-between gap-[4.7rem]">
-                <p className="font-xl font-bold text-grey-medium">
+                <p className="text-center text-xl font-bold text-grey-medium">
                   {activeBoard
                     ? "This board is empty. Create a new column to get started."
                     : "You don't have any boards. Create one to get started."}

@@ -6,7 +6,7 @@
  */
 
 import { db } from "@/firebase/config";
-import { IColumn, ITask, ISubtask } from "@/types/data";
+import { IColumn, ITask, ISubtask, IBoard } from "@/types/data";
 import {
   collection,
   getDocs,
@@ -17,7 +17,6 @@ import {
   DocumentSnapshot,
 } from "firebase/firestore";
 import { NextApiRequest, NextApiResponse } from "next";
-import { IBoard } from "@/types/data";
 
 export default async function requestHandler(
   req: NextApiRequest,

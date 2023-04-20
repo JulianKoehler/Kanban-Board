@@ -36,7 +36,7 @@ const DeletionWarning = ({
       <p className="text-base font-medium text-grey-medium">
         {getWarningMessage()}
       </p>
-      <div className="flex w-full gap-[1.6rem]">
+      <div className="flex w-full flex-col gap-[1.6rem] tablet:flex-row">
         <Button
           variant="destructive"
           onClick={deleteFunction}

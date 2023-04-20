@@ -276,7 +276,7 @@ const AddOrEditTaskModal = ({
             {isLoading ? TailSpin : isEditing ? "Save Changes" : "Create Task"}
           </Button>
           <Button onClick={onClose} type="button" variant="secondary">
-            Discard Changes
+            {isEditing ? "Discard Changes" : "Cancel"}
           </Button>
         </div>
       </Form>

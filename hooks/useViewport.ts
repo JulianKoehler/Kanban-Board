@@ -1,11 +1,22 @@
 import { useEffect, useState } from "react";
 
 const useViewport = () => {
-  const tabletViewport = 768;
-  const [isMobile, setIsMobile] = useState(window.innerWidth < tabletViewport);
+  const lowestTabletViewport = 768;
+  const lowestDesktopViewport = 1060;
+  const [isMobile, setIsMobile] = useState(
+    window.innerWidth < lowestTabletViewport
+  );
+  const [isTablet, setIsTablet] = useState(
+    window.innerWidth >= lowestTabletViewport &&
+      window.innerWidth < lowestDesktopViewport
+  );
 
   const updateMedia = () => {
-    setIsMobile(window.innerWidth < tabletViewport);
+    setIsMobile(window.innerWidth < lowestTabletViewport);
+    setIsTablet(
+      window.innerWidth >= lowestTabletViewport &&
+        window.innerWidth < lowestDesktopViewport
+    );
   };
 
   useEffect(() => {
@@ -13,7 +24,9 @@ const useViewport = () => {
     return () => window.removeEventListener("resize", updateMedia);
   }, []);
 
-  return isMobile;
+  const viewports: [boolean, boolean] = [isMobile, isTablet];
+
+  return viewports;
 };
 
 export default useViewport;

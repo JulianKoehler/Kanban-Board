@@ -7,14 +7,20 @@ type ContainerProps = {
 };
 
 type ModalProps = ContainerProps & {
-  onClose?: React.Dispatch<React.SetStateAction<boolean>>;
+  onClose?: () => void;
+  backdropModifications?: string | "";
 };
 
-const Backdrop = ({ ...rest }) => {
+type BackdropProps = {
+  mods?: string | "";
+  onClick?: () => void;
+};
+
+const Backdrop = ({ mods, onClick }: BackdropProps) => {
   return (
     <div
-      {...rest}
-      className="fixed top-0 left-0 z-30 h-screen w-full bg-modal-backdrop"
+      onClick={onClick}
+      className={`fixed top-0 left-0 z-30 h-screen w-full bg-modal-backdrop ${mods}`}
     />
   );
 };
@@ -25,7 +31,7 @@ const ModalOverlay = ({
 }: ContainerProps) => {
   return (
     <div
-      className={`absolute top-1/2 left-1/2 z-40 flex h-fit translate-x-[-50%] translate-y-[-50%] flex-col rounded-xl bg-white p-[3.2rem] shadow-sm dark:bg-grey-very-dark ${additionalClassNames}`}
+      className={`absolute top-1/2 left-1/2 z-40 flex h-fit max-h-[90%] max-w-[90%] translate-x-[-50%] translate-y-[-50%] flex-col overflow-auto rounded-xl bg-white p-[2.4rem] shadow-sm dark:bg-grey-very-dark tablet:overflow-visible tablet:p-[3.2rem] ${additionalClassNames}`}
     >
       {children}
     </div>
@@ -36,6 +42,7 @@ const GenericModalContainer = ({
   onClose,
   children,
   additionalClassNames,
+  backdropModifications,
 }: ModalProps) => {
   const backdrop = useRef<Element | null>(null);
   const modalOverlay = useRef<Element | null>(null);
@@ -49,7 +56,10 @@ const GenericModalContainer = ({
 
   return mounted && backdrop.current && modalOverlay.current ? (
     <>
-      {ReactDOM.createPortal(<Backdrop onClick={onClose} />, backdrop.current)}
+      {ReactDOM.createPortal(
+        <Backdrop mods={backdropModifications} onClick={onClose} />,
+        backdrop.current
+      )}
       {ReactDOM.createPortal(
         <ModalOverlay
           additionalClassNames={additionalClassNames}

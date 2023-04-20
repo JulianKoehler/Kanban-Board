@@ -6,25 +6,37 @@ import {
   setActiveBoard,
   STATUS,
 } from "@/redux/slices/boardSlice";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddOrEditBoardModal from "../Board/CreateOrEditBoardModal";
 import BoardIcon from "../UI/Icons/BoardIcon";
+import useViewport from "@/hooks/useViewport";
 
-const BoardManager = () => {
+type Props = {
+  onMobileClose?: VoidFunction;
+};
+
+const BoardManager = ({ onMobileClose }: Props) => {
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
   const boardList = useAppSelector(selectBoardList);
   const activeBoard = useAppSelector(selectActiveBoard);
   const status = useAppSelector(selectBoardListStatus);
+  const [isMobile, isTablet] = useViewport();
   const dispatch = useAppDispatch();
 
   const boards = boardList?.map((board, index) => {
     const active = activeBoard?.id === board.id;
+    const maxNameLength = isTablet ? 18 : 20;
+
+    function handleBoardSelection() {
+      dispatch(setActiveBoard(boardList[index]));
+      isMobile ? onMobileClose!() : null;
+    }
 
     return (
       <button
         key={board.id}
-        onClick={() => dispatch(setActiveBoard(boardList[index]))}
-        className={`relative flex gap-[1.6rem] rounded-r-[2.4rem] py-[1.4rem] text-lg font-bold transition-colors duration-300 tablet:left-[-1.2rem] tablet:min-w-[24rem] tablet:pl-[2.4rem] desktop:left-[-2.4rem] desktop:w-[27.6rem] desktop:pl-[3.2rem] ${
+        onClick={handleBoardSelection}
+        className={`relative left-[-2.4rem] flex w-[24rem] gap-[1.6rem] overflow-y-auto overflow-x-hidden whitespace-nowrap rounded-r-[2.4rem] py-[1.4rem] pl-[2.4rem] text-lg font-bold transition-colors duration-300 tablet:left-[-1.2rem] tablet:min-w-[24rem] desktop:left-[-2.4rem] desktop:w-[27.6rem] desktop:pl-[3.2rem] ${
           active && "bg-purple-main fill-white text-white"
         } ${
           !active &&
@@ -32,10 +44,15 @@ const BoardManager = () => {
         }`}
       >
         <BoardIcon />
-        {board.name}
+        {board.name.slice(0, maxNameLength)}
+        {board.name.length >= maxNameLength ? "..." : ""}
       </button>
     );
   });
+
+  function handleBoardCreation() {
+    setShowCreateBoardModal(true);
+  }
 
   return (
     <>
@@ -47,7 +64,7 @@ const BoardManager = () => {
         </h4>
         {boards}
         <button
-          onClick={() => setShowCreateBoardModal(true)}
+          onClick={handleBoardCreation}
           className="flex items-center gap-[1.6rem] fill-purple-main py-[1.4rem] text-lg font-bold text-purple-main tablet:pl-[1.2rem] desktop:pl-3"
         >
           <BoardIcon /> + Create New Board

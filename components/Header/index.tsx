@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { ChangeEventHandler, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
@@ -15,6 +15,8 @@ import LogoLightMode from "@/public/assets/logo-dark.svg";
 import LogoDarkMode from "@/public/assets/logo-light.svg";
 import LogoMobile from "@/public/assets/logo-mobile.svg";
 import AddIcon from "@/public/assets/icon-add-task-mobile.svg";
+import ArrowDown from "@/public/assets/icon-chevron-down.svg";
+import ArrowUp from "@/public/assets/icon-chevron-up.svg";
 import Button from "@/components/UI/Button";
 import OptionsIcon from "@/public/assets/icon-vertical-ellipsis.svg";
 import DropDownContainer from "@/components/UI/DropDown/DropDownContainer";
@@ -25,13 +27,16 @@ import DeletionWarning from "../UI/Modal/DeletionWarning";
 import useHttpRequest from "@/hooks/useHttpRequest";
 import API_URLS from "@/util/API_URLs";
 import useViewport from "@/hooks/useViewport";
+import MobileMenu from "./MobileMenu";
 
 type Props = {
   showSidebar: boolean;
   theme: string;
+  setTheme: React.Dispatch<React.SetStateAction<string>> &
+    ChangeEventHandler<HTMLInputElement>;
 };
 
-const Header = ({ showSidebar, theme }: Props) => {
+const Header = ({ showSidebar, theme, setTheme }: Props) => {
   const dispatch = useAppDispatch();
   const boardList = useAppSelector(selectBoardList);
   const boardDataStatus = useAppSelector(selectBoardDataStatus);
@@ -41,11 +46,12 @@ const Header = ({ showSidebar, theme }: Props) => {
   const [showAddNewTaskModal, setShowAddNewTaskModal] = useState(false);
   const [showEditBoardModal, setShowEditBoardModal] = useState(false);
   const [showDeletionWarning, setShowDeletionWarning] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { showElement: showMenu, setShowElement: setShowMenu } =
     useMenuHandler(menuRef);
   const { isLoading, hasError, deleteData } = useHttpRequest();
   const columnsExist = board?.columns && board?.columns?.length > 0;
-  const isMobile = useViewport();
+  const [isMobile, isTablet] = useViewport();
 
   function handleEditCurrentBoard() {
     setShowEditBoardModal(true);
@@ -79,12 +85,16 @@ const Header = ({ showSidebar, theme }: Props) => {
     setShowAddNewTaskModal(false);
   }
 
+  function onShowMobileMenu() {
+    setShowMobileMenu((bool) => !bool);
+  }
+
   return (
     <>
       <header
         className={`flex ${
           isMobile ? "h-[6.4rem]" : "h-[9.6rem]"
-        } max-w-[100%] items-center justify-start border-b border-lines-light bg-white pr-[2.2rem] pl-[2.4rem] dark:border-lines-dark dark:bg-grey-dark`}
+        } max-w-[100%] items-center justify-start border-b border-lines-light bg-white pr-[0.6rem] pl-[1.6rem] dark:border-lines-dark dark:bg-grey-dark tablet:pr-[2.2rem] tablet:pl-[2.4rem]`}
       >
         {!showSidebar && !isMobile && (
           <div className="flex h-full items-center border-r-[0.1rem] border-lines-light pr-[3.2rem] dark:border-lines-dark">
@@ -100,18 +110,35 @@ const Header = ({ showSidebar, theme }: Props) => {
           </div>
         )}
         <h1
-          className={`font-bold ${isMobile ? "text-xl" : "text-2xl"} ${
-            !showSidebar && !isMobile && "ml-[3.2rem]"
+          className={`font-bold ${
+            isMobile ? "text-xl" : isTablet ? "text-[2rem]" : "text-2xl"
+          } ${!showSidebar && !isTablet && !isMobile && "ml-[3.2rem]"} ${
+            !showSidebar && isTablet && "ml-[2.4rem]"
           }`}
         >
           {activeBoard?.name || ""}
         </h1>
+        {isMobile && (
+          <button
+            className={`flex items-center justify-center p-[0.9rem] ${
+              showMobileMenu ? "" : "mt-[0.5rem]"
+            }`}
+            onClick={onShowMobileMenu}
+          >
+            <Image
+              src={showMobileMenu ? ArrowUp : ArrowDown}
+              alt="Open board manager"
+            />
+          </button>
+        )}
         <div className="relative ml-auto flex gap-[1rem]">
           {boardDataStatus === STATUS.SUCCESS ? (
             <Button
               large
               variant="primary"
-              additionalClassNames={isMobile ? "py-[1rem] px-[1.8rem]" : ""}
+              additionalClassNames={
+                isMobile ? "py-[1rem] px-[1.8rem]" : "px-[2.4rem]"
+              }
               onClick={onAddNewTask}
               disabled={!columnsExist}
             >
@@ -169,6 +196,13 @@ const Header = ({ showSidebar, theme }: Props) => {
           onClose={() => setShowDeletionWarning(false)}
           deleteFunction={handleDeleteCurrentBoard}
           isLoading={isLoading}
+        />
+      )}
+      {showMobileMenu && isMobile && (
+        <MobileMenu
+          theme={theme}
+          setTheme={setTheme}
+          onClose={onShowMobileMenu}
         />
       )}
     </>
