@@ -52,6 +52,7 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
   const { isLoading, hasError, deleteData } = useHttpRequest();
   const columnsExist = board?.columns && board?.columns?.length > 0;
   const [isMobile, isTablet] = useViewport();
+  const maxLengthBoardName = 30;
 
   function handleEditCurrentBoard() {
     setShowEditBoardModal(true);
@@ -116,7 +117,10 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
             !showSidebar && isTablet && "ml-[2.4rem]"
           }`}
         >
-          {activeBoard?.name || ""}
+          {activeBoard?.name.slice(0, maxLengthBoardName) || ""}
+          {activeBoard?.name && activeBoard?.name.length > maxLengthBoardName
+            ? "..."
+            : ""}
         </h1>
         {isMobile && (
           <button
@@ -131,7 +135,7 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
             />
           </button>
         )}
-        <div className="relative ml-auto flex gap-[1rem]">
+        <div className="relative ml-auto flex min-w-fit gap-[1rem]">
           {boardDataStatus === STATUS.SUCCESS ? (
             <Button
               large
