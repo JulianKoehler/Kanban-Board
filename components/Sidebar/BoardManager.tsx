@@ -10,7 +10,6 @@ import { useState } from "react";
 import AddOrEditBoardModal from "../Board/CreateOrEditBoardModal";
 import BoardIcon from "../UI/Icons/BoardIcon";
 import useViewport from "@/hooks/useViewport";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import localStorageIdentifiers from "@/util/localStorageIdentifiers";
 
 type Props = {
