@@ -115,10 +115,14 @@ export const boardSlice = createSlice({
         (column) => column.id === action.payload.status.columnID
       );
 
-      if (oldColumn?.id === newColumn?.id) {
-        oldColumn?.tasks?.find((task) => {
-          task.id === action.payload.id ? (task = action.payload) : null;
-        });
+      const allColumnsFound = oldColumn && newColumn;
+      const statusChanged = oldColumn?.id !== newColumn?.id;
+
+      if (allColumnsFound && !statusChanged) {
+        const taskToBeChanged = oldColumn.tasks!.findIndex(
+          (task) => task.id === action.payload.id
+        );
+        oldColumn.tasks![taskToBeChanged] = action.payload;
         return;
       }
 

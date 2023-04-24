@@ -37,7 +37,7 @@ const Task = ({ currentBoard, task }: Props) => {
     return completedTasks;
   }, 0);
   const taskDescription = task.details.replace(/\n/g, "<br>");
-  let timestamp = task.timestamp;
+  let taskTimestamp = task.timestamp;
 
   function handleEditCurrentBoard() {
     setShowEditTaskModal(true);
@@ -49,7 +49,7 @@ const Task = ({ currentBoard, task }: Props) => {
 
     toast.promise(response, {
       loading: "Sending...",
-      success: `Successfully deleted your task`,
+      success: `Your task has been deleted`,
       error: (err) => `Could not delete your task: ${err.toString()}`,
     });
 
@@ -73,11 +73,11 @@ const Task = ({ currentBoard, task }: Props) => {
   }
 
   async function handleStatusChange(newStatus: IColumn) {
-    timestamp = new Date().getTime();
+    taskTimestamp = new Date().getTime();
 
     const updatedTaskData = {
       ...task,
-      timestamp,
+      timestamp: taskTimestamp,
       subtasks,
       column: newStatus.id,
       status: {

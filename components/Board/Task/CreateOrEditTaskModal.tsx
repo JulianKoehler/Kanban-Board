@@ -195,6 +195,8 @@ const AddOrEditTaskModal = ({
       (subtask) => !subtask.markedForDeletion
     );
 
+    console.log(subtasksNotMarkedForDeletion);
+
     isEditing
       ? dispatch(
           updateExistingTask({
