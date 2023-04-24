@@ -6,10 +6,12 @@ import {
   setActiveBoard,
   STATUS,
 } from "@/redux/slices/boardSlice";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AddOrEditBoardModal from "../Board/CreateOrEditBoardModal";
 import BoardIcon from "../UI/Icons/BoardIcon";
 import useViewport from "@/hooks/useViewport";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import localStorageIdentifiers from "@/util/localStorageIdentifiers";
 
 type Props = {
   onMobileClose?: VoidFunction;
@@ -28,7 +30,15 @@ const BoardManager = ({ onMobileClose }: Props) => {
     const maxNameLength = isTablet ? 18 : 20;
 
     function handleBoardSelection() {
-      dispatch(setActiveBoard(boardList[index]));
+      const newBoard = boardList[index];
+
+      dispatch(setActiveBoard(newBoard));
+
+      localStorage.setItem(
+        localStorageIdentifiers.activeBoard,
+        JSON.stringify(newBoard)
+      );
+
       isMobile ? onMobileClose!() : null;
     }
 

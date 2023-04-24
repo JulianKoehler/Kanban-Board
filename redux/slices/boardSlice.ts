@@ -5,6 +5,7 @@ import axios, { GenericAbortSignal } from "axios";
 import { RootState } from "../store";
 import API_URLS from "@/util/API_URLs";
 import findColumn from "@/util/findColumn";
+import localStorageIdentifiers from "@/util/localStorageIdentifiers";
 
 type UpdatedTask = ITask & {
   oldColumnId: string;
@@ -161,7 +162,14 @@ export const boardSlice = createSlice({
         (state, action: PayloadAction<BoardListItem[]>) => {
           state.boardListStatus = STATUS.SUCCESS;
           state.boardList = action.payload;
-          state.activeBoard = action.payload[0] ?? undefined;
+
+          const lastBoardTouched =
+            JSON.parse(
+              localStorage.getItem(localStorageIdentifiers.activeBoard) ?? ""
+            ) || null;
+          const firstBoard = action.payload[0];
+
+          state.activeBoard = lastBoardTouched ?? firstBoard;
           state.error = undefined;
         }
       )
