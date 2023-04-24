@@ -163,13 +163,15 @@ export const boardSlice = createSlice({
           state.boardListStatus = STATUS.SUCCESS;
           state.boardList = action.payload;
 
-          const lastBoardTouched =
-            JSON.parse(
-              localStorage.getItem(localStorageIdentifiers.activeBoard) ?? ""
-            ) || null;
           const firstBoard = action.payload[0];
+          let lastBoardTouched = localStorage.getItem(
+            localStorageIdentifiers.activeBoard
+          );
 
-          state.activeBoard = lastBoardTouched ?? firstBoard;
+          if (lastBoardTouched) lastBoardTouched = JSON.parse(lastBoardTouched);
+
+          state.activeBoard =
+            (lastBoardTouched as BoardListItem | null) ?? firstBoard;
           state.error = undefined;
         }
       )
