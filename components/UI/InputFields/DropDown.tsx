@@ -17,7 +17,7 @@ const DropDown = ({ task, dropDownOptions, onStatusChange }: Props) => {
     task?.status.name || dropDownOptions[0].name
   );
 
-  async function handleSelectOption(selectedColumn: IColumn) {
+  function handleSelectOption(selectedColumn: IColumn) {
     onStatusChange!(selectedColumn);
     setDisplayedStatus(selectedColumn.name);
     setShowDropDown(false);
@@ -28,14 +28,16 @@ const DropDown = ({ task, dropDownOptions, onStatusChange }: Props) => {
       <button
         type="button"
         onClick={() => setShowDropDown((prevState) => !prevState)}
-        className="flex w-full items-center justify-between rounded-md border-[0.1rem] border-lines-light py-[0.8rem] px-[1.6rem] hover:border-purple-main"
+        className="flex w-full max-w-[85%] items-center justify-between rounded-md border-[0.1rem] border-lines-light py-[0.8rem] px-[1.6rem] hover:border-purple-main"
       >
-        <p className="text-base font-medium">{displayedStatus}</p>
+        <p className="overflow-hidden text-ellipsis whitespace-nowrap text-base font-medium">
+          {displayedStatus}
+        </p>
         <div className="h-4 w-[1.2rem] bg-dropDownArrowDown bg-contain bg-center bg-no-repeat" />
       </button>
       <DropDownContainer
         ref={dropDownRef}
-        additionalClassNames={`absolute transition-all duration-300 transition opacity-0 translate-y-[-1rem] desktop:min-w-[41.6rem] rounded-none rounded-b-xl ${
+        additionalClassNames={`absolute max-w-[85%] transition-all duration-300 transition opacity-0 translate-y-[-1rem] desktop:min-w-[41.6rem] rounded-none rounded-b-xl ${
           showDropDown
             ? "opacity-100 translate-y-[0.5rem]"
             : "pointer-events-none"
@@ -46,7 +48,7 @@ const DropDown = ({ task, dropDownOptions, onStatusChange }: Props) => {
             key={status.id}
             role="option"
             onClick={() => handleSelectOption(status)}
-            className={`px-[1.6rem] py-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800 ${
+            className={`max-w-full overflow-hidden text-ellipsis whitespace-nowrap px-[1.6rem] py-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800 ${
               index === dropDownOptions.length - 1 ? "rounded-b-xl" : ""
             }`}
           >

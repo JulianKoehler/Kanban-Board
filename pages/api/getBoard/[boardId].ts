@@ -110,7 +110,7 @@ async function getAssociatedSubtasks(
   );
 
   /* The following 3 lines of code are only a workaround until there is an index for each existing subtask implemented */
-  if (subtasks[0].index && subtasks[0].index >= 0) {
+  if (subtasks[0]?.index && subtasks[0]?.index >= 0) {
     return subtasks.sort((a: ISubtask, b: ISubtask) => a.index! - b.index!);
   }
 
