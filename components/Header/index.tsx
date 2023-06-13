@@ -8,6 +8,7 @@ import {
   selectBoardDataStatus,
   selectBoardList,
   setActiveBoard,
+  setBoardData,
   setBoardList,
   STATUS,
 } from "@/redux/slices/boardSlice";
@@ -67,6 +68,8 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
     if (!error) {
       localStorage.removeItem(localStorageIdentifiers.activeBoard);
       dispatch(setBoardList([]));
+      dispatch(setActiveBoard(undefined));
+      dispatch(setBoardData(undefined));
       router.push("/authentication/login");
     } else {
       toast.error("Could not logout: " + error);

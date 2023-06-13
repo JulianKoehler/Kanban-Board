@@ -105,7 +105,7 @@ export const boardSlice = createSlice({
     addBoard: (state, action: PayloadAction<BoardListItem>) => {
       state.boardList.push(action.payload);
     },
-    setBoardData: (state, action: PayloadAction<IBoard>) => {
+    setBoardData: (state, action: PayloadAction<IBoard | undefined>) => {
       state.activeBoardData = action.payload;
     },
     updateColumns: (state, action: PayloadAction<IBoard>) => {
