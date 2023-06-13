@@ -17,10 +17,12 @@ import Form from "@/components/UI/Formelements/Form";
 import FormGroup from "@/components/UI/Formelements/FormGroup";
 import H5 from "@/components/UI/Headings/H5";
 import DeleteIcon from "@/components/UI/Icons/DeleteIcon";
-import TextInput from "@/components/UI/InputFields/TextInput";
+import Input from "@/components/UI/InputFields/TextInput";
 import GenericModalContainer from "@/components/UI/Modal/GenericModalContainer";
 import { LoadingSpinner_TailSpin as TailSpin } from "@/components/UI/LoadingSpinner";
 import API_URLS from "@/util/API_URLs";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/firebase/config";
 
 type Props = {
   onClose: VoidFunction;
@@ -29,6 +31,7 @@ type Props = {
 
 const AddOrEditBoardModal = ({ board, onClose }: Props) => {
   const dispatch = useAppDispatch();
+  const [user] = useAuthState(auth);
   const boardList = useAppSelector(selectBoardList);
   const boardIndex = board
     ? board.index
@@ -40,6 +43,7 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [boardName, setBoardName] = useState<string>(board ? board.name : "");
   const boardId = board?.id ?? uuid();
+  const users = isEditMode ? board!.users : { creator: user!.uid };
   const [columns, setColumns] = useState<IColumn[]>(
     isEditMode
       ? (board?.columns as IColumn[])
@@ -47,6 +51,7 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
           {
             id: uuid(),
             index: 0,
+            color: "#49C4E5",
             markedForDeletion: false,
             name: "",
             boardId,
@@ -57,8 +62,8 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
 
   const columnsInputFields = columns.map((column, index) => {
     return column.markedForDeletion ? null : (
-      <div key={column.id} className="relative flex gap-[1.6rem]">
-        <TextInput
+      <div key={column.id} className="relative flex items-center gap-[1.6rem]">
+        <Input
           value={column.name}
           additionalClasses={
             isFormSubmitted && column.name.length < 1 ? "input-error" : ""
@@ -73,6 +78,12 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
         >
           <DeleteIcon />
         </button>
+        <input
+          onChange={(e) => onColorInput(e, index)}
+          className="w-12"
+          type="color"
+          value={column.color}
+        />
         {column.name.length < 1 && isFormSubmitted && (
           <p className="absolute bottom-[0.9rem] right-[4.6rem] text-base font-medium text-red">
             Can't be empty
@@ -98,6 +109,19 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
     });
   }
 
+  function onColorInput(e: React.ChangeEvent<HTMLInputElement>, index: number) {
+    setColumns((prevColumns) => {
+      const columns = [...prevColumns];
+
+      columns[index] = {
+        ...columns[index],
+        color: e.target.value,
+      };
+
+      return columns;
+    });
+  }
+
   function onDeleteColumnInput(index: number) {
     setColumns((prevColumns) => {
       const columns = [...prevColumns];
@@ -117,6 +141,7 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
       {
         id: uuid(),
         name: "",
+        color: "49C4E5",
         markedForDeletion: false,
         index: columns.length,
         boardId,
@@ -146,6 +171,7 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
       id: boardId,
       index: boardIndex,
       columns,
+      users,
     };
 
     const response = sendData(
@@ -175,11 +201,19 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
           id: boardId,
           name: boardName,
           index: boardIndex,
+          userId: auth.currentUser!.uid,
         })
       );
       dispatch(setBoardData(newBoardData));
     } else {
-      dispatch(addBoard(newBoardData));
+      dispatch(
+        addBoard({
+          id: boardId,
+          name: boardName,
+          index: boardIndex,
+          userId: auth.currentUser!.uid,
+        })
+      );
     }
 
     if (!isLoading) {
@@ -188,6 +222,7 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
           name: newBoardData.name,
           id: newBoardData.id,
           index: newBoardData.index,
+          userId: auth.currentUser!.uid,
         })
       );
       onClose();
@@ -205,7 +240,7 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
         </h2>
         <FormGroup>
           <H5>Name</H5>
-          <TextInput
+          <Input
             additionalClasses={
               isFormSubmitted && boardName.length < 1 ? "input-error" : ""
             }

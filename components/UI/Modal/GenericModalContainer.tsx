@@ -31,7 +31,7 @@ const ModalOverlay = ({
 }: ContainerProps) => {
   return (
     <div
-      className={`absolute top-1/2 left-1/2 z-40 flex h-fit max-h-[90%] max-w-[90%] translate-x-[-50%] translate-y-[-50%] flex-col overflow-auto rounded-xl bg-white p-[2.4rem] shadow-sm dark:bg-grey-very-dark tablet:overflow-visible tablet:p-[3.2rem] ${additionalClassNames}`}
+      className={`absolute top-1/2 left-1/2 z-40 flex h-fit max-h-[90%] max-w-[90%] translate-x-[-50%] translate-y-[-50%] flex-col overflow-y-auto rounded-xl bg-white p-[2.4rem] shadow-sm dark:bg-grey-very-dark tablet:overflow-visible tablet:p-[3.2rem] ${additionalClassNames}`}
     >
       {children}
     </div>

@@ -38,7 +38,7 @@ const Button = ({
   return (
     <button
       {...rest}
-      className={`rounded-[2.4rem] px-[1.8rem]  font-bold ${textColor} ${fontSize} ${paddingY} ${width} ${getBgColor()} disabled:opacity-25 ${additionalClassNames}`}
+      className={`rounded-[2.4rem] px-[1.8rem]  font-bold ${textColor} ${fontSize} ${paddingY} ${width} ${getBgColor()} ${additionalClassNames}`}
     >
       {children}
     </button>

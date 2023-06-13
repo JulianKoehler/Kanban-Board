@@ -24,7 +24,7 @@ const Sidebar = ({
   setTheme,
 }: Props) => {
   const logo = theme === "dark" ? LogoDarkMode : LogoLightMode;
-  const [isMobile, isTablet] = useViewport();
+  const [isMobile] = useViewport();
 
   return (
     <>

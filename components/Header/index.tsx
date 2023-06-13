@@ -28,6 +28,11 @@ import useHttpRequest from "@/hooks/useHttpRequest";
 import API_URLS from "@/util/API_URLs";
 import useViewport from "@/hooks/useViewport";
 import MobileMenu from "./MobileMenu";
+import LogoutBtn from "../UI/Button/LogoutBtn";
+import { auth } from "@/firebase/config";
+import { useSignOut } from "react-firebase-hooks/auth";
+import { useRouter } from "next/router";
+import localStorageIdentifiers from "@/util/localStorageIdentifiers";
 
 type Props = {
   showSidebar: boolean;
@@ -38,6 +43,8 @@ type Props = {
 
 const Header = ({ showSidebar, theme, setTheme }: Props) => {
   const dispatch = useAppDispatch();
+  const [signOut, loading, error] = useSignOut(auth);
+  const router = useRouter();
   const boardList = useAppSelector(selectBoardList);
   const boardDataStatus = useAppSelector(selectBoardDataStatus);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -53,6 +60,16 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
   const columnsExist = board?.columns && board?.columns?.length > 0;
   const [isMobile, isTablet] = useViewport();
   const maxLengthBoardName = 30;
+
+  async function handleLogout() {
+    await signOut();
+    if (!error) {
+      localStorage.removeItem(localStorageIdentifiers.activeBoard);
+      router.push("/authentication/login");
+    } else {
+      toast.error("Could not logout: " + error);
+    }
+  }
 
   function handleEditCurrentBoard() {
     setShowEditBoardModal(true);
@@ -75,7 +92,7 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
 
     setShowDeletionWarning(false);
     dispatch(deleteBoardListItem(board!.id));
-    dispatch(setActiveBoard(boardList[0] || null));
+    dispatch(setActiveBoard(boardList[0]));
   }
 
   function onAddNewTask() {
@@ -95,7 +112,7 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
       <header
         className={`flex ${
           isMobile ? "h-[6.4rem]" : "h-[9.6rem]"
-        } max-w-[100%] items-center justify-start border-b border-lines-light bg-white pr-[0.6rem] pl-[1.6rem] dark:border-lines-dark dark:bg-grey-dark tablet:pr-[2.2rem] tablet:pl-[2.4rem]`}
+        } max-w-[100%] items-center justify-start gap-8 border-b border-lines-light bg-white pr-[0.6rem] pl-[1.6rem] dark:border-lines-dark dark:bg-grey-dark tablet:pr-[2.2rem] tablet:pl-[2.4rem]`}
       >
         {!showSidebar && !isMobile && (
           <div className="flex h-full items-center border-r-[0.1rem] border-lines-light pr-[3.2rem] dark:border-lines-dark">
@@ -135,7 +152,13 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
             />
           </button>
         )}
-        <div className="relative ml-auto flex min-w-fit gap-[1rem]">
+        <LogoutBtn
+          showToolTip
+          className="group relative ml-auto text-xl"
+          onClick={handleLogout}
+        />
+
+        <div className="relative flex min-w-fit gap-[1rem]">
           {boardDataStatus === STATUS.SUCCESS ? (
             <Button
               large
@@ -153,7 +176,7 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
             <>
               <button
                 onClick={() => setShowMenu((prevState) => !prevState)}
-                className="px-[1rem]"
+                className="duration 300 rounded-lg px-[1rem] transition-all hover:bg-gray-200"
               >
                 <Image src={OptionsIcon} alt="options" />
               </button>
@@ -195,7 +218,7 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
       )}
       {showDeletionWarning && (
         <DeletionWarning
-          title={board!.name}
+          title={board?.name ?? ""}
           type="board"
           onClose={() => setShowDeletionWarning(false)}
           deleteFunction={handleDeleteCurrentBoard}

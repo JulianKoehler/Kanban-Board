@@ -6,6 +6,7 @@ enum API_URLS {
   deleteBoard = "/api/deleteBoard",
   deleteTask = "/api/deleteTask",
   checkSubtask = "/api/checkSubtask",
+  addColumn = "/api/addColumn",
 }
 
 export default API_URLS;

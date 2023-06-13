@@ -12,7 +12,7 @@ const FormGroup = ({ children, additionalClasses = "", ...rest }: Props) => {
   return (
     <fieldset
       {...rest}
-      className={`relative flex flex-col gap-[1.6rem] ${additionalClasses}`}
+      className={`relative flex max-w-full flex-col gap-[1.6rem] ${additionalClasses}`}
     >
       {children}
     </fieldset>

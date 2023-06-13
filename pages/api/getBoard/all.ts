@@ -1,7 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/firebase/config";
 import { IBoard, IColumn, ITask, ISubtask } from "@/types/data";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  FieldPath,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 
 type Data =
   | {
@@ -20,7 +26,10 @@ export default async function requestHandler(
   }
 
   try {
-    const boards = (await getCollection("boards")) as IBoard[];
+    const boards = (await getCollection(
+      "boards",
+      req.headers.authorization
+    )) as IBoard[];
     const sortedByIndex = boards.sort(
       (a: IBoard, b: IBoard) => a.index - b.index
     );
@@ -28,16 +37,26 @@ export default async function requestHandler(
     res.status(200).json({ boards: sortedByIndex });
   } catch (err) {
     if (err instanceof Error) {
+      console.log(err);
       res.status(502).send(err.message);
     }
   }
 }
 
-async function getCollection(collectionName: string) {
+async function getCollection(
+  collectionName: string,
+  userId: string | undefined
+) {
   const results: Array<CollectionTypes> = [];
 
+  console.log("userID: " + userId);
+
   const collectionRef = collection(db, collectionName);
-  const snapshot = await getDocs(collectionRef);
+  const q = query(
+    collectionRef,
+    where(new FieldPath("users", "creator"), "==", userId)
+  );
+  const snapshot = await getDocs(q);
 
   if (snapshot.empty) {
     return [];

@@ -7,7 +7,7 @@ import useHttpRequest from "@/hooks/useHttpRequest";
 import { IColumn, IStatus, ISubtask, ITask } from "@/types/data";
 import API_URLS from "@/util/API_URLs";
 import GenericModalContainer from "@/components/UI/Modal/GenericModalContainer";
-import TextInput from "@/components/UI/InputFields/TextInput";
+import Input from "@/components/UI/InputFields/TextInput";
 import DeleteIcon from "@/components/UI/Icons/DeleteIcon";
 import Button from "@/components/UI/Button";
 import DropDown from "@/components/UI/InputFields/DropDown";
@@ -67,7 +67,7 @@ const AddOrEditTaskModal = ({
   const subtaskInputFields = subtasks.map((subtask, index) => {
     return subtask.markedForDeletion ? null : (
       <div key={subtask.id} className="relative flex gap-[1.6rem]">
-        <TextInput
+        <Input
           value={subtask.title}
           additionalClasses={
             isFormSubmitted && subtask.title.length < 1 ? "input-error" : ""
@@ -221,7 +221,7 @@ const AddOrEditTaskModal = ({
         </h2>
         <FormGroup>
           <H5>Title</H5>
-          <TextInput
+          <Input
             additionalClasses={
               isFormSubmitted && title.length < 1 ? "input-error" : ""
             }
@@ -244,9 +244,9 @@ const AddOrEditTaskModal = ({
             placeholder="e.g. It's always good to take a break. This 15 minute break will recharge the batteries a little."
           />
         </FormGroup>
-        <FormGroup className="flex flex-col gap-[1.6rem]">
+        <FormGroup>
           <H5>Subtasks</H5>
-          <div className="flex max-h-[9.6rem] flex-col gap-[1.2rem] overflow-y-auto">
+          <div className="max-w- flex max-h-[9.6rem] flex-col gap-[1.2rem] overflow-y-auto">
             {subtaskInputFields}
           </div>
           <Button
@@ -257,7 +257,7 @@ const AddOrEditTaskModal = ({
             + Add New Subtask
           </Button>
         </FormGroup>
-        <FormGroup className="flex flex-col gap-[0.8rem]">
+        <FormGroup>
           <H5>Status</H5>
           <DropDown
             onStatusChange={(selectedColumn) =>

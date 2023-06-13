@@ -13,6 +13,7 @@ export default async function requestHandler(
       await setDoc(doc(db, "boards", req.body.id), {
         name: req.body.name,
         index: req.body.index,
+        users: req.body.users,
       });
 
       for (const column of req.body.columns) {
@@ -23,6 +24,7 @@ export default async function requestHandler(
             board: req.body.id,
             index: column.index,
             name: column.name,
+            color: column.color,
           });
         }
       }

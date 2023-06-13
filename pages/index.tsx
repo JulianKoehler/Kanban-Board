@@ -10,22 +10,42 @@ import {
   selectActiveBoard,
   getActiveBoardData,
   selectError,
+  getBoardList,
 } from "@/redux/slices/boardSlice";
 import { Toaster } from "react-hot-toast";
+import { auth } from "@/firebase/config";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useRouter } from "next/router";
+import { updateProfile } from "firebase/auth";
+import { store } from "@/redux/store";
 
 export default function Kanban() {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const { theme, systemTheme, setTheme } = useTheme();
   const [appIsMounted, setAppIsMounted] = useState(false);
   const activeBoard = useAppSelector(selectActiveBoard);
-  const error = useAppSelector(selectError);
+  const dataError = useAppSelector(selectError);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [user, loading, error] = useAuthState(auth);
+
+  useEffect(() => {
+    if (!user) {
+      router.replace("/authentication/login");
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      store.dispatch(getBoardList(user.uid));
+    }
+  }, [user]);
 
   useEffect(() => {
     const controller = new AbortController();
     const { signal } = controller;
 
-    if (error === undefined) {
+    if (dataError === undefined) {
       dispatch(
         getActiveBoardData({
           id: activeBoard?.id ?? "",
@@ -55,7 +75,7 @@ export default function Kanban() {
   return (
     <>
       <Head>
-        <title>Kanban</title>
+        <title>Your Kanban Task Manager</title>
         <meta
           name="description"
           content="Your kanban app that supports your agile workflow!"

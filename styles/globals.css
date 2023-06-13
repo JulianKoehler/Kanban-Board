@@ -36,3 +36,12 @@ body, html, #__next, .app {
 .input-error {
   border: 1px solid red;
 }
+
+input[type=color]::-webkit-color-swatch {
+  border-radius: 50%;
+  border: none;
+}
+
+input[type=color] {
+  background-color: transparent
+}

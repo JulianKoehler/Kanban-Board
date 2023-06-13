@@ -10,7 +10,7 @@ const Form = ({ children, ...restProps }: Props) => {
   return (
     <form
       autoComplete="off"
-      className="flex flex-col gap-[2.4rem]"
+      className="flex max-w-full flex-col gap-[2.4rem]"
       {...restProps}
     >
       {children}

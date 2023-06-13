@@ -46,6 +46,7 @@ export default async function requestHandler(
       name: board?.name ?? "Board not found",
       index: board?.index,
       columns: columns,
+      users: board?.users,
     });
   } catch (err) {
     console.error(err);

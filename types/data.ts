@@ -5,6 +5,10 @@ export interface IBoard {
   name: string;
   columns?: IColumn[];
   index: number;
+  users: {
+    creator: string;
+    contributors?: string[];
+  };
 }
 
 export interface IColumn {
@@ -12,6 +16,7 @@ export interface IColumn {
   index: number;
   markedForDeletion: boolean;
   name: string;
+  color: string;
   boardId: string;
   tasks?: ITask[];
 }
@@ -38,6 +43,7 @@ export interface BoardListItem {
   id: string;
   name: string;
   index: number;
+  userId: string;
 }
 
 export interface IStatus {

@@ -69,7 +69,7 @@ const BoardManager = ({ onMobileClose }: Props) => {
         <h4 className="mb-8 text-sm font-bold uppercase tracking-wide text-grey-medium tablet:pl-[1.2rem] desktop:pl-3">
           {status === STATUS.LOADING
             ? "loading boards..."
-            : `all boards (${boardList?.length ?? 0})`}
+            : `my boards (${boardList?.length ?? 0})`}
         </h4>
         {boards}
         <button

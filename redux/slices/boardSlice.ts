@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { BoardListItem, IBoard, ITask } from "@/types/data";
+import { BoardListItem, IBoard, IColumn, ITask } from "@/types/data";
 import axios, { GenericAbortSignal } from "axios";
 import { RootState } from "../store";
 import API_URLS from "@/util/API_URLs";
@@ -37,9 +37,14 @@ const initialState: BoardsState = {
 
 export const getBoardList = createAsyncThunk(
   "boards/setInitialBoardList",
-  async () => {
+  async (userId: string) => {
     try {
-      const response = await axios.get(API_URLS.getAllBoards);
+      const response = await axios.get(API_URLS.getAllBoards, {
+        headers: {
+          "Content-Type": "text/plain",
+          authorization: userId,
+        },
+      });
       return response.data.boards;
     } catch (err) {
       if (err instanceof Error) throw new Error("ERR_BOARDLIST");
@@ -74,13 +79,14 @@ export const boardSlice = createSlice({
         (board) => board.id === action.payload.id
       );
 
-      if (boardListItem) {
-        boardListItem.id = action.payload.id;
-        boardListItem.name = action.payload.name;
-        boardListItem.index = action.payload.index;
-      } else {
+      if (!boardListItem) {
         throw new Error(`Boardlist item ${action.payload.name} not found.`);
       }
+
+      boardListItem.id = action.payload.id;
+      boardListItem.name = action.payload.name;
+      boardListItem.index = action.payload.index;
+      boardListItem.userId = action.payload.userId;
     },
     deleteBoardListItem: (state, action: PayloadAction<string>) => {
       state.boardList = state.boardList.filter(
@@ -101,6 +107,9 @@ export const boardSlice = createSlice({
     },
     updateColumns: (state, action: PayloadAction<IBoard>) => {
       state.activeBoardData!.columns = action.payload.columns;
+    },
+    addColumn: (state, action: PayloadAction<IColumn>) => {
+      state.activeBoardData!.columns?.push(action.payload);
     },
     addNewTask: (state, action: PayloadAction<ITask>) => {
       const task = action.payload;
@@ -208,6 +217,7 @@ export const {
   updateBoardList,
   setBoardData,
   updateColumns,
+  addColumn,
   deleteBoardListItem,
   addNewTask,
   updateExistingTask,

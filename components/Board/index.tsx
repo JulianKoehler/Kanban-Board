@@ -14,15 +14,20 @@ import {
   STATUS,
 } from "@/redux/slices/boardSlice";
 import ErrorFeedback from "../UI/UserFeedback/ErrorFeedback";
+import AddColumn from "./AddColumn";
+import { auth } from "@/firebase/config";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const Board = () => {
+  const [user, loading, error] = useAuthState(auth);
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
+  const [showAddColumnModal, setShowAddColumnModal] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const boardData = useAppSelector(selectactiveBoardData);
   const boardDataStatus = useAppSelector(selectBoardDataStatus);
   const boardListStatus = useAppSelector(selectBoardListStatus);
   const activeBoard = useAppSelector(selectActiveBoard);
-  const error = useAppSelector(selectError);
+  const dataError = useAppSelector(selectError);
   const [errorHeaderMessage, setErrorHeaderMessage] = useState<
     undefined | string
   >();
@@ -33,21 +38,21 @@ const Board = () => {
   console.log(boardData);
 
   useEffect(() => {
-    if (error) setShowErrorMessage(true);
+    if (dataError) setShowErrorMessage(true);
 
-    if (error === "ERR_BOARDLIST") {
+    if (dataError === "ERR_BOARDLIST") {
       setErrorHeaderMessage("Failed to load Boardlist!");
       setErrorDescriptionMessage(
         "We are sorry, but currently we are not able to load your boards. Please try again later."
       );
     }
-    if (error === "ERR_BOARDDATA") {
+    if (dataError === "ERR_BOARDDATA") {
       setErrorHeaderMessage("Failed to load this Board!");
       setErrorDescriptionMessage(
         "We are sorry, but currently we are not able to load this board. Please try again later."
       );
     }
-  }, [error]);
+  }, [dataError]);
 
   return (
     <>
@@ -73,7 +78,7 @@ const Board = () => {
             ))}
             {boardData?.columns?.length! >= 1 ? (
               <div
-                onClick={() => setShowCreateBoardModal(true)}
+                onClick={() => setShowAddColumnModal(true)}
                 className="mt-[4rem] flex min-w-[28rem] cursor-pointer items-center justify-center rounded-[0.6rem] bg-gradient-to-b from-[#E9EFFA] to-[#e9effa80] text-2xl font-bold text-grey-medium hover:text-purple-main dark:from-[#2b2c3740] dark:to-[#2b2c3721]"
               >
                 + New Column
@@ -86,7 +91,11 @@ const Board = () => {
                     : "You don't have any boards. Create one to get started."}
                 </p>
                 <Button
-                  onClick={() => setShowCreateBoardModal(true)}
+                  onClick={() => {
+                    activeBoard
+                      ? setShowAddColumnModal(true)
+                      : setShowCreateBoardModal(true);
+                  }}
                   variant="primary"
                   large
                 >
@@ -98,10 +107,10 @@ const Board = () => {
         )}
       </main>
       {showCreateBoardModal && (
-        <AddOrEditBoardModal
-          onClose={() => setShowCreateBoardModal(false)}
-          board={boardData}
-        />
+        <AddOrEditBoardModal onClose={() => setShowCreateBoardModal(false)} />
+      )}
+      {showAddColumnModal && (
+        <AddColumn onClose={() => setShowAddColumnModal(false)} />
       )}
     </>
   );

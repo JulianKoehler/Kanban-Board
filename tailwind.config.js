@@ -31,7 +31,8 @@ module.exports = {
         margin: "margin",
       },
       boxShadow: {
-        "md-dark": " 0px 4px 6px rgba(54, 78, 126, 0.101545);",
+        "md-dark": "0px 4px 6px rgba(54, 78, 126, 0.101545);",
+        "md-light": "rgba(0, 0, 0, 0.2) 0px 11px 34px",
       },
       backgroundImage: {
         checkIcon: "url('/assets/icon-check.svg')",
@@ -49,6 +50,7 @@ module.exports = {
       desktop: "1060px",
     },
     fontSize: {
+      "3xl": ["3rem", "5rem"],
       "2xl": ["2.4rem", "3rem"],
       xl: ["1.8rem", "2.3rem"],
       lg: ["1.5rem", "1.9rem"],
