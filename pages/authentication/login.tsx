@@ -4,7 +4,9 @@ import FormGroup from "@/components/UI/Formelements/FormGroup";
 import Input from "@/components/UI/InputFields/TextInput";
 import { LoadingSpinner_TailSpin } from "@/components/UI/LoadingSpinner";
 import { auth } from "@/firebase/config";
-import logo from "@/public/assets/logo-dark.svg";
+import LogoLightMode from "@/public/assets/logo-dark.svg";
+import LogoDarkMode from "@/public/assets/logo-light.svg";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -16,6 +18,7 @@ type Props = {};
 
 const Login = (props: Props) => {
   const router = useRouter();
+  const { theme } = useTheme();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [signInWithEmailAndPassword, user, loading, error] =
@@ -58,10 +61,10 @@ const Login = (props: Props) => {
       <AuthCard className="flex-col items-center gap-4">
         <Link href="/">
           <Image
-            src={logo.src}
+            src={theme === "dark" ? LogoDarkMode.src : LogoLightMode.src}
             alt="kanban"
-            width={logo.width + 100}
-            height={logo.height}
+            width={LogoLightMode.width + 100}
+            height={LogoLightMode.height}
           />
         </Link>
         <h1 className="my-10 text-3xl font-bold tracking-[-0.1rem]">

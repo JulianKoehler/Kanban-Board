@@ -16,7 +16,6 @@ import { Toaster } from "react-hot-toast";
 import { auth } from "@/firebase/config";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
-import { updateProfile } from "firebase/auth";
 import { store } from "@/redux/store";
 
 export default function Kanban() {
@@ -30,13 +29,14 @@ export default function Kanban() {
   const [user, loading, error] = useAuthState(auth);
 
   useEffect(() => {
-    if (!user) {
+    if (!user && !loading) {
       router.replace("/authentication/login");
     }
   }, [user]);
 
   useEffect(() => {
     if (user) {
+      console.log(user);
       store.dispatch(getBoardList(user.uid));
     }
   }, [user]);
@@ -45,14 +45,18 @@ export default function Kanban() {
     const controller = new AbortController();
     const { signal } = controller;
 
-    if (dataError === undefined) {
+    (function fetchActiveBoardData() {
+      if (dataError !== undefined || !activeBoard) {
+        return;
+      }
+
       dispatch(
         getActiveBoardData({
           id: activeBoard?.id ?? "",
           signal,
         })
       );
-    }
+    })();
 
     return () => {
       controller.abort();

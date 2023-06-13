@@ -92,7 +92,7 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
 
     setShowDeletionWarning(false);
     dispatch(deleteBoardListItem(board!.id));
-    dispatch(setActiveBoard(boardList[0]));
+    dispatch(setActiveBoard(boardList.length === 1 ? undefined : boardList[0]));
   }
 
   function onAddNewTask() {

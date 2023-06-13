@@ -96,7 +96,10 @@ export const boardSlice = createSlice({
         state.activeBoardData = undefined;
       }
     },
-    setActiveBoard: (state, action: PayloadAction<BoardListItem>) => {
+    setActiveBoard: (
+      state,
+      action: PayloadAction<BoardListItem | undefined>
+    ) => {
       state.activeBoard = action.payload;
     },
     addBoard: (state, action: PayloadAction<BoardListItem>) => {
@@ -204,6 +207,7 @@ export const boardSlice = createSlice({
         if (action.error.message === "canceled") {
           return;
         }
+        console.log("error: " + action.error.message);
         state.boardDataStatus = STATUS.FAILED;
         state.error = "ERR_BOARDDATA";
       });
