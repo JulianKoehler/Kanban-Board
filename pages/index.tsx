@@ -32,7 +32,7 @@ export default function Kanban() {
     if (!user && !loading) {
       router.replace("/authentication/login");
     }
-  }, [user]);
+  }, [user, loading]);
 
   useEffect(() => {
     if (user) {
