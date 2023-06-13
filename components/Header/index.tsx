@@ -8,6 +8,7 @@ import {
   selectBoardDataStatus,
   selectBoardList,
   setActiveBoard,
+  setBoardList,
   STATUS,
 } from "@/redux/slices/boardSlice";
 import Image from "next/image";
@@ -65,6 +66,7 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
     await signOut();
     if (!error) {
       localStorage.removeItem(localStorageIdentifiers.activeBoard);
+      dispatch(setBoardList([]));
       router.push("/authentication/login");
     } else {
       toast.error("Could not logout: " + error);
