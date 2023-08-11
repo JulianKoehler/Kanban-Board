@@ -36,7 +36,6 @@ export default function Kanban() {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
       store.dispatch(getBoardList(user.uid));
     }
   }, [user]);

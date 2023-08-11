@@ -8,32 +8,37 @@ import logo from "@/public/assets/logo-dark.svg";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FormEvent, useRef } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { useSendPasswordResetEmail } from "react-firebase-hooks/auth";
 import { Toaster, toast } from "react-hot-toast";
 
-type Props = {};
-
-const resetPassword = (props: Props) => {
+const resetPassword = () => {
   const router = useRouter();
-  const emailRef = useRef<HTMLInputElement>(null);
+  const [email, setEmail] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
+  const emailInputError = email.trim().length < 1;
   const [sendPasswordResetEmail, sending, error] =
     useSendPasswordResetEmail(auth);
 
+  const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    setEmailTouched(true);
+  };
+
   async function forgotPasswordHandler(e: FormEvent) {
     e.preventDefault();
+    setEmailTouched(true);
 
-    const response = sendPasswordResetEmail(emailRef.current!.value);
+    if (email === "") return;
 
-    toast.promise(response, {
-      loading: "Sending...",
-      success: "Email sent! Check your inbox.",
-      error: "Could not send email, please try again later.",
-    });
+    try {
+      sendPasswordResetEmail(email);
+      toast.success("Mail sent, please check your inbox!");
+    } catch (error) {
+      if (error instanceof Error) toast.error(error.message);
+    }
 
-    await response;
-
-    router.push("/authentication/login");
+    if (!error) router.push("/authentication/login");
   }
 
   return (
@@ -63,24 +68,37 @@ const resetPassword = (props: Props) => {
           Reset your password
         </h1>
         <p className="w-[40rem] text-center">
-          We will send you an email to your email address containig a link where
-          you can reset your password.
+          We will send you a message to your email address containig a link
+          where you can reset your password.
         </p>
         <form
           method="post"
           onSubmit={forgotPasswordHandler}
           className="mt-12 flex w-full max-w-[36rem] flex-col gap-4"
         >
-          <FormGroup additionalClasses="gap-1">
+          <FormGroup additionalClasses="gap-1 relative">
             <label
               htmlFor="email"
               className="text-lg font-bold text-grey-medium"
             >
               Your Email
             </label>
-            <Input type="email" id="email" name="email" ref={emailRef} />
+            <Input
+              type="email"
+              id="email"
+              name="email"
+              value={email}
+              onChange={onChangeHandler}
+            />
+            {emailInputError && emailTouched && (
+              <sub className="absolute right-4 bottom-8 text-red">
+                Please provide your email
+              </sub>
+            )}
           </FormGroup>
-          <Button>Submit</Button>
+          <Button additionalClassNames="flex justify-center">
+            {sending ? LoadingSpinner_TailSpin : "Submit"}
+          </Button>
         </form>
       </AuthCard>
     </>

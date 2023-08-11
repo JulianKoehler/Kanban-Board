@@ -14,9 +14,7 @@ import React, { FormEvent, useEffect, useRef } from "react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { Toaster, toast } from "react-hot-toast";
 
-type Props = {};
-
-const Login = (props: Props) => {
+const Login = () => {
   const router = useRouter();
   const { theme } = useTheme();
   const emailRef = useRef<HTMLInputElement>(null);
@@ -34,8 +32,6 @@ const Login = (props: Props) => {
   }
 
   useEffect(() => {
-    console.log(user);
-
     if (user) {
       router.push("/");
     }
@@ -105,14 +101,14 @@ const Login = (props: Props) => {
             {loading ? LoadingSpinner_TailSpin : "Sign in"}
           </Button>
         </form>
-        <div className="mt-6 flex w-full flex-col gap-7">
+        <div className="relative mt-6 flex w-full flex-col gap-7">
           <Link
             href="/authentication/reset_password"
-            className="w-full pr-[4.8em] text-right font-bold text-purple-main"
+            className="w-full pl-[4.8em] text-left font-bold text-purple-main"
           >
             Forgot password?
           </Link>
-          <div className="w-full pl-[4.8em] text-left">
+          <div className="absolute -bottom-48 left-1/2 -translate-x-1/2">
             New to kanban?{" "}
             <Link
               href="/authentication/signup"
