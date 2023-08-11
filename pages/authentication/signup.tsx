@@ -28,7 +28,7 @@ const Signup = (props: Props) => {
     useCreateUserWithEmailAndPassword(auth);
   const [sendEmailVerification] = useSendEmailVerification(auth);
 
-  async function signInHandler(e: FormEvent) {
+  async function signUpHandler(e: FormEvent) {
     e.preventDefault();
 
     if (passwordRef.current!.value !== confirmedPasswordRef.current!.value) {
@@ -94,7 +94,7 @@ const Signup = (props: Props) => {
         </h1>
         <form
           method="post"
-          onSubmit={signInHandler}
+          onSubmit={signUpHandler}
           className="flex w-full max-w-[36rem] flex-col gap-4"
         >
           <FormGroup additionalClasses="gap-1">

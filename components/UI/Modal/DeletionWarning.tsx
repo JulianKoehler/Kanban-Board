@@ -4,9 +4,9 @@ import GenericModalContainer from "./GenericModalContainer";
 import { LoadingSpinner_TailSpin as Tailspin } from "@/components/UI/LoadingSpinner";
 
 type Props = {
-  type: "board" | "task";
+  type: "board" | "task" | "user";
   title: string;
-  isLoading: boolean;
+  isLoading?: boolean;
   deleteFunction: VoidFunction;
   onClose: VoidFunction;
 };
@@ -24,6 +24,8 @@ const DeletionWarning = ({
         return `Are you sure you want to delete the "${title}" board? This action will remove all columns and tasks and cannot be reversed.`;
       case "task":
         return `Are you sure you want to delete the "${title}" task and its subtasks? This action cannot be reversed.`;
+      case "user":
+        return "Do you really want to delete your account? You will lose access to all of your boards, also the ones you created!";
     }
   }
 

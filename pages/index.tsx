@@ -109,6 +109,7 @@ export default function Kanban() {
           showSidebar={showSidebar}
           theme={currentTheme!}
           setTheme={handleThemeChange}
+          user={user!}
         />
         <Board />
       </div>

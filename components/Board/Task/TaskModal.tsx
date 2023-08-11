@@ -24,7 +24,7 @@ type Props = {
   subtaskList?: ISubtask[];
 };
 
-const AddOrEditTaskModal = ({
+const TaskModal = ({
   onClose,
   statusOptions,
   task = undefined,
@@ -72,12 +72,12 @@ const AddOrEditTaskModal = ({
           additionalClasses={
             isFormSubmitted && subtask.title.length < 1 ? "input-error" : ""
           }
-          onChange={(e) => handleSubtaskInput(e, index)}
+          onChange={handleSubtaskInput(index)}
           placeholder="e.g. Make coffee"
         />
         <button
           type="button"
-          onClick={() => onDeleteSubtaskInput(index)}
+          onClick={onDeleteSubtaskInput(index)}
           className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
         >
           <DeleteIcon />
@@ -91,39 +91,39 @@ const AddOrEditTaskModal = ({
     );
   });
 
-  function handleSubtaskInput(
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) {
-    setSubtasks((prevSubtasks) => {
-      const subtasks = [...prevSubtasks!];
+  function handleSubtaskInput(index: number) {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSubtasks((prevSubtasks) => {
+        const subtasks = [...prevSubtasks!];
 
-      subtasks[index] = {
-        ...subtasks[index],
-        title: e.target.value,
-      };
+        subtasks[index] = {
+          ...subtasks[index],
+          title: e.target.value,
+        };
 
-      return subtasks;
-    });
+        return subtasks;
+      });
+    };
   }
 
   function onDeleteSubtaskInput(index: number) {
-    if (subtasks.length <= 1) return; // There should always be at least 1 input field visible
-    setSubtasks((prevSubtasks) => {
-      const subtasks = [...prevSubtasks!];
+    return () => {
+      setSubtasks((prevSubtasks) => {
+        const subtasks = [...prevSubtasks!];
 
-      subtasks[index] = {
-        ...subtasks[index],
-        markedForDeletion: true,
-      };
+        subtasks[index] = {
+          ...subtasks[index],
+          markedForDeletion: true,
+        };
 
-      return subtasks;
-    });
+        return subtasks;
+      });
+    };
   }
 
   function onAddNewSubtaskInput() {
     setSubtasks((prevSubtasks) => [
-      ...prevSubtasks!,
+      ...prevSubtasks,
       {
         id: uuid(),
         index: subtasks.length,
@@ -152,9 +152,7 @@ const AddOrEditTaskModal = ({
       }
     });
     const isFormValid = checkFormValidity(toBeValidated);
-    if (!isFormValid) {
-      return;
-    }
+    if (!isFormValid) return;
 
     if (isEditing && currentColumnId !== status.columnID) {
       timestamp = new Date().getTime();
@@ -187,9 +185,7 @@ const AddOrEditTaskModal = ({
 
     await response;
 
-    if (hasError) {
-      return;
-    }
+    if (hasError) return;
 
     const subtasksNotMarkedForDeletion = subtasks.filter(
       (subtask) => !subtask.markedForDeletion
@@ -200,7 +196,7 @@ const AddOrEditTaskModal = ({
           updateExistingTask({
             ...newTaskData,
             subtasks: subtasksNotMarkedForDeletion,
-            oldColumnId: currentColumnId!,
+            oldColumnId: currentColumnId,
           })
         )
       : dispatch(
@@ -284,4 +280,4 @@ const AddOrEditTaskModal = ({
   );
 };
 
-export default AddOrEditTaskModal;
+export default TaskModal;

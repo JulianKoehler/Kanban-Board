@@ -7,7 +7,7 @@ import {
   STATUS,
 } from "@/redux/slices/boardSlice";
 import { useState } from "react";
-import AddOrEditBoardModal from "../Board/CreateOrEditBoardModal";
+import BoardModal from "../Board/BoardModal";
 import BoardIcon from "../UI/Icons/BoardIcon";
 import useViewport from "@/hooks/useViewport";
 import localStorageIdentifiers from "@/util/localStorageIdentifiers";
@@ -80,7 +80,7 @@ const BoardManager = ({ onMobileClose }: Props) => {
         </button>
       </div>
       {showCreateBoardModal && (
-        <AddOrEditBoardModal onClose={() => setShowCreateBoardModal(false)} />
+        <BoardModal onClose={() => setShowCreateBoardModal(false)} />
       )}
     </>
   );

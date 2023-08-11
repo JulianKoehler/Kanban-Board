@@ -8,7 +8,7 @@ import Subtask from "../Subtask";
 import DropDownContainer from "../../UI/DropDown/DropDownContainer";
 import DropDown from "../../UI/InputFields/DropDown";
 import useMenuHandler from "@/hooks/useMenuHandler";
-import AddOrEditTaskModal from "./CreateOrEditTaskModal";
+import TaskModal from "./TaskModal";
 import DeletionWarning from "@/components/UI/Modal/DeletionWarning";
 import useHttpRequest from "@/hooks/useHttpRequest";
 import API_URLS from "@/util/API_URLs";
@@ -89,8 +89,7 @@ const Task = ({ currentBoard, task }: Props) => {
     await sendData("PATCH", API_URLS.addOrEditTask, updatedTaskData);
 
     if (!isLoading && hasError) {
-      // For now I am generating an alert, want to replace it with Push Notes soon
-      window.alert("Could not change the status! Check the console.");
+      toast.error("Could not update the task status.");
     }
 
     if (!isLoading && !hasError) {
@@ -193,7 +192,7 @@ const Task = ({ currentBoard, task }: Props) => {
         </GenericModalContainer>
       )}
       {showEditTaskModal && (
-        <AddOrEditTaskModal
+        <TaskModal
           task={task}
           statusOptions={currentBoard.columns!}
           subtaskList={subtasks}

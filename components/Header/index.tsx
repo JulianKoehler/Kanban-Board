@@ -23,8 +23,8 @@ import Button from "@/components/UI/Button";
 import OptionsIcon from "@/public/assets/icon-vertical-ellipsis.svg";
 import DropDownContainer from "@/components/UI/DropDown/DropDownContainer";
 import useMenuHandler from "@/hooks/useMenuHandler";
-import AddOrEditTaskModal from "../Board/Task/CreateOrEditTaskModal";
-import AddOrEditBoardModal from "../Board/CreateOrEditBoardModal";
+import TaskModal from "../Board/Task/TaskModal";
+import BoardModal from "../Board/BoardModal";
 import DeletionWarning from "../UI/Modal/DeletionWarning";
 import useHttpRequest from "@/hooks/useHttpRequest";
 import API_URLS from "@/util/API_URLs";
@@ -32,33 +32,44 @@ import useViewport from "@/hooks/useViewport";
 import MobileMenu from "./MobileMenu";
 import LogoutBtn from "../UI/Button/LogoutBtn";
 import { auth } from "@/firebase/config";
-import { useSignOut } from "react-firebase-hooks/auth";
+import { useDeleteUser, useSignOut } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
 import localStorageIdentifiers from "@/util/localStorageIdentifiers";
+import { User } from "firebase/auth";
+import Avatar from "../UI/Avatar";
+import { SlLogout } from "react-icons/sl";
+import { TiUserDelete } from "react-icons/ti";
 
 type Props = {
   showSidebar: boolean;
   theme: string;
   setTheme: React.Dispatch<React.SetStateAction<string>> &
     ChangeEventHandler<HTMLInputElement>;
+  user: User;
 };
 
-const Header = ({ showSidebar, theme, setTheme }: Props) => {
+const Header = ({ showSidebar, theme, setTheme, user }: Props) => {
   const dispatch = useAppDispatch();
   const [signOut, loading, error] = useSignOut(auth);
   const router = useRouter();
   const boardList = useAppSelector(selectBoardList);
   const boardDataStatus = useAppSelector(selectBoardDataStatus);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const boardMenuRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const board = useAppSelector(selectactiveBoardData);
   const activeBoard = useAppSelector(selectActiveBoard);
   const [showAddNewTaskModal, setShowAddNewTaskModal] = useState(false);
   const [showEditBoardModal, setShowEditBoardModal] = useState(false);
-  const [showDeletionWarning, setShowDeletionWarning] = useState(false);
+  const [showDeleteBoardWarning, setShowDeleteBoardWarning] = useState(false);
+  const [showDeleteAccountWarning, setShowDeleteAccountWarning] =
+    useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const { showElement: showMenu, setShowElement: setShowMenu } =
-    useMenuHandler(menuRef);
+  const { showElement: showBoardMenu, setShowElement: setShowBoardMenu } =
+    useMenuHandler(boardMenuRef);
+  const { showElement: showUserMenu, setShowElement: setShowUserMenu } =
+    useMenuHandler(userMenuRef);
   const { isLoading, hasError, deleteData } = useHttpRequest();
+  const [deleteUser, loads, err] = useDeleteUser(auth);
   const columnsExist = board?.columns && board?.columns?.length > 0;
   const [isMobile, isTablet] = useViewport();
   const maxLengthBoardName = 30;
@@ -95,9 +106,13 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
       throw new Error("Something went wrong.");
     }
 
-    setShowDeletionWarning(false);
+    setShowDeleteBoardWarning(false);
     dispatch(deleteBoardListItem(board!.id));
     dispatch(setActiveBoard(boardList.length === 1 ? undefined : boardList[0]));
+  }
+
+  async function handleAccountDeletion() {
+    await deleteUser();
   }
 
   function onAddNewTask() {
@@ -157,13 +172,8 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
             />
           </button>
         )}
-        <LogoutBtn
-          showToolTip
-          className="group relative ml-auto text-xl"
-          onClick={handleLogout}
-        />
 
-        <div className="relative flex min-w-fit gap-[1rem]">
+        <div className="relative ml-auto flex min-w-fit items-center gap-[1rem]">
           {boardDataStatus === STATUS.SUCCESS ? (
             <Button
               large
@@ -180,15 +190,15 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
           {boardDataStatus === STATUS.SUCCESS && (
             <>
               <button
-                onClick={() => setShowMenu((prevState) => !prevState)}
-                className="duration 300 rounded-lg px-[1rem] transition-all hover:bg-gray-200"
+                onClick={() => setShowBoardMenu((prevState) => !prevState)}
+                className="duration 300 rounded-full p-[1rem] transition-all hover:bg-gray-200"
               >
                 <Image src={OptionsIcon} alt="options" />
               </button>
-              {showMenu && (
+              {showBoardMenu && (
                 <DropDownContainer
                   additionalClassNames="absolute right-0 top-[6rem]"
-                  ref={menuRef}
+                  ref={boardMenuRef}
                 >
                   <button
                     onClick={handleEditCurrentBoard}
@@ -198,7 +208,7 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
                   </button>
 
                   <button
-                    onClick={() => setShowDeletionWarning(true)}
+                    onClick={() => setShowDeleteBoardWarning(true)}
                     className="rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
                     Delete Board
@@ -207,27 +217,53 @@ const Header = ({ showSidebar, theme, setTheme }: Props) => {
               )}
             </>
           )}
+          <Avatar onClick={() => setShowUserMenu(true)} user={user} />
+          {showUserMenu && (
+            <DropDownContainer
+              additionalClassNames="absolute right-0 top-[6rem]"
+              ref={userMenuRef}
+            >
+              <button
+                onClick={handleLogout}
+                className="flex w-full items-center rounded-t-xl px-[1.6rem] pt-[1.6rem] pb-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                Logout <SlLogout className="ml-3 text-purple-main" />
+              </button>
+              <button
+                onClick={() => setShowDeleteAccountWarning(true)}
+                className="flex items-center rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                Delete Account <TiUserDelete className="ml-3" />
+              </button>
+            </DropDownContainer>
+          )}
         </div>
       </header>
       {showAddNewTaskModal && (
-        <AddOrEditTaskModal
-          statusOptions={board?.columns!}
-          onClose={onCloseNewTask}
-        />
+        <TaskModal statusOptions={board?.columns!} onClose={onCloseNewTask} />
       )}
       {showEditBoardModal && (
-        <AddOrEditBoardModal
+        <BoardModal
           board={board}
           onClose={() => setShowEditBoardModal(false)}
         />
       )}
-      {showDeletionWarning && (
+      {showDeleteBoardWarning && (
         <DeletionWarning
           title={board?.name ?? ""}
           type="board"
-          onClose={() => setShowDeletionWarning(false)}
+          onClose={() => setShowDeleteBoardWarning(false)}
           deleteFunction={handleDeleteCurrentBoard}
           isLoading={isLoading}
+        />
+      )}
+      {showDeleteAccountWarning && (
+        <DeletionWarning
+          title={""}
+          type="user"
+          onClose={() => setShowDeleteAccountWarning(false)}
+          deleteFunction={handleAccountDeletion}
+          isLoading={loads}
         />
       )}
       {showMobileMenu && isMobile && (

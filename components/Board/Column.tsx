@@ -4,10 +4,9 @@ import React from "react";
 type Props = {
   children?: React.ReactNode;
   column: IColumn;
-  index: number;
 };
 
-const Column = ({ column, index, children }: Props) => {
+const Column = ({ column, children }: Props) => {
   return (
     <div className="h-fit min-w-[28rem] max-w-[28rem]">
       <div className="flex gap-3">

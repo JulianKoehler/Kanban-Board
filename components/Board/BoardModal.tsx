@@ -29,7 +29,7 @@ type Props = {
   board?: IBoard;
 };
 
-const AddOrEditBoardModal = ({ board, onClose }: Props) => {
+const BoardModal = ({ board, onClose }: Props) => {
   const dispatch = useAppDispatch();
   const [user] = useAuthState(auth);
   const boardList = useAppSelector(selectBoardList);
@@ -279,4 +279,4 @@ const AddOrEditBoardModal = ({ board, onClose }: Props) => {
   );
 };
 
-export default AddOrEditBoardModal;
+export default BoardModal;

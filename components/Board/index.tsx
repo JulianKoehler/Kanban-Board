@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Button from "../UI/Button";
-import AddOrEditBoardModal from "./CreateOrEditBoardModal";
+import BoardModal from "./BoardModal";
 import Column from "./Column";
 import Task from "./Task";
 import { LoadingSpinner_ThreeDots as LoadingSpinner } from "@/components/UI/LoadingSpinner";
@@ -15,11 +15,8 @@ import {
 } from "@/redux/slices/boardSlice";
 import ErrorFeedback from "../UI/UserFeedback/ErrorFeedback";
 import AddColumn from "./AddColumn";
-import { auth } from "@/firebase/config";
-import { useAuthState } from "react-firebase-hooks/auth";
 
 const Board = () => {
-  const [user, loading, error] = useAuthState(auth);
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
   const [showAddColumnModal, setShowAddColumnModal] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -34,8 +31,6 @@ const Board = () => {
   const [errorDescriptionMessage, setErrorDescriptionMessage] = useState<
     undefined | string
   >();
-
-  console.log(boardData);
 
   useEffect(() => {
     if (dataError) setShowErrorMessage(true);
@@ -70,7 +65,7 @@ const Board = () => {
         ) : (
           <>
             {boardData?.columns?.map((column, index) => (
-              <Column key={column.id} column={column} index={index}>
+              <Column key={column.id} column={column}>
                 {column.tasks?.map((task) => (
                   <Task key={task.id} currentBoard={boardData} task={task} />
                 ))}
@@ -107,7 +102,7 @@ const Board = () => {
         )}
       </main>
       {showCreateBoardModal && (
-        <AddOrEditBoardModal onClose={() => setShowCreateBoardModal(false)} />
+        <BoardModal onClose={() => setShowCreateBoardModal(false)} />
       )}
       {showAddColumnModal && (
         <AddColumn onClose={() => setShowAddColumnModal(false)} />
