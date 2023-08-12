@@ -30,7 +30,6 @@ import useHttpRequest from "@/hooks/useHttpRequest";
 import API_URLS from "@/util/API_URLs";
 import useViewport from "@/hooks/useViewport";
 import MobileMenu from "./MobileMenu";
-import LogoutBtn from "../UI/Button/LogoutBtn";
 import { auth } from "@/firebase/config";
 import { useDeleteUser, useSignOut } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
@@ -50,7 +49,7 @@ type Props = {
 
 const Header = ({ showSidebar, theme, setTheme, user }: Props) => {
   const dispatch = useAppDispatch();
-  const [signOut, loading, error] = useSignOut(auth);
+  const [signOut, signingOut, error] = useSignOut(auth);
   const router = useRouter();
   const boardList = useAppSelector(selectBoardList);
   const boardDataStatus = useAppSelector(selectBoardDataStatus);
@@ -113,6 +112,7 @@ const Header = ({ showSidebar, theme, setTheme, user }: Props) => {
 
   async function handleAccountDeletion() {
     await deleteUser();
+    if (err) console.log(err.cause);
   }
 
   function onAddNewTask() {

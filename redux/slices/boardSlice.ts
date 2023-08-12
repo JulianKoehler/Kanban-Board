@@ -54,7 +54,7 @@ export const getBoardList = createAsyncThunk(
 
 export const getActiveBoardData = createAsyncThunk(
   "boards/getActiveBoardData",
-  async ({ id, signal }: { id: string; signal: GenericAbortSignal }) => {
+  async ({ id, signal }: { id: string; signal: AbortSignal }) => {
     try {
       const response = await axios.get(API_URLS.getSpecificBoard + id, {
         signal: signal,

@@ -5,7 +5,6 @@ import Input from "@/components/UI/InputFields/TextInput";
 import { LoadingSpinner_TailSpin } from "@/components/UI/LoadingSpinner";
 import { auth } from "@/firebase/config";
 import logo from "@/public/assets/logo-dark.svg";
-import { updateProfile } from "firebase/auth";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -13,12 +12,11 @@ import React, { FormEvent, useEffect, useRef } from "react";
 import {
   useCreateUserWithEmailAndPassword,
   useSendEmailVerification,
+  useUpdateProfile,
 } from "react-firebase-hooks/auth";
 import { Toaster, toast } from "react-hot-toast";
 
-type Props = {};
-
-const Signup = (props: Props) => {
+const Signup = () => {
   const router = useRouter();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -27,6 +25,7 @@ const Signup = (props: Props) => {
   const [createUserWithEmailAndPassword, user, loading, error] =
     useCreateUserWithEmailAndPassword(auth);
   const [sendEmailVerification] = useSendEmailVerification(auth);
+  const [updateProfile, updating, updateError] = useUpdateProfile(auth);
 
   async function signUpHandler(e: FormEvent) {
     e.preventDefault();
@@ -36,35 +35,28 @@ const Signup = (props: Props) => {
       return;
     }
 
-    try {
-      await createUserWithEmailAndPassword(
-        emailRef.current!.value,
-        passwordRef.current!.value
-      );
-      await sendEmailVerification();
+    await createUserWithEmailAndPassword(
+      emailRef.current!.value,
+      passwordRef.current!.value
+    );
+    if (error) toast.error("Could not create account, please try again later!");
 
-      if (auth.currentUser) {
-        await updateProfile(auth.currentUser, {
-          displayName: userNameRef.current!.value,
-        });
-      }
-    } catch (err) {
-      console.log(err);
-    }
+    await sendEmailVerification();
   }
 
   useEffect(() => {
-    if (user) {
-      toast.success(
-        "Welcome to kanban! We have sent you a verification email."
-      );
-      router.push("/");
-    }
+    (async () => {
+      if (user) {
+        const displayName = userNameRef!.current!.value;
+        await updateProfile({ displayName });
 
-    if (error) {
-      toast.error("Failed to Sign up: " + error);
-    }
-  }, [user, error]);
+        toast.success(
+          `Welcome to kanban, ${displayName}! We have sent you a verification email.`
+        );
+        router.push("/");
+      }
+    })();
+  }, [user]);
 
   return (
     <>

@@ -29,20 +29,13 @@ export default function Kanban() {
   const [user, loading, error] = useAuthState(auth);
 
   useEffect(() => {
-    if (!user && !loading) {
-      router.replace("/authentication/login");
-    }
+    !user && !loading && router.replace("/authentication/login");
+    user && store.dispatch(getBoardList(user.uid));
   }, [user, loading]);
 
   useEffect(() => {
-    if (user) {
-      store.dispatch(getBoardList(user.uid));
-    }
-  }, [user]);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const { signal } = controller;
+    const abortController = new AbortController();
+    const { signal } = abortController;
 
     (function fetchActiveBoardData() {
       if (dataError !== undefined || !activeBoard) {
@@ -58,7 +51,7 @@ export default function Kanban() {
     })();
 
     return () => {
-      controller.abort();
+      abortController.abort();
     };
   }, [activeBoard]);
 
