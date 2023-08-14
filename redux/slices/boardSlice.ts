@@ -183,7 +183,7 @@ export const boardSlice = createSlice({
           if (lastBoardTouched) lastBoardTouched = JSON.parse(lastBoardTouched);
 
           state.activeBoard =
-            (lastBoardTouched as BoardListItem | null) ?? firstBoard;
+            (lastBoardTouched as BoardListItem | null) ?? firstBoard ?? null;
           state.error = undefined;
         }
       )

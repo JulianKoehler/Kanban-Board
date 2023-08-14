@@ -1,6 +1,6 @@
 /**
  * This route is for getting a specific board including all its columns, the columns tasks
- * and the tasks subtasks. The board ID determine wich data to load. Thereafter the columns,
+ * and the tasks subtasks. The board ID determines wich data to load. Thereafter the columns,
  * will be queried that are connected to this board. This methodology is continuing until we reach
  * the subtasks, which are within a subcollection of each task document.
  */

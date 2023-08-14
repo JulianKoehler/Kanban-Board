@@ -65,7 +65,7 @@ const BoardModal = ({ board, onClose }: Props) => {
       <div key={column.id} className="relative flex items-center gap-[1.6rem]">
         <Input
           value={column.name}
-          additionalClasses={
+          className={
             isFormSubmitted && column.name.length < 1 ? "input-error" : ""
           }
           onChange={(e) => handleColumnInput(e, index)}
@@ -166,7 +166,7 @@ const BoardModal = ({ board, onClose }: Props) => {
       return;
     }
 
-    const newBoardData = {
+    const newBoardData: IBoard = {
       name: boardName,
       id: boardId,
       index: boardIndex,
@@ -241,7 +241,7 @@ const BoardModal = ({ board, onClose }: Props) => {
         <FormGroup>
           <H5>Name</H5>
           <Input
-            additionalClasses={
+            className={
               isFormSubmitted && boardName.length < 1 ? "input-error" : ""
             }
             value={boardName}
