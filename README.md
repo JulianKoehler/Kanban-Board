@@ -34,12 +34,6 @@ The data fetching is being managed by RTK Query since it offers a great package 
 Allthough I know that I would not need the NextJS API Routes per se, I wanted to separate concerns and created a seperate API Route for each task to perform. These endpoints are then reaching out to the actual firebase database.
 
 
-
-## Demo
-
-Insert gif or link to demo
-
-
 ## Deployment
 
 Check out the live Version via the following Link:
