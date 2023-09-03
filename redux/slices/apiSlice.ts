@@ -8,7 +8,7 @@ import {
 } from "@/types/data/board.model";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const BASE_URL = "https://kanban-board-jet.vercel.app/api/"
+const BASE_URL = "https://kanban-board-mpov22cnq-juliankoehler.vercel.app/api/"
 // const BASE_URL = "http://localhost:3000/api/";
 
 export const boardApi = createApi({
