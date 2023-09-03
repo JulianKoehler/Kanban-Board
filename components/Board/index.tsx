@@ -5,26 +5,33 @@ import Column from "./Column";
 import Task from "./Task";
 import { LoadingSpinner_ThreeDots as LoadingSpinner } from "@/components/UI/LoadingSpinner";
 import { useAppSelector } from "@/redux/hooks";
-import {
-  selectActiveBoard,
-  selectactiveBoardData,
-  selectBoardDataStatus,
-  selectBoardListStatus,
-  selectError,
-  STATUS,
-} from "@/redux/slices/boardSlice";
+import { selectActiveBoard } from "@/redux/slices/boardSlice";
 import ErrorFeedback from "../UI/UserFeedback/ErrorFeedback";
 import AddColumn from "./AddColumn";
+import { BoardDataProps } from "@/types/component-props/board.model";
+import {
+  useGetBoardDataQuery,
+  useGetBoardListQuery,
+} from "@/redux/slices/apiSlice";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { selectUser } from "@/redux/slices/authSlice";
+import NoBoardData from "./NoBoardData";
 
-const Board = () => {
+const Board = ({ isSuccessBoardList, errorBoardList }: BoardDataProps) => {
+  const activeBoard = useAppSelector(selectActiveBoard);
+  const user = useAppSelector(selectUser);
+  const { data: boardList } = useGetBoardListQuery(user?.uid ?? "");
+  const {
+    data: boardData,
+    isLoading: isLoadingBoardData,
+    error: errorBoardData,
+    refetch: fetchNewBoardData,
+  } = useGetBoardDataQuery(activeBoard?.id ? activeBoard?.id : skipToken);
+
   const [showCreateBoardModal, setShowCreateBoardModal] = useState(false);
   const [showAddColumnModal, setShowAddColumnModal] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const boardData = useAppSelector(selectactiveBoardData);
-  const boardDataStatus = useAppSelector(selectBoardDataStatus);
-  const boardListStatus = useAppSelector(selectBoardListStatus);
-  const activeBoard = useAppSelector(selectActiveBoard);
-  const dataError = useAppSelector(selectError);
+  const dataError = !!errorBoardData || !!errorBoardList;
   const [errorHeaderMessage, setErrorHeaderMessage] = useState<
     undefined | string
   >();
@@ -33,15 +40,19 @@ const Board = () => {
   >();
 
   useEffect(() => {
+    activeBoard && fetchNewBoardData();
+  }, [activeBoard]);
+
+  useEffect(() => {
     if (dataError) setShowErrorMessage(true);
 
-    if (dataError === "ERR_BOARDLIST") {
+    if (errorBoardList) {
       setErrorHeaderMessage("Failed to load Boardlist!");
       setErrorDescriptionMessage(
         "We are sorry, but currently we are not able to load your boards. Please try again later."
       );
     }
-    if (dataError === "ERR_BOARDDATA") {
+    if (errorBoardData) {
       setErrorHeaderMessage("Failed to load this Board!");
       setErrorDescriptionMessage(
         "We are sorry, but currently we are not able to load this board. Please try again later."
@@ -54,9 +65,9 @@ const Board = () => {
       <main
         className={`relative flex h-[calc(100vh-6.4rem)] gap-[2.4rem] overflow-auto bg-grey-light px-[1.6rem] pt-[2.4rem] dark:bg-grey-very-dark tablet:h-[calc(100vh-9.6rem)] tablet:pl-[2.4rem] tablet:pb-40`}
       >
-        {boardDataStatus === STATUS.LOADING ? (
+        {isLoadingBoardData ? (
           <div className="m-auto">{LoadingSpinner}</div>
-        ) : boardListStatus === STATUS.FAILED && showErrorMessage ? (
+        ) : errorBoardList && showErrorMessage ? (
           <ErrorFeedback
             header={errorHeaderMessage}
             description={errorDescriptionMessage}
@@ -64,7 +75,7 @@ const Board = () => {
           />
         ) : (
           <>
-            {boardData?.columns?.map((column, index) => (
+            {boardData?.columns?.map((column) => (
               <Column key={column.id} column={column}>
                 {column.tasks?.map((task) => (
                   <Task key={task.id} currentBoard={boardData} task={task} />
@@ -78,25 +89,13 @@ const Board = () => {
               >
                 + New Column
               </div>
-            ) : boardListStatus === STATUS.SUCCESS ? (
-              <div className="m-auto flex flex-col items-center justify-between gap-[4.7rem]">
-                <p className="text-center text-xl font-bold text-grey-medium">
-                  {activeBoard
-                    ? "This board is empty. Create a new column to get started."
-                    : "You don't have any boards. Create one to get started."}
-                </p>
-                <Button
-                  onClick={() => {
-                    activeBoard
-                      ? setShowAddColumnModal(true)
-                      : setShowCreateBoardModal(true);
-                  }}
-                  variant="primary"
-                  large
-                >
-                  {activeBoard ? "+ Add New Column" : "+ Create New Board"}
-                </Button>
-              </div>
+            ) : isSuccessBoardList ? (
+              <NoBoardData
+                activeBoard={activeBoard}
+                boardList={boardList}
+                setShowAddColumnModal={setShowAddColumnModal}
+                setShowCreateBoardModal={setShowCreateBoardModal}
+              />
             ) : null}
           </>
         )}
@@ -105,7 +104,10 @@ const Board = () => {
         <BoardModal onClose={() => setShowCreateBoardModal(false)} />
       )}
       {showAddColumnModal && (
-        <AddColumn onClose={() => setShowAddColumnModal(false)} />
+        <AddColumn
+          onClose={() => setShowAddColumnModal(false)}
+          boardData={boardData}
+        />
       )}
     </>
   );

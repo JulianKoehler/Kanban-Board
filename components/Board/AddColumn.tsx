@@ -4,23 +4,19 @@ import Form from "../UI/Formelements/Form";
 import H5 from "../UI/Headings/H5";
 import Input from "../UI/InputFields/TextInput";
 import Button from "../UI/Button";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import useHttpRequest from "@/hooks/useHttpRequest";
-import API_URLS from "@/util/API_URLs";
-import { addColumn, selectactiveBoardData } from "@/redux/slices/boardSlice";
 import { toast } from "react-hot-toast";
 import uuid from "react-uuid";
-import { IColumn } from "@/types/data";
+import { IBoard, IColumn } from "@/types/data/board.model";
 import { LoadingSpinner_TailSpin } from "../UI/LoadingSpinner";
+import { useCreateColumnMutation } from "@/redux/slices/apiSlice";
 
 type Props = {
   onClose: () => void;
+  boardData: IBoard | undefined;
 };
 
-const AddColumn = ({ onClose }: Props) => {
-  const dispatch = useAppDispatch();
-  const { sendData, isLoading, hasError } = useHttpRequest();
-  const boardData = useAppSelector(selectactiveBoardData);
+const AddColumn = ({ onClose, boardData }: Props) => {
+  const [createNewColumn, result] = useCreateColumnMutation();
   const [color, setColor] = useState("#67E2AE");
   const nameRef = useRef<HTMLInputElement>(null);
 
@@ -36,21 +32,15 @@ const AddColumn = ({ onClose }: Props) => {
       markedForDeletion: false,
     };
 
-    const response = sendData("POST", API_URLS.addColumn, newColumn);
+    const response = createNewColumn(newColumn);
 
     toast.promise(response, {
       loading: "Sending...",
       success: "Column has been added!",
-      error: (err) => `Could not add column: ${err.toString()}`,
+      error: (err) => `Could not add column: ${result.error}`,
     });
 
     await response;
-
-    if (hasError) {
-      throw new Error("Something went wrong.");
-    }
-
-    dispatch(addColumn(newColumn));
     onClose();
   }
 
@@ -71,7 +61,9 @@ const AddColumn = ({ onClose }: Props) => {
             onChange={(e) => setColor(e.target.value)}
           />
         </div>
-        <Button>{isLoading ? LoadingSpinner_TailSpin : "Add Column"}</Button>
+        <Button>
+          {result.isLoading ? LoadingSpinner_TailSpin : "Add Column"}
+        </Button>
       </Form>
     </GenericModalContainer>
   );

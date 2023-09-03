@@ -2,7 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/firebase/config";
 import { doc, setDoc } from "firebase/firestore";
 
-type Response = string;
+type Response = {
+  message: string;
+};
 
 export default async function requestHandler(
   req: NextApiRequest,
@@ -20,11 +22,15 @@ export default async function requestHandler(
       name: req.body.name,
     });
 
-    res.status(200).send("Successfully added the column");
+    res.status(200).send({
+      message: "Successfully added the column",
+    });
   } catch (err) {
     if (err instanceof Error) {
       console.log(err.message);
-      res.status(500).send(err.message);
+      res.status(500).send({
+        message: err.message,
+      });
     }
   }
 }

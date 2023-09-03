@@ -1,20 +1,11 @@
 import Image from "next/image";
 import UnhideIcon from "@/public/assets/icon-show-sidebar.svg";
-import { ChangeEventHandler } from "react";
 import LogoLightMode from "@/public/assets/logo-dark.svg";
 import LogoDarkMode from "@/public/assets/logo-light.svg";
 import ThemeSwitcher from "@/components/UI/ThemeSwitch";
 import HideIcon from "../UI/Icons/HideIcon";
 import useViewport from "@/hooks/useViewport";
-
-type Props = {
-  boardManager: React.ReactNode;
-  showSidebar: boolean;
-  setShowSidebar: React.Dispatch<React.SetStateAction<boolean>>;
-  theme: string;
-  setTheme: React.Dispatch<React.SetStateAction<string>> &
-    ChangeEventHandler<HTMLInputElement>;
-};
+import { SidebarProps } from "@/types/component-props/sidebar.model";
 
 const Sidebar = ({
   boardManager,
@@ -22,7 +13,7 @@ const Sidebar = ({
   setShowSidebar,
   theme,
   setTheme,
-}: Props) => {
+}: SidebarProps) => {
   const logo = theme === "dark" ? LogoDarkMode : LogoLightMode;
   const [isMobile] = useViewport();
 

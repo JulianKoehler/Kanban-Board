@@ -1,17 +1,7 @@
-import useHttpRequest from "@/hooks/useHttpRequest";
-import { ISubtask } from "@/types/data";
-import API_URLS from "@/util/API_URLs";
-import React, { useState } from "react";
-
-type Props = {
-  checked: boolean;
-  id: string;
-  index: number;
-  title: string;
-  taskId: string;
-  markedForDeletion: boolean;
-  updateSubtask: (updatedSubtask: ISubtask) => void;
-};
+import React, { useEffect, useState } from "react";
+import { SubtaskProps } from "@/types/component-props/Subtask.model";
+import { useMarkSubtaskMutation } from "@/redux/slices/apiSlice";
+import { toast } from "react-hot-toast";
 
 const Subtask = ({
   checked,
@@ -21,9 +11,9 @@ const Subtask = ({
   title,
   taskId,
   updateSubtask,
-}: Props) => {
+}: SubtaskProps) => {
   const [isCompleted, setIsCompleted] = useState(checked);
-  const { sendData } = useHttpRequest();
+  const [toggleSubtask, result] = useMarkSubtaskMutation();
 
   function handleCheck() {
     setIsCompleted((completed) => !completed);
@@ -42,12 +32,16 @@ const Subtask = ({
       isCompleted: !isCompleted,
     });
 
-    sendData("PATCH", API_URLS.checkSubtask, {
+    toggleSubtask({
       taskId,
       subtaskId: id,
       isCompleted: !isCompleted,
     });
   }
+
+  useEffect(() => {
+    if (result.isError) toast.error("Could not update Subtask");
+  }, [result.isError]);
 
   return (
     <div

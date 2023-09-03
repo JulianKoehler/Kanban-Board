@@ -9,9 +9,8 @@ interface Props extends HTMLProps<HTMLDivElement> {
 }
 
 const Avatar = ({ user, className = "", ...props }: Props) => {
-  const userNameArray = user?.displayName?.split(" ");
-
   function getUserInitials() {
+    const userNameArray = user?.displayName?.split(" ");
     return userNameArray
       ? userNameArray![0].charAt(0).concat(userNameArray![1].charAt(0))
       : "";
@@ -20,7 +19,7 @@ const Avatar = ({ user, className = "", ...props }: Props) => {
   return (
     <div
       className={cn(
-        "flex h-[4rem] w-[4rem] cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-blue-500 font-bold tracking-[0.08rem] text-white",
+        "neumorphism tracking-tight flex h-[4rem] w-[4rem] cursor-pointer items-center justify-center rounded-full font-bold text-white",
         className
       )}
       {...props}

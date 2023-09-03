@@ -6,54 +6,40 @@ import Header from "@/components/Header";
 import BoardManager from "@/components/Sidebar/BoardManager";
 import Board from "@/components/Board";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import {
-  selectActiveBoard,
-  getActiveBoardData,
-  selectError,
-  getBoardList,
-} from "@/redux/slices/boardSlice";
 import { Toaster } from "react-hot-toast";
 import { auth } from "@/firebase/config";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
-import { store } from "@/redux/store";
+import { useGetBoardListQuery } from "@/redux/slices/apiSlice";
+import { selectActiveBoard } from "@/redux/slices/boardSlice";
+import BoardList from "@/components/Sidebar/BoardManager/BoardList";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { login } from "@/redux/slices/authSlice";
 
 export default function Kanban() {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const [user, loadingUser] = useAuthState(auth);
   const { theme, systemTheme, setTheme } = useTheme();
-  const [appIsMounted, setAppIsMounted] = useState(false);
-  const activeBoard = useAppSelector(selectActiveBoard);
-  const dataError = useAppSelector(selectError);
   const [showSidebar, setShowSidebar] = useState(true);
-  const [user, loading, error] = useAuthState(auth);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [appIsMounted, setAppIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState<boolean | undefined>();
+  const activeBoard = useAppSelector(selectActiveBoard);
+
+  const {
+    data: boardList,
+    isFetching: isLoadingBoardList,
+    error: errorBoardList,
+    isSuccess: isSuccessBoardList,
+    refetch: refetchBoardList,
+  } = useGetBoardListQuery(user?.uid ? user?.uid : skipToken);
 
   useEffect(() => {
-    !user && !loading && router.replace("/authentication/login");
-    user && store.dispatch(getBoardList(user.uid));
-  }, [user, loading]);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    const { signal } = abortController;
-
-    (function fetchActiveBoardData() {
-      if (dataError !== undefined || !activeBoard) {
-        return;
-      }
-
-      dispatch(
-        getActiveBoardData({
-          id: activeBoard?.id ?? "",
-          signal,
-        })
-      );
-    })();
-
-    return () => {
-      abortController.abort();
-    };
-  }, [activeBoard]);
+    const serializedUser = JSON.parse(JSON.stringify(user));
+    !user && !loadingUser && router.replace("/login");
+    user && dispatch(login(serializedUser)) && refetchBoardList();
+  }, [user, loadingUser]);
 
   /* Avoid hydration mismatch */
   useEffect(() => {
@@ -68,13 +54,17 @@ export default function Kanban() {
     setTheme(currentTheme === "dark" ? "light" : "dark");
   }
 
+  function onToggleMobileMenu() {
+    setShowMobileMenu((bool) => !bool);
+  }
+
   return (
     <>
       <Head>
-        <title>Your Kanban Task Manager</title>
+        <title>{activeBoard?.name || "Your Kanban Task Manager"}</title>
         <meta
           name="description"
-          content="Your kanban app that supports your agile workflow!"
+          content="Your kanban app that supports your agile workflow."
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -84,7 +74,18 @@ export default function Kanban() {
         setTheme={handleThemeChange}
         showSidebar={showSidebar}
         setShowSidebar={setShowSidebar}
-        boardManager={<BoardManager />}
+        boardManager={
+          <BoardManager
+            boardListLength={boardList?.length ?? 0}
+            isLoading={isLoadingBoardList}
+          >
+            <BoardList
+              boardList={boardList}
+              refetchBoardList={refetchBoardList}
+              onMobileClose={() => null}
+            />
+          </BoardManager>
+        }
       />
       <div className="w-full overflow-hidden">
         <div>
@@ -102,9 +103,31 @@ export default function Kanban() {
           showSidebar={showSidebar}
           theme={currentTheme!}
           setTheme={handleThemeChange}
-          user={user!}
+          onToggleMobileMenu={onToggleMobileMenu}
+          showMobileMenu={showMobileMenu}
+          setIsMobile={(isMobile: boolean) => setIsMobile(isMobile)}
+          boardList={boardList}
+          isLoadingBoardList={isLoadingBoardList}
+          isSuccessBoardList={isSuccessBoardList}
+        >
+          {isMobile && (
+            <BoardManager
+              boardListLength={boardList?.length ?? 0}
+              isLoading={isLoadingBoardList}
+            >
+              <BoardList
+                boardList={boardList}
+                refetchBoardList={refetchBoardList}
+                onMobileClose={onToggleMobileMenu}
+              />
+            </BoardManager>
+          )}
+        </Header>
+        <Board
+          key={activeBoard?.id}
+          isSuccessBoardList={isSuccessBoardList}
+          errorBoardList={errorBoardList}
         />
-        <Board />
       </div>
     </>
   );

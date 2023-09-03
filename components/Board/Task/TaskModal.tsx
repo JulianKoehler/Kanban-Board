@@ -1,39 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import uuid from "react-uuid";
 import toast from "react-hot-toast";
-import { useAppDispatch } from "@/redux/hooks";
-import { addNewTask, updateExistingTask } from "@/redux/slices/boardSlice";
-import useHttpRequest from "@/hooks/useHttpRequest";
-import { IColumn, IStatus, ISubtask, ITask } from "@/types/data";
-import API_URLS from "@/util/API_URLs";
+import { IColumn, IStatus, ISubtask, ITask } from "@/types/data/board.model";
 import GenericModalContainer from "@/components/UI/Modal/GenericModalContainer";
 import Input from "@/components/UI/InputFields/TextInput";
-import DeleteIcon from "@/components/UI/Icons/DeleteIcon";
 import Button from "@/components/UI/Button";
-import DropDown from "@/components/UI/InputFields/DropDown";
+import DropDown from "@/components/UI/DropDown/DropDown";
 import H5 from "@/components/UI/Headings/H5";
 import Form from "@/components/UI/Formelements/Form";
 import FormGroup from "@/components/UI/Formelements/FormGroup";
 import checkFormValidity from "@/util/checkFormValidity";
 import { LoadingSpinner_TailSpin as TailSpin } from "@/components/UI/LoadingSpinner";
-
-type Props = {
-  statusOptions: IColumn[];
-  task?: ITask;
-  onClose: VoidFunction;
-  subtaskList?: ISubtask[];
-};
+import { TaskModalProps } from "@/types/component-props/taskModal.model";
+import {
+  useCreateTaskMutation,
+  useUpdateTaskMutation,
+} from "@/redux/slices/apiSlice";
+import SubtaskInputArea from "../Subtask/SubtaskInputArea";
 
 const TaskModal = ({
   onClose,
   statusOptions,
   task = undefined,
   subtaskList = undefined,
-}: Props) => {
-  const dispatch = useAppDispatch();
+}: TaskModalProps) => {
+  const [createTask, createResult] = useCreateTaskMutation();
+  const [updateTask, updateResult] = useUpdateTaskMutation();
   const isEditing = task ? true : false;
   const currentColumnId = task?.column ?? statusOptions[0].id;
-  const { isLoading, hasError, sendData } = useHttpRequest();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const taskID = task?.id ?? uuid();
   let timestamp = task?.timestamp ?? new Date().getTime();
@@ -52,87 +46,10 @@ const TaskModal = ({
           },
         ]
   );
-  const [status, setStatus] = useState<IStatus>(
-    task
-      ? {
-          name: task.status.name,
-          columnID: task.status.columnID,
-        }
-      : {
-          name: statusOptions[0].name,
-          columnID: statusOptions[0].id,
-        }
-  );
-
-  const subtaskInputFields = subtasks.map((subtask, index) => {
-    return subtask.markedForDeletion ? null : (
-      <div key={subtask.id} className="relative flex gap-[1.6rem]">
-        <Input
-          value={subtask.title}
-          additionalClasses={
-            isFormSubmitted && subtask.title.length < 1 ? "input-error" : ""
-          }
-          onChange={handleSubtaskInput(index)}
-          placeholder="e.g. Make coffee"
-        />
-        <button
-          type="button"
-          onClick={onDeleteSubtaskInput(index)}
-          className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
-        >
-          <DeleteIcon />
-        </button>
-        {subtask.title.length < 1 && isFormSubmitted && (
-          <p className="absolute bottom-[0.9rem] right-[4.6rem] text-base font-medium text-red">
-            Can't be empty
-          </p>
-        )}
-      </div>
-    );
+  const [status, setStatus] = useState<IStatus>({
+    name: task?.status?.name ?? statusOptions[0].name,
+    columnID: task?.status?.columnID ?? statusOptions[0].id,
   });
-
-  function handleSubtaskInput(index: number) {
-    return (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSubtasks((prevSubtasks) => {
-        const subtasks = [...prevSubtasks!];
-
-        subtasks[index] = {
-          ...subtasks[index],
-          title: e.target.value,
-        };
-
-        return subtasks;
-      });
-    };
-  }
-
-  function onDeleteSubtaskInput(index: number) {
-    return () => {
-      setSubtasks((prevSubtasks) => {
-        const subtasks = [...prevSubtasks!];
-
-        subtasks[index] = {
-          ...subtasks[index],
-          markedForDeletion: true,
-        };
-
-        return subtasks;
-      });
-    };
-  }
-
-  function onAddNewSubtaskInput() {
-    setSubtasks((prevSubtasks) => [
-      ...prevSubtasks,
-      {
-        id: uuid(),
-        index: subtasks.length,
-        title: "",
-        isCompleted: false,
-        markedForDeletion: false,
-      },
-    ]);
-  }
 
   function handleStatusChange(selectedColumn: IColumn) {
     setStatus({
@@ -168,46 +85,26 @@ const TaskModal = ({
       subtasks,
     };
 
-    const response = sendData(
-      isEditing ? "PATCH" : "POST",
-      API_URLS.addOrEditTask,
-      newTaskData
-    );
-
-    toast.promise(response, {
-      loading: "Sending...",
-      success: `Your task has been ${isEditing ? "updated" : "created"}!`,
-      error: (err) =>
-        `Could not ${
-          isEditing ? "update" : "create"
-        } your task: ${err.toString()}`,
-    });
-
-    await response;
-
-    if (hasError) return;
-
-    const subtasksNotMarkedForDeletion = subtasks.filter(
-      (subtask) => !subtask.markedForDeletion
-    );
-
-    isEditing
-      ? dispatch(
-          updateExistingTask({
-            ...newTaskData,
-            subtasks: subtasksNotMarkedForDeletion,
-            oldColumnId: currentColumnId,
-          })
-        )
-      : dispatch(
-          addNewTask({
-            ...newTaskData,
-            subtasks: subtasksNotMarkedForDeletion,
-          })
-        );
-
-    onClose();
+    if (isEditing) {
+      const response = updateTask(newTaskData).unwrap();
+      toast.promise(response, {
+        loading: "Updating your task...",
+        success: "Your task has been updated.",
+        error: () => `Your task could not be updated: ${updateResult.error}`
+      })
+    } else {
+      const response = createTask(newTaskData).unwrap();
+      toast.promise(response, {
+        loading: "Creating your task...",
+        success: "Your task has been created.",
+        error: () => `Your task could not be created: ${createResult.error}`
+      })
+    }
   }
+
+  useEffect(() => {
+    (createResult.isSuccess || updateResult.isSuccess) && onClose()
+  }, [createResult.isSuccess, updateResult.isSuccess])
 
   return (
     <GenericModalContainer additionalClassNames="w-[48rem] max-h-[71rem]">
@@ -218,9 +115,7 @@ const TaskModal = ({
         <FormGroup>
           <H5>Title</H5>
           <Input
-            additionalClasses={
-              isFormSubmitted && title.length < 1 ? "input-error" : ""
-            }
+            className={isFormSubmitted && title.length < 1 ? "input-error" : ""}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Take coffee break"
@@ -243,15 +138,12 @@ const TaskModal = ({
         <FormGroup>
           <H5>Subtasks</H5>
           <div className="max-w- flex max-h-[9.6rem] flex-col gap-[1.2rem] overflow-y-auto">
-            {subtaskInputFields}
+            <SubtaskInputArea
+              subtasks={subtasks}
+              setSubtasks={setSubtasks}
+              isFormSubmitted={isFormSubmitted}
+            />
           </div>
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onAddNewSubtaskInput}
-          >
-            + Add New Subtask
-          </Button>
         </FormGroup>
         <FormGroup>
           <H5>Status</H5>
@@ -267,9 +159,11 @@ const TaskModal = ({
           <Button
             type="submit"
             variant="primary"
-            additionalClassNames="flex justify-center"
+            className="flex justify-center"
           >
-            {isLoading ? TailSpin : isEditing ? "Save Changes" : "Create Task"}
+            {/* {isLoading ? TailSpin : isEditing ? "Save Changes" : "Create Task"} */}
+            {!isEditing && (createResult.isLoading ? TailSpin : "Create Task")}
+            {isEditing && (updateResult.isLoading ? TailSpin : "Update Task")}
           </Button>
           <Button onClick={onClose} type="button" variant="secondary">
             {isEditing ? "Discard Changes" : "Cancel"}

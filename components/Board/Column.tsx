@@ -1,12 +1,7 @@
-import { IColumn } from "@/types/data";
+import { ColumnProps } from "@/types/component-props/column.model";
 import React from "react";
 
-type Props = {
-  children?: React.ReactNode;
-  column: IColumn;
-};
-
-const Column = ({ column, children }: Props) => {
+const Column = ({ column, children }: ColumnProps) => {
   return (
     <div className="h-fit min-w-[28rem] max-w-[28rem]">
       <div className="flex gap-3">

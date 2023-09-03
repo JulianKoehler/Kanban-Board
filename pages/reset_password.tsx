@@ -38,7 +38,7 @@ const resetPassword = () => {
       if (error instanceof Error) toast.error(error.message);
     }
 
-    if (!error) router.push("/authentication/login");
+    if (!error) router.push("/login");
   }
 
   return (
@@ -96,7 +96,7 @@ const resetPassword = () => {
               </sub>
             )}
           </FormGroup>
-          <Button additionalClassNames="flex justify-center">
+          <Button className="flex justify-center">
             {sending ? LoadingSpinner_TailSpin : "Submit"}
           </Button>
         </form>

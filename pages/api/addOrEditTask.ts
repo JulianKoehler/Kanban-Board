@@ -2,7 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/firebase/config";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
 
-type Response = string;
+type Response = {
+  message: string;
+};
 
 export default async function requestHandler(
   req: NextApiRequest,
@@ -19,12 +21,6 @@ export default async function requestHandler(
         status: req.body.status,
       });
 
-      if (req.body.subtasks.length < 1) {
-        throw new Error(
-          "No Subtasks provided. Please specify at least 1 subtask."
-        );
-      }
-
       for (const subtask of req.body.subtasks) {
         if (subtask.markedForDeletion) {
           await deleteDoc(
@@ -40,10 +36,14 @@ export default async function requestHandler(
         }
       }
 
-      res.status(200).send("Successfully set/updated the task");
+      res.status(200).send({
+        message: "Successfully set/updated the task",
+      });
     } catch (err) {
       if (err instanceof Error) {
-        res.status(500).send(err.message);
+        res.status(500).send({
+          message: err.message,
+        });
       }
     }
   } else {

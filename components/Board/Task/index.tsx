@@ -1,35 +1,30 @@
 import toast from "react-hot-toast";
-import { IBoard, ITask, ISubtask, IColumn } from "@/types/data";
+import { ISubtask, IColumn } from "@/types/data/board.model";
 import Image from "next/image";
 import OptionsIcon from "@/public/assets/icon-vertical-ellipsis.svg";
 import { useEffect, useRef, useState } from "react";
 import GenericModalContainer from "@/components/UI/Modal/GenericModalContainer";
 import Subtask from "../Subtask";
 import DropDownContainer from "../../UI/DropDown/DropDownContainer";
-import DropDown from "../../UI/InputFields/DropDown";
+import DropDown from "../../UI/DropDown/DropDown";
 import useMenuHandler from "@/hooks/useMenuHandler";
 import TaskModal from "./TaskModal";
 import DeletionWarning from "@/components/UI/Modal/DeletionWarning";
-import useHttpRequest from "@/hooks/useHttpRequest";
-import API_URLS from "@/util/API_URLs";
-import { useAppDispatch } from "@/redux/hooks";
-import { deleteTask, updateExistingTask } from "@/redux/slices/boardSlice";
+import {
+  useDeleteTaskMutation,
+  useUpdateTaskMutation,
+} from "@/redux/slices/apiSlice";
+import { TaskProps } from "@/types/component-props/TaskProps.model";
 
-type Props = {
-  currentBoard: IBoard;
-  task: ITask;
-};
-
-const Task = ({ currentBoard, task }: Props) => {
-  const dispatch = useAppDispatch();
+const Task = ({ currentBoard, task }: TaskProps) => {
+  const [deleteTask, { error: taskDeletionError, isLoading: isDeletingTask }] = useDeleteTaskMutation();
+  const [updateTask, { error: taskUpdatingError, isLoading: isUpdatingTask }] = useUpdateTaskMutation();
   const [subtasks, setSubtasks] = useState(task.subtasks);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showEditTaskModal, setShowEditTaskModal] = useState(false);
   const [showDeletionWarning, setShowDeletionWarning] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { showElement: showEditTaskMenu, setShowElement: setShowEditTaskMenu } =
-    useMenuHandler(menuRef);
-  const { isLoading, hasError, deleteData, sendData } = useHttpRequest();
+  const { showElement: showEditTaskMenu, setShowElement: setShowEditTaskMenu } = useMenuHandler(menuRef);
   const completedTasks = subtasks.reduce((completedTasks, subtask) => {
     if (subtask.isCompleted && !subtask.markedForDeletion) {
       return completedTasks + 1;
@@ -45,21 +40,15 @@ const Task = ({ currentBoard, task }: Props) => {
   }
 
   async function handleDeleteCurrentTask() {
-    const response = deleteData(API_URLS.deleteTask, { id: task.id });
+    const response = deleteTask({ id: task.id });
 
     toast.promise(response, {
       loading: "Sending...",
       success: `Your task has been deleted`,
-      error: (err) => `Could not delete your task: ${err.toString()}`,
+      error: () => `Could not delete your task: ${taskDeletionError}`,
     });
 
     await response;
-
-    if (hasError) {
-      throw new Error("Could not delete Task, please try again later.");
-    }
-
-    dispatch(deleteTask(task));
     setShowDeletionWarning(false);
   }
 
@@ -74,7 +63,6 @@ const Task = ({ currentBoard, task }: Props) => {
 
   async function handleStatusChange(newStatus: IColumn) {
     taskTimestamp = new Date().getTime();
-
     const updatedTaskData = {
       ...task,
       timestamp: taskTimestamp,
@@ -86,19 +74,10 @@ const Task = ({ currentBoard, task }: Props) => {
       },
     };
 
-    await sendData("PATCH", API_URLS.addOrEditTask, updatedTaskData);
+    await updateTask(updatedTaskData);
 
-    if (!isLoading && hasError) {
+    if (!isUpdatingTask && taskUpdatingError) {
       toast.error("Could not update the task status.");
-    }
-
-    if (!isLoading && !hasError) {
-      dispatch(
-        updateExistingTask({
-          ...updatedTaskData,
-          oldColumnId: task.column,
-        })
-      );
     }
   }
 
@@ -205,7 +184,7 @@ const Task = ({ currentBoard, task }: Props) => {
           title={task.title}
           onClose={() => setShowDeletionWarning(false)}
           deleteFunction={handleDeleteCurrentTask}
-          isLoading={isLoading}
+          isLoading={isDeletingTask}
         />
       )}
     </>

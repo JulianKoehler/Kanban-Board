@@ -1,8 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/firebase/config";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
+import { BoardListItem } from "@/types/data/board.model";
 
-type Response = string;
+type Response = BoardListItem | { message: string };
 
 export default async function requestHandler(
   req: NextApiRequest,
@@ -29,10 +30,17 @@ export default async function requestHandler(
         }
       }
 
-      res.status(200).send("Successfully set/updated the board");
+      res.status(200).send({
+        id: req.body.id,
+        name: req.body.name,
+        index: req.body.index,
+        userId: req.body.users.creator,
+      });
     } catch (err) {
       if (err instanceof Error) {
-        res.status(500).send(err.message);
+        res.status(500).send({
+          message: err.message,
+        });
       }
     }
   } else {

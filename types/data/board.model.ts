@@ -39,14 +39,14 @@ export interface ISubtask {
   markedForDeletion: boolean;
 }
 
+export interface IStatus {
+  name: string;
+  columnID: string;
+}
+
 export interface BoardListItem {
   id: string;
   name: string;
   index: number;
   userId: string;
-}
-
-export interface IStatus {
-  name: string;
-  columnID: string;
 }

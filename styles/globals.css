@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,10 +6,10 @@
 
 @layer base {
   body {
-    @apply bg-white dark:bg-grey-dark text-black dark:text-white
+    @apply bg-white text-black dark:bg-grey-dark dark:text-white;
   }
   #__next {
-    @apply flex
+    @apply flex;
   }
 }
 
@@ -25,10 +25,13 @@
 
 body {
   font-size: 1.6rem;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
-body, html, #__next, .app {
+body,
+html,
+#__next,
+.app {
   min-width: 100%;
   min-height: 100%;
 }
@@ -37,11 +40,17 @@ body, html, #__next, .app {
   border: 1px solid red;
 }
 
-input[type=color]::-webkit-color-swatch {
+input[type="color"]::-webkit-color-swatch {
   border-radius: 50%;
   border: none;
 }
 
-input[type=color] {
-  background-color: transparent
+input[type="color"] {
+  background-color: transparent;
+}
+
+.neumorphism {
+  border-radius: 150px;
+  background: linear-gradient(145deg, #d12ac0, #6b2594);
+  box-shadow: 3px 3px 6px #bdbdbd, -3px -3px 6px #ffffff;
 }

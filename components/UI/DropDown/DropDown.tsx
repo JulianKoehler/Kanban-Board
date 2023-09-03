@@ -1,6 +1,6 @@
 import DropDownContainer from "@/components/UI/DropDown/DropDownContainer";
 import useMenuHandler from "@/hooks/useMenuHandler";
-import { IColumn, ITask } from "@/types/data";
+import { IColumn, ITask } from "@/types/data/board.model";
 import { useRef, useState } from "react";
 
 type Props = {

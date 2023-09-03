@@ -6,7 +6,7 @@
  */
 
 import { db } from "@/firebase/config";
-import { IColumn, ITask, ISubtask, IBoard } from "@/types/data";
+import { IColumn, ITask, ISubtask, IBoard } from "@/types/data/board.model";
 import {
   collection,
   getDocs,
@@ -20,7 +20,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function requestHandler(
   req: NextApiRequest,
-  res: NextApiResponse<IBoard | string>
+  res: NextApiResponse<IBoard | { message: string }>
 ) {
   try {
     if (req.method !== "GET") {
@@ -50,7 +50,9 @@ export default async function requestHandler(
     });
   } catch (err) {
     console.error(err);
-    res.status(502).send("ERR_BOARDDATA");
+    res.status(502).send({
+      message: "ERR_BOARDDATA",
+    });
   }
 }
 

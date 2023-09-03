@@ -2,7 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/firebase/config";
 import { deleteDoc, doc } from "firebase/firestore";
 
-type Response = string;
+type Response = {
+  message: string;
+};
 
 export default async function requestHandler(
   req: NextApiRequest,
@@ -16,7 +18,9 @@ export default async function requestHandler(
     await deleteDoc(doc(db, "boards", req.body.id));
 
     if (req.body.columns.length < 1) {
-      res.status(200).send(`The board with ID ${req.body.id} has been deleted`);
+      res.status(200).send({
+        message: `The board with ID ${req.body.id} has been deleted`,
+      });
     }
 
     for (const column of req.body.columns) {
@@ -31,10 +35,14 @@ export default async function requestHandler(
       }
     }
 
-    res.status(200).send(`The board with ID ${req.body.id} has been deleted`);
+    res.status(200).send({
+      message: `The board with ID ${req.body.id} has been deleted`,
+    });
   } catch (err) {
     if (err instanceof Error) {
-      res.status(500).send(err.message);
+      res.status(500).send({
+        message: err.message,
+      });
     }
   }
 }

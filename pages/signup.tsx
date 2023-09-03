@@ -144,7 +144,7 @@ const Signup = () => {
           </FormGroup>
           <Button
             disabled={loading}
-            additionalClassNames="text-lg mt-4 rounded-[0.8rem] py-4 flex justify-center"
+            className="mt-4 flex justify-center rounded-[0.8rem] py-4 text-lg"
           >
             {loading ? LoadingSpinner_TailSpin : "Sign in"}
           </Button>
@@ -152,10 +152,7 @@ const Signup = () => {
         <div className="mt-6 flex w-full flex-col gap-7">
           <div className="w-full pl-[4.8em] text-left">
             Already have an account?{" "}
-            <Link
-              href="/authentication/login"
-              className="font-bold text-purple-main"
-            >
+            <Link href="/login" className="font-bold text-purple-main">
               Sign in
             </Link>
           </div>

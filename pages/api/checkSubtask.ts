@@ -2,14 +2,16 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/firebase/config";
 import { doc, setDoc } from "firebase/firestore";
 
-type Response = string;
+type Response = {
+  message: string;
+};
 
 export default async function requestHandler(
   req: NextApiRequest,
   res: NextApiResponse<Response>
 ) {
   if (req.method !== "PATCH") {
-    throw new Error("Only PATCZH Requests allowed!");
+    throw new Error("Only PATCH Requests allowed!");
   }
 
   try {
@@ -22,12 +24,14 @@ export default async function requestHandler(
       { merge: true }
     );
 
-    res
-      .status(200)
-      .send(`The subtask with ID ${req.body.subtaskId} has been updated!`);
+    res.status(200).send({
+      message: `The subtask with ID ${req.body.subtaskId} has been updated!`,
+    });
   } catch (err) {
     if (err instanceof Error) {
-      res.status(502).send(err.message);
+      res.status(502).send({
+        message: err.message,
+      });
     }
   }
 }

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/firebase/config";
-import { IBoard, IColumn, ITask, ISubtask } from "@/types/data";
+import { IBoard, IColumn, ITask, ISubtask } from "@/types/data/board.model";
 import {
   FieldPath,
   collection,
@@ -13,7 +13,9 @@ type Data =
   | {
       boards: IBoard[];
     }
-  | string;
+  | {
+      message: string;
+    };
 
 export type CollectionTypes = IBoard | IColumn | ITask | ISubtask;
 
@@ -38,7 +40,9 @@ export default async function requestHandler(
   } catch (err) {
     if (err instanceof Error) {
       console.log(err);
-      res.status(502).send(err.message);
+      res.status(502).send({
+        message: err.message,
+      });
     }
   }
 }
@@ -48,8 +52,6 @@ async function getCollection(
   userId: string | undefined
 ) {
   const results: Array<CollectionTypes> = [];
-
-  console.log("userID: " + userId);
 
   const collectionRef = collection(db, collectionName);
   const q = query(

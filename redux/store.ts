@@ -1,9 +1,21 @@
 import { configureStore } from "@reduxjs/toolkit";
 import boardsReducer from "./slices/boardSlice";
+import authReducer from "./slices/authSlice";
+import { boardApi } from "@/redux/slices/apiSlice";
 
 export const store = configureStore({
   reducer: {
     boards: boardsReducer,
+    auth: authReducer,
+    [boardApi.reducerPath]: boardApi.reducer,
+  },
+  middleware: (getDefaultMiddleware) => {
+    return getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these action types
+        ignoredActions: ["login"],
+      },
+    }).concat(boardApi.middleware);
   },
 });
 

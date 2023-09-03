@@ -1,47 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import uuid from "react-uuid";
 import toast from "react-hot-toast";
-import { IBoard, IColumn } from "@/types/data";
-import useHttpRequest from "@/hooks/useHttpRequest";
+import { IBoard, IColumn } from "@/types/data/board.model";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import {
-  addBoard,
-  selectBoardList,
-  setActiveBoard,
-  setBoardData,
-  updateBoardList,
-} from "@/redux/slices/boardSlice";
+import { selectActiveBoard, setActiveBoard } from "@/redux/slices/boardSlice";
 import checkFormValidity from "@/util/checkFormValidity";
 import Button from "@/components/UI/Button";
 import Form from "@/components/UI/Formelements/Form";
 import FormGroup from "@/components/UI/Formelements/FormGroup";
 import H5 from "@/components/UI/Headings/H5";
-import DeleteIcon from "@/components/UI/Icons/DeleteIcon";
 import Input from "@/components/UI/InputFields/TextInput";
 import GenericModalContainer from "@/components/UI/Modal/GenericModalContainer";
 import { LoadingSpinner_TailSpin as TailSpin } from "@/components/UI/LoadingSpinner";
-import API_URLS from "@/util/API_URLs";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/config";
+import {
+  useCreateBoardMutation,
+  useGetBoardListQuery,
+  useUpdateBoardMutation,
+} from "@/redux/slices/apiSlice";
+import { BoardModalProps } from "@/types/component-props/boardModal.model";
+import ColumnInputArea from "./ColumnInputArea";
 
-type Props = {
-  onClose: VoidFunction;
-  board?: IBoard;
-};
-
-const BoardModal = ({ board, onClose }: Props) => {
+const BoardModal = ({ board, onClose }: BoardModalProps) => {
   const dispatch = useAppDispatch();
   const [user] = useAuthState(auth);
-  const boardList = useAppSelector(selectBoardList);
-  const boardIndex = board
-    ? board.index
-    : boardList.length > 0
-    ? boardList[boardList.length - 1].index + 1
-    : 0;
+  const activeBoard = useAppSelector(selectActiveBoard)
+  const { data: boardList } = useGetBoardListQuery(user?.uid ?? "");
+  const [updateBoard, { isLoading: isUpdatingBoard, isError: errorUpdate }] = useUpdateBoardMutation();
+  const [createBoard, { isLoading: isCreatingBoard, isError: errorCreation }] = useCreateBoardMutation();
+  const { refetch } = useGetBoardListQuery(user!.uid)
+  const isLoading = isUpdatingBoard || isCreatingBoard;
+  const isError = errorUpdate || errorCreation;
   const isEditMode = board ? true : false;
-  const { isLoading, hasError, sendData } = useHttpRequest();
+  const boardIndex = isEditMode
+    ? board!.index
+    : boardList?.length && boardList.length > 0
+    ? boardList![boardList!.length - 1].index + 1
+    : 0;
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [boardName, setBoardName] = useState<string>(board ? board.name : "");
+  const [boardName, setBoardName] = useState(board ? board.name : "");
   const boardId = board?.id ?? uuid();
   const users = isEditMode ? board!.users : { creator: user!.uid };
   const [columns, setColumns] = useState<IColumn[]>(
@@ -59,96 +57,6 @@ const BoardModal = ({ board, onClose }: Props) => {
           },
         ]
   );
-
-  const columnsInputFields = columns.map((column, index) => {
-    return column.markedForDeletion ? null : (
-      <div key={column.id} className="relative flex items-center gap-[1.6rem]">
-        <Input
-          value={column.name}
-          className={
-            isFormSubmitted && column.name.length < 1 ? "input-error" : ""
-          }
-          onChange={(e) => handleColumnInput(e, index)}
-          placeholder="e.g. Backlog"
-        />
-        <button
-          type="button"
-          onClick={() => onDeleteColumnInput(index)}
-          className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
-        >
-          <DeleteIcon />
-        </button>
-        <input
-          onChange={(e) => onColorInput(e, index)}
-          className="w-12"
-          type="color"
-          value={column.color}
-        />
-        {column.name.length < 1 && isFormSubmitted && (
-          <p className="absolute bottom-[0.9rem] right-[4.6rem] text-base font-medium text-red">
-            Can't be empty
-          </p>
-        )}
-      </div>
-    );
-  });
-
-  function handleColumnInput(
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) {
-    setColumns((prevColumns) => {
-      const columns = [...prevColumns];
-
-      columns[index] = {
-        ...columns[index],
-        name: e.target.value,
-      };
-
-      return columns;
-    });
-  }
-
-  function onColorInput(e: React.ChangeEvent<HTMLInputElement>, index: number) {
-    setColumns((prevColumns) => {
-      const columns = [...prevColumns];
-
-      columns[index] = {
-        ...columns[index],
-        color: e.target.value,
-      };
-
-      return columns;
-    });
-  }
-
-  function onDeleteColumnInput(index: number) {
-    setColumns((prevColumns) => {
-      const columns = [...prevColumns];
-
-      columns[index] = {
-        ...columns[index],
-        markedForDeletion: true,
-      };
-
-      return columns;
-    });
-  }
-
-  function onAddNewColumnInput() {
-    setColumns((prevColumns) => [
-      ...prevColumns,
-      {
-        id: uuid(),
-        name: "",
-        color: "49C4E5",
-        markedForDeletion: false,
-        index: columns.length,
-        boardId,
-        tasks: [],
-      },
-    ]);
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -174,11 +82,14 @@ const BoardModal = ({ board, onClose }: Props) => {
       users,
     };
 
-    const response = sendData(
-      isEditMode ? "PATCH" : "POST",
-      API_URLS.addOrEditBoard,
-      newBoardData
-    );
+    const response = new Promise(async (resolve, reject) => {
+      try {
+        const result = isEditMode ? await updateBoard(newBoardData) : await createBoard(newBoardData)
+        resolve(result)
+      } catch(error) {
+        reject(error)
+      }
+    })
 
     toast.promise(response, {
       loading: "Sending...",
@@ -189,34 +100,9 @@ const BoardModal = ({ board, onClose }: Props) => {
         } your board: ${err.toString()}`,
     });
 
-    await response;
+    await response
 
-    if (hasError) {
-      throw new Error("Something went wrong.");
-    }
-
-    if (isEditMode) {
-      dispatch(
-        updateBoardList({
-          id: boardId,
-          name: boardName,
-          index: boardIndex,
-          userId: auth.currentUser!.uid,
-        })
-      );
-      dispatch(setBoardData(newBoardData));
-    } else {
-      dispatch(
-        addBoard({
-          id: boardId,
-          name: boardName,
-          index: boardIndex,
-          userId: auth.currentUser!.uid,
-        })
-      );
-    }
-
-    if (!isLoading) {
+    if (!isError) {
       dispatch(
         setActiveBoard({
           name: newBoardData.name,
@@ -256,22 +142,14 @@ const BoardModal = ({ board, onClose }: Props) => {
         </FormGroup>
         <FormGroup className="flex flex-col gap-[1.6rem]">
           <H5>Columns</H5>
-          <div className="flex max-h-[14.7rem] flex-col gap-[1.2rem] overflow-y-auto">
-            {columnsInputFields}
-          </div>
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onAddNewColumnInput}
-          >
-            + Add New Column
-          </Button>
+          <ColumnInputArea
+            columns={columns}
+            setColumns={setColumns}
+            isFormSubmitted={isFormSubmitted}
+            boardId={boardId}
+          />
         </FormGroup>
-        <Button
-          type="submit"
-          variant="primary"
-          additionalClassNames="flex justify-center"
-        >
+        <Button type="submit" variant="primary" className="flex justify-center">
           {isLoading ? TailSpin : isEditMode ? "Save Changes" : "Create Board"}
         </Button>
       </Form>

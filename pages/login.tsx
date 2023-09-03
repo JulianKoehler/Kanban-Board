@@ -32,13 +32,8 @@ const Login = () => {
   }
 
   useEffect(() => {
-    if (user) {
-      router.push("/");
-    }
-
-    if (error) {
-      toast.error("Failed to login: " + error);
-    }
+    if (user) router.push("/");
+    if (error) toast.error("Failed to login: " + error);
   }, [user, error]);
 
   return (
@@ -57,7 +52,7 @@ const Login = () => {
       <AuthCard className="flex-col items-center gap-4">
         <Link href="/">
           <Image
-            src={theme === "dark" ? LogoDarkMode.src : LogoLightMode.src}
+            src={theme === "light" ? LogoLightMode.src : LogoDarkMode.src}
             alt="kanban"
             width={LogoLightMode.width + 100}
             height={LogoLightMode.height}
@@ -96,24 +91,21 @@ const Login = () => {
           </FormGroup>
           <Button
             disabled={loading}
-            additionalClassNames="text-lg mt-4 rounded-[0.8rem] py-4 flex justify-center"
+            className="mt-4 flex justify-center rounded-[0.8rem] py-4 text-lg"
           >
             {loading ? LoadingSpinner_TailSpin : "Sign in"}
           </Button>
         </form>
         <div className="relative mt-6 flex w-full flex-col gap-7">
           <Link
-            href="/authentication/reset_password"
+            href="/reset_password"
             className="w-full pl-[4.8em] text-left font-bold text-purple-main"
           >
             Forgot password?
           </Link>
           <div className="absolute -bottom-48 left-1/2 -translate-x-1/2">
             New to kanban?{" "}
-            <Link
-              href="/authentication/signup"
-              className="font-bold text-purple-main"
-            >
+            <Link href="/signup" className="font-bold text-purple-main">
               Create Account
             </Link>
           </div>

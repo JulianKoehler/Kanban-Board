@@ -3,7 +3,6 @@ import Tooltip from "../Tooltips/Tooltip";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   showToolTip?: boolean;
-  [btnProps: string]: any;
 }
 
 /**
