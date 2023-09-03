@@ -25,11 +25,9 @@ import ColumnInputArea from "./ColumnInputArea";
 const BoardModal = ({ board, onClose }: BoardModalProps) => {
   const dispatch = useAppDispatch();
   const [user] = useAuthState(auth);
-  const activeBoard = useAppSelector(selectActiveBoard)
   const { data: boardList } = useGetBoardListQuery(user?.uid ?? "");
   const [updateBoard, { isLoading: isUpdatingBoard, isError: errorUpdate }] = useUpdateBoardMutation();
   const [createBoard, { isLoading: isCreatingBoard, isError: errorCreation }] = useCreateBoardMutation();
-  const { refetch } = useGetBoardListQuery(user!.uid)
   const isLoading = isUpdatingBoard || isCreatingBoard;
   const isError = errorUpdate || errorCreation;
   const isEditMode = board ? true : false;
