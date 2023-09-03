@@ -1,38 +1,94 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+## Screenshots
 
-First, run the development server:
+![App Screenshot](https://github.com/JulianKoehler/Kanban-Board/blob/main/public/assets/preview.png?raw=true)
+
+
+# Kanban Task Manager
+
+This is my current and biggest private project, in which I invested by far the most time compared to all the other projects. The work is still in progress.
+
+It is basically an application for managing tasks based on the Kanban concept. I learned really a lot along this project, which I started in March 2023, even before my first Job as a developer and am totally aware of the fact that some parts of the codebase may need some refactoring. WORK IN PROGRESS =)
+
+What is currently possible:
+
+* Creating your own user account with your protected boards
+* Complete CRUD functionality for boards, columns, tasks and subtasks
+* Select between dark and light theme
+
+What is planned for the future:
+
+* Collaboration: Giving other users permission to work on your boards
+* Consequently searching for other users either with name or ID to add them to your boards
+* Assign Tasks to specific users
+* Dashboard Page for the user
+
+## Tech Stack
+
+**Client:** React (NextJS), Redux, TailwindCSS
+
+**Server:** NextJS, Firebase
+
+The data fetching is being managed by RTK Query since it offers a great package with all different kind of fetching states, caching and integration to an existing RTK Store.
+
+Allthough I know that I would not need the NextJS API Routes per se, I wanted to separate concerns and created a seperate API Route for each task to perform. These endpoints are then reaching out to the actual firebase database.
+
+
+
+## Demo
+
+Insert gif or link to demo
+
+
+## Deployment
+
+Check out the live Version via the following Link:
+
+https://kanban-board-jet.vercel.app/
+
+Feel free to create your own account or use the following Demo User Account:
+
+email: test@account.com
+
+password: Welcome123
+
+
+## Run Locally
+
+Clone the project
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+  git clone https://github.com/JulianKoehler/Kanban-Board.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Go to the project directory
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```bash
+  cd kanban
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Install dependencies
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+```bash
+  npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Start the server
 
-## Learn More
+```bash
+  npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Roadmap
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Loading Skeleton UI
+- Testing
+- Animationen w/ Framer Motion
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Lessons Learned
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+The biggest thing that I learned is that bringing in a new big libgrary like RTK Query can have bigger consequences to the rest of your code as one might initially think. I gained a lot of performance and code quality but had to refactor a lot of code to make it work.
+
+I also learned a lot about abstraction. There are situations where it makes sense to create resuable abstractions but there are also cases where code might look very similar but performas different logic.
