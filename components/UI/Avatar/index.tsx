@@ -11,9 +11,17 @@ interface Props extends HTMLProps<HTMLDivElement> {
 const Avatar = ({ user, className = "", ...props }: Props) => {
   function getUserInitials() {
     const userNameArray = user?.displayName?.split(" ");
-    return userNameArray
-      ? userNameArray![0].charAt(0).concat(userNameArray![1].charAt(0))
-      : "";
+    let userName = "";
+    const MAX_LENGTH_INITIALS = 3
+
+    if (!userNameArray) return;
+
+    for (let i = 0; i < userNameArray.length; i++) {
+      if (i >= MAX_LENGTH_INITIALS) break
+      userName += userNameArray[i].charAt(0);
+    }
+
+    return userName;
   }
 
   return (

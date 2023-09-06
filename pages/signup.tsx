@@ -144,9 +144,9 @@ const Signup = () => {
           </FormGroup>
           <Button
             disabled={loading}
-            className="mt-4 flex justify-center rounded-[0.8rem] py-4 text-lg"
+            className="mt-4 capitalize flex justify-center rounded-[0.8rem] py-4 text-lg"
           >
-            {loading ? LoadingSpinner_TailSpin : "Sign in"}
+            {loading ? LoadingSpinner_TailSpin : "create account"}
           </Button>
         </form>
         <div className="mt-6 flex w-full flex-col gap-7">
