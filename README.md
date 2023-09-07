@@ -76,6 +76,7 @@ Start the server
 
 ## Roadmap
 
+- Testing
 - Loading Skeleton UI
 - Testing
 - Animationen w/ Framer Motion
