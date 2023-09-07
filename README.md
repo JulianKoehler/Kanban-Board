@@ -23,6 +23,8 @@ What is planned for the future:
 * Assign Tasks to specific users
 * Dashboard Page for the user
 
+Also checkout the Roadmap at the very bottom where I list my smaller updates planned to enhance the codebase and the existing features!
+
 ## Tech Stack
 
 **Client:** React (NextJS), Redux, TailwindCSS
@@ -76,7 +78,7 @@ Start the server
 
 ## Roadmap
 
-- Testing
+- Optimistic Updates
 - Loading Skeleton UI
 - Testing
 - Animationen w/ Framer Motion
