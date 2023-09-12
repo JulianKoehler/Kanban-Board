@@ -30,7 +30,7 @@ const Header = ({
   isSuccessBoardList,
 }: HeaderProps) => {
   const activeBoard = useAppSelector(selectActiveBoard);
-  const { data: board } = useGetBoardDataQuery(activeBoard?.id ? activeBoard?.id : skipToken);
+  const { data: board, isFetching: isFetchingBoardData } = useGetBoardDataQuery(activeBoard?.id ? activeBoard?.id : skipToken);
   const user = useAppSelector(selectUser);
   const [showAddNewTaskModal, setShowAddNewTaskModal] = useState(false);
   const columnsExist = board?.columns && board?.columns?.length > 0;
@@ -95,18 +95,18 @@ const Header = ({
           </button>
         )}
         <div className="relative ml-auto flex min-w-fit items-center gap-[1rem]">
-          {isSuccessBoardList ? (
+          {isSuccessBoardList && activeBoard ? (
             <Button
               large
               variant="primary"
               className={isMobile ? "py-[1rem] px-[1.8rem]" : "px-[2.4rem]"}
               onClick={onAddNewTask}
-              disabled={!columnsExist}
+              disabled={!columnsExist || isFetchingBoardData }
             >
               {isMobile ? <Image src={AddIcon} alt="add" /> : "+Add New Task"}
             </Button>
           ) : null}
-          {isSuccessBoardList && <BoardMenu />}
+          {isSuccessBoardList && activeBoard && !isFetchingBoardData && <BoardMenu />}
           {user && <UserMenu />}
         </div>
       </header>
