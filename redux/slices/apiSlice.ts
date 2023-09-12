@@ -3,13 +3,13 @@ import {
   BoardListItem,
   IBoard,
   IColumn,
-  ISubtask,
   ITask,
+  ITaskChanged,
+  TaskDataServerResponse,
 } from "@/types/data/board.model";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const BASE_URL = "/api/"
-// const BASE_URL = "http://localhost:3000/api/";
+const BASE_URL = "/api/";
 
 export const boardApi = createApi({
   reducerPath: "board",
@@ -48,7 +48,28 @@ export const boardApi = createApi({
         method: "PATCH",
         body: board,
       }),
-      invalidatesTags: ["BoardList", "BoardData"],
+      invalidatesTags: ["BoardList"],
+      async onQueryStarted(board, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            boardApi.util.updateQueryData("getBoardData", board?.id ?? "", (draft) => {
+              for (let i = 0; i < draft.columns!.length; i++) {
+                if (board.columns![i].markedForDeletion) {
+                  draft.columns?.filter(column => column.id !== board.columns![i].id)
+                  break
+                }
+                draft.columns![i].name = board.columns![i].name;
+                draft.columns![i].color = board.columns![i].color;
+              }
+            })
+          );
+        } catch (err) {
+          console.log(err);
+          dispatch(boardApi.util.invalidateTags(["BoardData"]));
+        }
+      },
+
     }),
     deleteBoard: builder.mutation<null, IBoard>({
       query: (board) => ({
@@ -66,21 +87,86 @@ export const boardApi = createApi({
       }),
       invalidatesTags: ["BoardData"],
     }),
-    createTask: builder.mutation<string, ITask>({
+    createTask: builder.mutation<string, ITaskChanged>({
       query: (task) => ({
         url: API_ENDPOINTS.addOrEditTask,
         method: "POST",
         body: task,
       }),
-      invalidatesTags: ["BoardData"],
+      async onQueryStarted(task, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            boardApi.util.updateQueryData(
+              "getBoardData",
+              task.boardId ?? "",
+              (draft) => {
+                const columnIndex = draft.columns?.findIndex(
+                  (column) => column?.id === task?.column
+                );
+                draft.columns![columnIndex!].tasks!.push(task);
+              }
+            )
+          );
+        } catch (err) {
+          console.log(err);
+          dispatch(boardApi.util.invalidateTags(["BoardData"]));
+        }
+      },
     }),
-    updateTask: builder.mutation<string, ITask>({
+    updateTask: builder.mutation<TaskDataServerResponse, ITaskChanged>({
       query: (task) => ({
         url: API_ENDPOINTS.addOrEditTask,
         method: "PATCH",
         body: task,
       }),
-      invalidatesTags: ["BoardData"],
+      async onQueryStarted(task, { dispatch, queryFulfilled }) {
+        const { id } = task;
+
+        try {
+          await queryFulfilled;
+          dispatch(
+            boardApi.util.updateQueryData(
+              "getBoardData",
+              task.boardId ?? "",
+              (draft) => {
+                const hasColumnChanged = task?.column !== task?.oldColumn;
+                const oldColumnIndex = draft.columns?.findIndex(
+                  (column) => column?.id === task?.oldColumn
+                );
+                const newColumnIndex = draft.columns?.findIndex(
+                  (column) => column?.id === task?.column
+                );
+
+                if (
+                  !draft.columns ||
+                  !task ||
+                  oldColumnIndex! < 0 ||
+                  newColumnIndex! < 0
+                ) {
+                  throw new Error(`Check your data, something is undefined.`);
+                }
+
+                if (hasColumnChanged) {
+                  draft.columns[oldColumnIndex!].tasks = draft.columns[
+                    oldColumnIndex!
+                  ].tasks?.filter((task) => task.id !== id);
+                  draft.columns[newColumnIndex!].tasks?.push(task);
+                } else {
+                  const indexOfUpdatedTask = draft.columns[
+                    newColumnIndex!
+                  ].tasks?.findIndex((task) => task.id === id);
+                  draft.columns[newColumnIndex!].tasks![indexOfUpdatedTask!] =
+                    task;
+                }
+              }
+            )
+          );
+        } catch (err) {
+          console.log(err);
+          dispatch(boardApi.util.invalidateTags(["BoardData"]));
+        }
+      },
     }),
     deleteTask: builder.mutation<null, Pick<ITask, "id">>({
       query: (id) => ({

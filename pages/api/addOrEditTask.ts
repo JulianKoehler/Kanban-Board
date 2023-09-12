@@ -1,9 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/firebase/config";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
+import { ITaskChanged } from "@/types/data/board.model";
 
 type Response = {
   message: string;
+  data?: Pick<ITaskChanged, "id" | "column" | "oldColumn" |"boardId">
 };
 
 export default async function requestHandler(
@@ -38,6 +40,12 @@ export default async function requestHandler(
 
       res.status(200).send({
         message: "Successfully set/updated the task",
+        data: {
+          id: req.body.id,
+          column: req.body.status.columnID,
+          oldColumn: req.body.oldColumn,
+          boardId: req.body.boardId
+        }
       });
     } catch (err) {
       if (err instanceof Error) {

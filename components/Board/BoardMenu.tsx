@@ -46,7 +46,7 @@ const BoardMenu = () => {
 
     setShowDeleteBoardWarning(false);
     dispatch(
-      setActiveBoard(boardList?.length === 1 ? undefined : boardList![0])
+      setActiveBoard(undefined)
     );
   }
 

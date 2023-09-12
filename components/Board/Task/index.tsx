@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { ISubtask, IColumn } from "@/types/data/board.model";
+import { ISubtask, IColumn, ITaskChanged } from "@/types/data/board.model";
 import Image from "next/image";
 import OptionsIcon from "@/public/assets/icon-vertical-ellipsis.svg";
 import { useEffect, useRef, useState } from "react";
@@ -15,11 +15,15 @@ import {
   useUpdateTaskMutation,
 } from "@/redux/slices/apiSlice";
 import { TaskProps } from "@/types/component-props/TaskProps.model";
+import { useAppSelector } from "@/redux/hooks";
+import { selectActiveBoard } from "@/redux/slices/boardSlice";
 
 const Task = ({ currentBoard, task }: TaskProps) => {
-  const [deleteTask, { error: taskDeletionError, isLoading: isDeletingTask }] = useDeleteTaskMutation();
+  const [deleteTask, deleteResult] = useDeleteTaskMutation();
   const [updateTask, { error: taskUpdatingError, isLoading: isUpdatingTask }] = useUpdateTaskMutation();
   const [subtasks, setSubtasks] = useState(task.subtasks);
+  const activeBoard = useAppSelector(selectActiveBoard)
+
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showEditTaskModal, setShowEditTaskModal] = useState(false);
   const [showDeletionWarning, setShowDeletionWarning] = useState(false);
@@ -45,7 +49,7 @@ const Task = ({ currentBoard, task }: TaskProps) => {
     toast.promise(response, {
       loading: "Sending...",
       success: `Your task has been deleted`,
-      error: () => `Could not delete your task: ${taskDeletionError}`,
+      error: () => `Could not delete your task: ${deleteResult.error}`,
     });
 
     await response;
@@ -72,7 +76,10 @@ const Task = ({ currentBoard, task }: TaskProps) => {
         name: newStatus.name,
         columnID: newStatus.id,
       },
-    };
+      oldColumn: task.column,
+      boardId: activeBoard?.id,
+      isCardUI: true,
+    }
 
     await updateTask(updatedTaskData);
 
@@ -80,6 +87,12 @@ const Task = ({ currentBoard, task }: TaskProps) => {
       toast.error("Could not update the task status.");
     }
   }
+
+  useEffect(() => {
+    if (deleteResult.isSuccess) {
+      setShowTaskModal(false)
+    }
+  }, [deleteResult.isSuccess])
 
   useEffect(() => {
     setSubtasks(task.subtasks);
@@ -184,7 +197,7 @@ const Task = ({ currentBoard, task }: TaskProps) => {
           title={task.title}
           onClose={() => setShowDeletionWarning(false)}
           deleteFunction={handleDeleteCurrentTask}
-          isLoading={isDeletingTask}
+          isLoading={deleteResult.isLoading}
         />
       )}
     </>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import uuid from "react-uuid";
 import toast from "react-hot-toast";
-import { IColumn, IStatus, ISubtask, ITask } from "@/types/data/board.model";
+import { IColumn, IStatus, ISubtask, ITaskChanged } from "@/types/data/board.model";
 import GenericModalContainer from "@/components/UI/Modal/GenericModalContainer";
 import Input from "@/components/UI/InputFields/TextInput";
 import Button from "@/components/UI/Button";
@@ -17,6 +17,8 @@ import {
   useUpdateTaskMutation,
 } from "@/redux/slices/apiSlice";
 import SubtaskInputArea from "../Subtask/SubtaskInputArea";
+import { useAppSelector } from "@/redux/hooks";
+import { selectActiveBoard } from "@/redux/slices/boardSlice";
 
 const TaskModal = ({
   onClose,
@@ -26,9 +28,11 @@ const TaskModal = ({
 }: TaskModalProps) => {
   const [createTask, createResult] = useCreateTaskMutation();
   const [updateTask, updateResult] = useUpdateTaskMutation();
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  const activeBoard = useAppSelector(selectActiveBoard)
+
   const isEditing = task ? true : false;
   const currentColumnId = task?.column ?? statusOptions[0].id;
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const taskID = task?.id ?? uuid();
   let timestamp = task?.timestamp ?? new Date().getTime();
   const [title, setTitle] = useState(task?.title ?? "");
@@ -75,7 +79,7 @@ const TaskModal = ({
       timestamp = new Date().getTime();
     }
 
-    const newTaskData: ITask = {
+    const newTaskData: ITaskChanged = {
       id: taskID,
       timestamp,
       column: status.columnID,
@@ -83,6 +87,8 @@ const TaskModal = ({
       details: description,
       status,
       subtasks,
+      oldColumn: currentColumnId,
+      boardId: activeBoard?.id,
     };
 
     if (isEditing) {

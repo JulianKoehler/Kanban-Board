@@ -10,12 +10,7 @@ export const store = configureStore({
     [boardApi.reducerPath]: boardApi.reducer,
   },
   middleware: (getDefaultMiddleware) => {
-    return getDefaultMiddleware({
-      serializableCheck: {
-        // Ignore these action types
-        ignoredActions: ["login"],
-      },
-    }).concat(boardApi.middleware);
+    return getDefaultMiddleware().concat(boardApi.middleware);
   },
 });
 

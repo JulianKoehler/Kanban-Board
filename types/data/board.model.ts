@@ -31,6 +31,16 @@ export interface ITask {
   subtasks: ISubtask[];
 }
 
+export type ITaskChanged = ITask & {
+  oldColumn: string;
+  boardId: string | undefined;
+  isCardUI?: boolean;
+}
+
+export type TaskDataServerResponse = {
+  message: string;
+  data: Pick<ITaskChanged, "id" | "column" | "oldColumn" | "boardId">
+}
 export interface ISubtask {
   id: string;
   index: number;
