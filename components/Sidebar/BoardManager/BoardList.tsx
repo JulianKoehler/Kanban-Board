@@ -12,8 +12,6 @@ const BoardList = ({ boardList, onMobileClose }: BoardListProps) => {
   const activeBoard = useAppSelector(selectActiveBoard);
   const [isMobile, isTablet] = useViewport();
 
-  console.log(boardList);
-
   return (
     <>
       {boardList?.map((board, index) => {
