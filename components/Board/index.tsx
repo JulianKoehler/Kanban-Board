@@ -15,6 +15,7 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { selectUser } from "@/redux/slices/authSlice";
 import NoBoardData from "./NoBoardData";
+import LoadingSkeleton from "../UI/LoadingSkeleton";
 
 const Board = ({ isSuccessBoardList, errorBoardList }: BoardDataProps) => {
   const activeBoard = useAppSelector(selectActiveBoard);
@@ -65,7 +66,8 @@ const Board = ({ isSuccessBoardList, errorBoardList }: BoardDataProps) => {
         className={`relative flex h-[calc(100vh-6.4rem)] gap-[2.4rem] overflow-auto bg-grey-light px-[1.6rem] pt-[2.4rem] dark:bg-grey-very-dark tablet:h-[calc(100vh-9.6rem)] tablet:pl-[2.4rem] tablet:pb-40`}
       >
         {isLoadingBoardData ? (
-          <div className="m-auto">{LoadingSpinner}</div>
+          <LoadingSkeleton count={{ column: 4, task: 4}} />
+          // <div className="m-auto">{LoadingSpinner}</div>
         ) : errorBoardList && showErrorMessage ? (
           <ErrorFeedback
             header={errorHeaderMessage}
@@ -77,7 +79,7 @@ const Board = ({ isSuccessBoardList, errorBoardList }: BoardDataProps) => {
             {boardData?.columns?.map((column) => (
               <Column key={column.id} column={column}>
                 {column.tasks?.map((task) => (
-                  <Task key={task.id} currentBoard={boardData} task={task} />
+                  <Task key={task.id} currentBoard={boardData!} task={task} />
                 ))}
               </Column>
             ))}
