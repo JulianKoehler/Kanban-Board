@@ -27,6 +27,7 @@
     "react-hot-toast": "^2.4.0",
     "react-icons": "^4.9.0",
     "react-loader-spinner": "^5.3.4",
+    "react-loading-skeleton": "^3.3.1",
     "react-redux": "^8.0.5",
     "react-uuid": "^2.0.0",
     "tailwind-merge": "^1.14.0",

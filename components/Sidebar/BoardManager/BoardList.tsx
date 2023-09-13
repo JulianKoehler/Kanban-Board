@@ -4,11 +4,15 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectActiveBoard, setActiveBoard } from "@/redux/slices/boardSlice";
 import localStorageIdentifiers from "@/util/localStorageIdentifiers";
 import { BoardListProps } from "@/types/component-props/boardList.model";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const BoardList = ({ boardList, onMobileClose }: BoardListProps) => {
   const dispatch = useAppDispatch();
   const activeBoard = useAppSelector(selectActiveBoard);
   const [isMobile, isTablet] = useViewport();
+
+  console.log(boardList);
 
   return (
     <>
