@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { ISubtask, IColumn, ITaskChanged } from "@/types/data/board.model";
+import { ISubtask, IColumn } from "@/types/data/board.model";
 import Image from "next/image";
 import OptionsIcon from "@/public/assets/icon-vertical-ellipsis.svg";
 import { useEffect, useRef, useState } from "react";
@@ -17,6 +17,7 @@ import {
 import { TaskProps } from "@/types/component-props/TaskProps.model";
 import { useAppSelector } from "@/redux/hooks";
 import { selectActiveBoard } from "@/redux/slices/boardSlice";
+import getSubtaskHeadline from "@/util/getSubtaskHeadline";
 
 const Task = ({ currentBoard, task }: TaskProps) => {
   const [deleteTask, deleteResult] = useDeleteTaskMutation();
@@ -29,13 +30,9 @@ const Task = ({ currentBoard, task }: TaskProps) => {
   const [showDeletionWarning, setShowDeletionWarning] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { showElement: showEditTaskMenu, setShowElement: setShowEditTaskMenu } = useMenuHandler(menuRef);
-  const completedTasks = subtasks.reduce((completedTasks, subtask) => {
-    if (subtask.isCompleted && !subtask.markedForDeletion) {
-      return completedTasks + 1;
-    }
-    return completedTasks;
-  }, 0);
+
   const taskDescription = task.details.replace(/\n/g, "<br>");
+  const subtaskHeadline = getSubtaskHeadline(subtasks);
   let taskTimestamp = task.timestamp;
 
   function handleEditCurrentBoard() {
@@ -108,7 +105,7 @@ const Task = ({ currentBoard, task }: TaskProps) => {
           {task.title}
         </h3>
         <p className="text-sm font-bold text-grey-medium">
-          {completedTasks} of {task.subtasks?.length} subtasks completed
+          {subtaskHeadline}
         </p>
       </div>
       {!showDeletionWarning && showTaskModal && (
@@ -152,7 +149,7 @@ const Task = ({ currentBoard, task }: TaskProps) => {
           ></p>
           <div className="flex flex-col gap-[0.8rem]">
             <h4 className="mb-[0.8rem] text-sm font-bold text-grey-medium">
-              Subtasks ({completedTasks} of {task.subtasks.length})
+              {subtaskHeadline}
             </h4>
             {subtasks.map((subtask, index) => (
               <Subtask

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Button from "../UI/Button";
 import BoardModal from "./BoardModal";
 import Column from "./Column";
 import Task from "./Task";

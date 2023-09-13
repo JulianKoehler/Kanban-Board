@@ -62,6 +62,18 @@ const TaskModal = ({
     });
   }
 
+  function onChangeTitle(e: React.ChangeEvent<HTMLInputElement>) {
+    // @ts-ignore
+    if (title.length > 100 && e.nativeEvent.inputType !== "deleteContentBackward") {
+      toast("Consider putting the details into the description", {
+        icon: "🚫",
+        id: taskID,
+      });
+      return
+    }
+    setTitle(e.target.value)
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsFormSubmitted(true);
@@ -123,7 +135,7 @@ const TaskModal = ({
           <Input
             className={isFormSubmitted && title.length < 1 ? "input-error" : ""}
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={onChangeTitle}
             placeholder="e.g. Take coffee break"
           />
           {isFormSubmitted && title.length < 1 && (
