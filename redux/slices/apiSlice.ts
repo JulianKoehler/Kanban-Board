@@ -9,6 +9,7 @@ import {
 } from "@/types/data/board.model";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+
 const BASE_URL = "/api/";
 
 export const boardApi = createApi({
@@ -42,7 +43,7 @@ export const boardApi = createApi({
       }),
       invalidatesTags: ["BoardList"],
     }),
-    updateBoard: builder.mutation<null, IBoard>({
+    updateBoard: builder.mutation<void, IBoard>({
       query: (board) => ({
         url: API_ENDPOINTS.addOrEditBoard,
         method: "PATCH",
@@ -53,25 +54,30 @@ export const boardApi = createApi({
         try {
           await queryFulfilled;
           dispatch(
-            boardApi.util.updateQueryData("getBoardData", board?.id ?? "", (draft) => {
-              for (let i = 0; i < draft.columns!.length; i++) {
-                if (board.columns![i].markedForDeletion) {
-                  draft.columns?.filter(column => column.id !== board.columns![i].id)
-                  break
+            boardApi.util.updateQueryData(
+              "getBoardData",
+              board?.id ?? "",
+              (draft) => {
+                for (let i = 0; i < draft.columns!.length; i++) {
+                  if (board.columns![i].markedForDeletion) {
+                    draft.columns?.filter(
+                      (column) => column.id !== board.columns![i].id
+                    );
+                    break;
+                  }
+                  draft.columns![i].name = board.columns![i].name;
+                  draft.columns![i].color = board.columns![i].color;
                 }
-                draft.columns![i].name = board.columns![i].name;
-                draft.columns![i].color = board.columns![i].color;
               }
-            })
+            )
           );
         } catch (err) {
           console.log(err);
           dispatch(boardApi.util.invalidateTags(["BoardData"]));
         }
       },
-
     }),
-    deleteBoard: builder.mutation<null, IBoard>({
+    deleteBoard: builder.mutation<void, IBoard>({
       query: (board) => ({
         url: API_ENDPOINTS.deleteBoard,
         method: "DELETE",
@@ -168,7 +174,7 @@ export const boardApi = createApi({
         }
       },
     }),
-    deleteTask: builder.mutation<null, Pick<ITask, "id">>({
+    deleteTask: builder.mutation<void, Pick<ITask, "id">>({
       query: (id) => ({
         url: API_ENDPOINTS.deleteTask,
         method: "DELETE",
@@ -177,11 +183,12 @@ export const boardApi = createApi({
       invalidatesTags: ["BoardData"],
     }),
     markSubtask: builder.mutation<
-      null,
+      void,
       {
         taskId: string;
         subtaskId: string;
         isCompleted: boolean;
+        boardId: string;
       }
     >({
       query: (subtask) => ({
@@ -189,7 +196,29 @@ export const boardApi = createApi({
         method: "PATCH",
         body: subtask,
       }),
-      invalidatesTags: ["BoardData"],
+      async onQueryStarted(subtask, { dispatch, queryFulfilled }) {
+        const { taskId, subtaskId, isCompleted, boardId } = subtask;
+        dispatch(
+          boardApi.util.updateQueryData(
+            "getBoardData",
+            boardId ?? "",
+            (draft) => {
+              const column = draft.columns?.findIndex(column => column.tasks?.some(task => task.id === taskId))
+              const task = draft.columns![column!].tasks?.findIndex(task => task.id === taskId)
+              const subtask = draft.columns![column!].tasks![task!].subtasks.findIndex(subtask => subtask.id === subtaskId)
+
+              draft.columns![column!].tasks![task!].subtasks![subtask!].isCompleted = isCompleted
+            }
+          )
+        );
+
+        try {
+          await queryFulfilled;
+        } catch (err) {
+          console.log(err);
+          dispatch(boardApi.util.invalidateTags(["BoardData"]));
+        }
+      },
     }),
   }),
 });

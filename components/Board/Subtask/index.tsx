@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { SubtaskProps } from "@/types/component-props/Subtask.model";
 import { useMarkSubtaskMutation } from "@/redux/slices/apiSlice";
 import { toast } from "react-hot-toast";
+import { useAppSelector } from "@/redux/hooks";
+import { selectActiveBoard } from "@/redux/slices/boardSlice";
 
 const Subtask = ({
   checked,
@@ -14,6 +16,7 @@ const Subtask = ({
 }: SubtaskProps) => {
   const [isCompleted, setIsCompleted] = useState(checked);
   const [toggleSubtask, result] = useMarkSubtaskMutation();
+  const activeBoard = useAppSelector(selectActiveBoard)
 
   function handleCheck() {
     setIsCompleted((completed) => !completed);
@@ -36,6 +39,7 @@ const Subtask = ({
       taskId,
       subtaskId: id,
       isCompleted: !isCompleted,
+      boardId: activeBoard!.id
     });
   }
 
