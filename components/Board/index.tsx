@@ -66,8 +66,7 @@ const Board = ({ isSuccessBoardList, errorBoardList }: BoardDataProps) => {
         className={`relative flex h-[calc(100vh-6.4rem)] gap-[2.4rem] overflow-auto bg-grey-light px-[1.6rem] pt-[2.4rem] dark:bg-grey-very-dark tablet:h-[calc(100vh-9.6rem)] tablet:pl-[2.4rem] tablet:pb-40`}
       >
         {isLoadingBoardData ? (
-          <LoadingSkeleton count={{ column: 4, task: 4}} />
-          // <div className="m-auto">{LoadingSpinner}</div>
+          <LoadingSkeleton count={4} />
         ) : errorBoardList && showErrorMessage ? (
           <ErrorFeedback
             header={errorHeaderMessage}
