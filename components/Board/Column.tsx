@@ -1,9 +1,16 @@
 import { ColumnProps } from "@/types/component-props/column.model";
-import React from "react";
+import { motion } from "framer-motion";
 
 const Column = ({ column, children }: ColumnProps) => {
   return (
-    <div className="h-fit min-w-[28rem] max-w-[28rem]">
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        delay: 0.05
+      }}
+      className="h-fit min-w-[28rem] max-w-[28rem]"
+    >
       <div className="flex gap-3">
         <div
           className={`inline-block h-6 min-w-[1.5rem] rounded-full align-middle`}
@@ -17,7 +24,7 @@ const Column = ({ column, children }: ColumnProps) => {
         </span>
       </div>
       <div className="flex flex-col gap-8">{children}</div>
-    </div>
+    </motion.div>
   );
 };
 

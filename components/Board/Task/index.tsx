@@ -1,4 +1,5 @@
 import toast from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 import { ISubtask, IColumn } from "@/types/data/board.model";
 import Image from "next/image";
 import OptionsIcon from "@/public/assets/icon-vertical-ellipsis.svg";
@@ -21,15 +22,17 @@ import getSubtaskHeadline from "@/util/getSubtaskHeadline";
 
 const Task = ({ currentBoard, task }: TaskProps) => {
   const [deleteTask, deleteResult] = useDeleteTaskMutation();
-  const [updateTask, { error: taskUpdatingError, isLoading: isUpdatingTask }] = useUpdateTaskMutation();
+  const [updateTask, { error: taskUpdatingError, isLoading: isUpdatingTask }] =
+    useUpdateTaskMutation();
   const [subtasks, setSubtasks] = useState(task.subtasks);
-  const activeBoard = useAppSelector(selectActiveBoard)
+  const activeBoard = useAppSelector(selectActiveBoard);
 
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showEditTaskModal, setShowEditTaskModal] = useState(false);
   const [showDeletionWarning, setShowDeletionWarning] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { showElement: showEditTaskMenu, setShowElement: setShowEditTaskMenu } = useMenuHandler(menuRef);
+  const { showElement: showEditTaskMenu, setShowElement: setShowEditTaskMenu } =
+    useMenuHandler(menuRef);
 
   const taskDescription = task.details.replace(/\n/g, "<br>");
   const subtaskHeadline = getSubtaskHeadline(subtasks);
@@ -76,7 +79,7 @@ const Task = ({ currentBoard, task }: TaskProps) => {
       oldColumn: task.column,
       boardId: activeBoard?.id,
       isCardUI: true,
-    }
+    };
 
     await updateTask(updatedTaskData);
 
@@ -87,9 +90,9 @@ const Task = ({ currentBoard, task }: TaskProps) => {
 
   useEffect(() => {
     if (deleteResult.isSuccess) {
-      setShowTaskModal(false)
+      setShowTaskModal(false);
     }
-  }, [deleteResult.isSuccess])
+  }, [deleteResult.isSuccess]);
 
   useEffect(() => {
     setSubtasks(task.subtasks);
@@ -97,97 +100,98 @@ const Task = ({ currentBoard, task }: TaskProps) => {
 
   return (
     <>
-      <div
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{
+          type: "spring",
+          duration: 0.3,
+          delay: 0.25,
+        }}
         onClick={() => setShowTaskModal(true)}
         className="group flex max-w-[28rem] cursor-pointer flex-col gap-[0.8rem] rounded-xl bg-white py-[2.3rem] px-[1.6rem] shadow-md hover:z-30 dark:bg-grey-dark dark:shadow-md-dark"
       >
         <h3 className="text-lg font-bold group-hover:text-purple-main ">
           {task.title}
         </h3>
-        <p className="text-sm font-bold text-grey-medium">
-          {subtaskHeadline}
-        </p>
-      </div>
-      {!showDeletionWarning && showTaskModal && (
-        <GenericModalContainer
-          additionalClassNames="w-[48rem] gap-[2.4rem]"
-          onClose={() => setShowTaskModal(false)}
-        >
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold">{task.title}</h2>
-            <button
-              onClick={() => setShowEditTaskMenu((prevState) => !prevState)}
-              className="relative h-fit w-12 px-[1rem]"
-            >
-              <Image src={OptionsIcon} alt="options" />
-              {showEditTaskMenu && (
-                <DropDownContainer
-                  ref={menuRef}
-                  additionalClassNames="absolute right-1/2 translate-x-1/2 top-16"
+        <p className="text-sm font-bold text-grey-medium">{subtaskHeadline}</p>
+      </motion.div>
+      <GenericModalContainer
+        isShowing={!showDeletionWarning && showTaskModal}
+        additionalClassNames="w-[48rem] gap-[2.4rem]"
+        onClose={() => setShowTaskModal(false)}
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold">{task.title}</h2>
+          <button
+            onClick={() => setShowEditTaskMenu((prevState) => !prevState)}
+            className="relative h-fit w-12 px-[1rem]"
+          >
+            <Image src={OptionsIcon} alt="options" />
+            {showEditTaskMenu && (
+              <DropDownContainer
+                ref={menuRef}
+                additionalClassNames="absolute right-1/2 translate-x-1/2 top-16"
+              >
+                <button
+                  onClick={handleEditCurrentBoard}
+                  className="w-full rounded-t-xl px-[1.6rem] pt-[1.6rem] pb-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
                 >
-                  <button
-                    onClick={handleEditCurrentBoard}
-                    className="w-full rounded-t-xl px-[1.6rem] pt-[1.6rem] pb-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
-                  >
-                    Edit Task
-                  </button>
-                  <button
-                    onClick={() => setShowDeletionWarning(true)}
-                    className="rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
-                  >
-                    Delete Task
-                  </button>
-                </DropDownContainer>
-              )}
-            </button>
-          </div>
-          <p
-            className="text-base font-medium text-grey-medium"
-            dangerouslySetInnerHTML={{
-              __html: taskDescription || "No further details available",
-            }}
-          ></p>
-          <div className="flex flex-col gap-[0.8rem]">
-            <h4 className="mb-[0.8rem] text-sm font-bold text-grey-medium">
-              {subtaskHeadline}
-            </h4>
-            {subtasks.map((subtask, index) => (
-              <Subtask
-                key={subtask.id}
-                id={subtask.id}
-                index={index}
-                checked={subtask.isCompleted}
-                title={subtask.title}
-                taskId={task.id}
-                markedForDeletion={subtask.markedForDeletion}
-                updateSubtask={(updatedSubtask) =>
-                  onSubtaskCheck(updatedSubtask, index)
-                }
-              />
-            ))}
-          </div>
-          <div className="flex flex-col gap-[1.6rem]">
-            <h4 className="text-sm font-bold text-grey-medium">
-              Current Status
-            </h4>
-            <DropDown
-              task={task}
-              dropDownOptions={currentBoard.columns!}
-              onStatusChange={(selectedColumn) =>
-                handleStatusChange(selectedColumn)
+                  Edit Task
+                </button>
+                <button
+                  onClick={() => setShowDeletionWarning(true)}
+                  className="rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
+                >
+                  Delete Task
+                </button>
+              </DropDownContainer>
+            )}
+          </button>
+        </div>
+        <p
+          className="text-base font-medium text-grey-medium"
+          dangerouslySetInnerHTML={{
+            __html: taskDescription || "No further details available",
+          }}
+        ></p>
+        <div className="flex flex-col gap-[0.8rem]">
+          <h4 className="mb-[0.8rem] text-sm font-bold text-grey-medium">
+            {subtaskHeadline}
+          </h4>
+          {subtasks.map((subtask, index) => (
+            <Subtask
+              key={subtask.id}
+              id={subtask.id}
+              index={index}
+              checked={subtask.isCompleted}
+              title={subtask.title}
+              taskId={task.id}
+              markedForDeletion={subtask.markedForDeletion}
+              updateSubtask={(updatedSubtask) =>
+                onSubtaskCheck(updatedSubtask, index)
               }
             />
-          </div>
-        </GenericModalContainer>
-      )}
-      {showEditTaskModal && (
+          ))}
+        </div>
+        <div className="flex flex-col gap-[1.6rem]">
+          <h4 className="text-sm font-bold text-grey-medium">Current Status</h4>
+          <DropDown
+            task={task}
+            dropDownOptions={currentBoard.columns!}
+            onStatusChange={(selectedColumn) =>
+              handleStatusChange(selectedColumn)
+            }
+          />
+        </div>
+      </GenericModalContainer>
         <TaskModal
           task={task}
           statusOptions={currentBoard.columns!}
           subtaskList={subtasks}
+          showModal={showEditTaskModal}
           onClose={() => setShowEditTaskModal(false)}
         />
-      )}
       {showDeletionWarning && (
         <DeletionWarning
           type="task"

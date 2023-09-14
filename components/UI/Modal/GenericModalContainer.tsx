@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 type ContainerProps = {
   children: React.ReactNode;
@@ -9,19 +10,29 @@ type ContainerProps = {
 type ModalProps = ContainerProps & {
   onClose?: () => void;
   backdropModifications?: string | "";
+  isShowing: boolean;
 };
 
 type BackdropProps = {
+  children: React.ReactNode;
   mods?: string | "";
   onClick?: () => void;
 };
 
-const Backdrop = ({ mods, onClick }: BackdropProps) => {
+const Backdrop = ({ children, mods, onClick }: BackdropProps) => {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{
+        duration: 0.2,
+      }}
       onClick={onClick}
-      className={`fixed top-0 left-0 z-30 h-screen w-full bg-modal-backdrop ${mods}`}
-    />
+      className={`absolute top-0 left-0 z-30 flex h-full w-full items-center justify-center overflow-hidden bg-modal-backdrop ${mods}`}
+    >
+      {children}
+    </motion.div>
   );
 };
 
@@ -30,17 +41,22 @@ const ModalOverlay = ({
   additionalClassNames = "",
 }: ContainerProps) => {
   return (
-    <div
-      className={`absolute top-1/2 left-1/2 z-40 flex h-fit max-h-[90%] max-w-[90%] translate-x-[-50%] translate-y-[-50%] flex-col overflow-y-auto rounded-xl bg-white p-[2.4rem] shadow-sm dark:bg-grey-very-dark tablet:overflow-visible tablet:p-[3.2rem] ${additionalClassNames}`}
+    <motion.div
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: -0 }}
+      exit={{ opacity: 0, y: -50 }}
+      onClick={e => e.stopPropagation()}
+      className={`z-40 flex h-fit max-h-[90%] max-w-[90%] flex-col overflow-y-auto rounded-xl bg-white p-[2.4rem] shadow-sm dark:bg-grey-very-dark tablet:overflow-visible tablet:p-[3.2rem] ${additionalClassNames}`}
     >
       {children}
-    </div>
+    </motion.div>
   );
 };
 
 const GenericModalContainer = ({
   onClose,
   children,
+  isShowing,
   additionalClassNames,
   backdropModifications,
 }: ModalProps) => {
@@ -57,15 +73,17 @@ const GenericModalContainer = ({
   return mounted && backdrop.current && modalOverlay.current ? (
     <>
       {ReactDOM.createPortal(
-        <Backdrop mods={backdropModifications} onClick={onClose} />,
+        <AnimatePresence mode="wait">
+          {isShowing && (
+            <Backdrop mods={backdropModifications} onClick={onClose}>
+              <ModalOverlay additionalClassNames={additionalClassNames}>
+                {children}
+              </ModalOverlay>
+            </Backdrop>
+          )}
+          ,
+        </AnimatePresence>,
         backdrop.current
-      )}
-      {ReactDOM.createPortal(
-        <ModalOverlay
-          additionalClassNames={additionalClassNames}
-          children={children}
-        />,
-        modalOverlay.current
       )}
     </>
   ) : null;

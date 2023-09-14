@@ -22,6 +22,7 @@ import { selectActiveBoard } from "@/redux/slices/boardSlice";
 
 const TaskModal = ({
   onClose,
+  showModal,
   statusOptions,
   task = undefined,
   subtaskList = undefined,
@@ -125,7 +126,7 @@ const TaskModal = ({
   }, [createResult.isSuccess, updateResult.isSuccess])
 
   return (
-    <GenericModalContainer additionalClassNames="w-[48rem] max-h-[71rem]">
+    <GenericModalContainer isShowing={showModal} additionalClassNames="w-[48rem] max-h-[71rem]">
       <Form onSubmit={handleSubmit}>
         <h2 className="text-xl font-bold">
           {task ? "Edit Task" : "Add New Task"}

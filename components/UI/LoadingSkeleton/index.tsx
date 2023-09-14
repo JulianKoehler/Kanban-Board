@@ -2,15 +2,12 @@ import React from "react";
 import Skeleton from "react-loading-skeleton";
 
 type Props = {
-  count: {
-    column: number;
-    task: number;
-  };
+  count: number
 };
 
 const LoadingSkeleton = ({ count }: Props) => {
-  const columnCount = Array(count.column).fill(0);
-  const taskCount = Array(count.task).fill(0);
+  const columnCount = Array(count).fill(0);
+
   return (
     <div id="outmost-wrapper" className="flex h-full gap-[2.4rem] px-[1.6rem]">
       {columnCount.map((_) => (
@@ -23,11 +20,9 @@ const LoadingSkeleton = ({ count }: Props) => {
               <Skeleton borderRadius={6} className="h-7 w-full" />
             </div>
           </div>
-          {taskCount.map((_) => (
-            <div id="task-section" className="mt-6 h-48">
+            <div id="task-section" className="mt-6 h-5/6">
               <Skeleton className="h-full" borderRadius={8} />
             </div>
-          ))}
         </div>
       ))}
     </div>
