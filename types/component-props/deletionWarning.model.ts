@@ -4,4 +4,5 @@ export type DeletionWarningProps = {
   isLoading?: boolean;
   deleteFunction: VoidFunction;
   onClose: VoidFunction;
+  showDeletionWarning: boolean;
 };

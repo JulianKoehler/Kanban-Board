@@ -185,22 +185,22 @@ const Task = ({ currentBoard, task }: TaskProps) => {
           />
         </div>
       </GenericModalContainer>
-        <TaskModal
-          task={task}
-          statusOptions={currentBoard.columns!}
-          subtaskList={subtasks}
-          showModal={showEditTaskModal}
-          onClose={() => setShowEditTaskModal(false)}
-        />
-      {showDeletionWarning && (
-        <DeletionWarning
-          type="task"
-          title={task.title}
-          onClose={() => setShowDeletionWarning(false)}
-          deleteFunction={handleDeleteCurrentTask}
-          isLoading={deleteResult.isLoading}
-        />
-      )}
+      <TaskModal
+        task={task}
+        statusOptions={currentBoard.columns!}
+        subtaskList={subtasks}
+        showModal={showEditTaskModal}
+        onClose={() => setShowEditTaskModal(false)}
+      />
+
+      <DeletionWarning
+        showDeletionWarning={showDeletionWarning}
+        type="task"
+        title={task.title}
+        onClose={() => setShowDeletionWarning(false)}
+        deleteFunction={handleDeleteCurrentTask}
+        isLoading={deleteResult.isLoading}
+      />
     </>
   );
 };

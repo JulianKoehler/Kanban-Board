@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 
 type Props = {
   task?: ITask;
-  dropDownOptions: Array<IColumn>;
+  dropDownOptions: IColumn[];
   onStatusChange: (column: IColumn) => void;
 };
 
@@ -37,7 +37,7 @@ const DropDown = ({ task, dropDownOptions, onStatusChange }: Props) => {
       </button>
       <DropDownContainer
         ref={dropDownRef}
-        additionalClassNames={`absolute max-w-full transition-all duration-300 transition opacity-0 translate-y-[-1rem] min-w-full rounded-none rounded-b-xl ${
+        additionalClassNames={`absolute w-full max-w-[42rem] transition-all duration-300 transition opacity-0 translate-y-[-1rem] rounded-none rounded-b-xl ${
           showDropDown
             ? "opacity-100 translate-y-[0.5rem]"
             : "pointer-events-none"

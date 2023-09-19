@@ -10,6 +10,7 @@ const DeletionWarning = ({
   isLoading,
   deleteFunction,
   onClose,
+  showDeletionWarning,
 }: DeletionWarningProps) => {
   function getWarningMessage() {
     switch (type) {
@@ -24,6 +25,7 @@ const DeletionWarning = ({
 
   return (
     <GenericModalContainer
+      isShowing={showDeletionWarning}
       additionalClassNames="w-[48rem] gap-[2.4rem]"
       onClose={onClose}
     >
