@@ -30,7 +30,9 @@ const Header = ({
   isSuccessBoardList,
 }: HeaderProps) => {
   const activeBoard = useAppSelector(selectActiveBoard);
-  const { data: board, isFetching: isFetchingBoardData } = useGetBoardDataQuery(activeBoard?.id ? activeBoard?.id : skipToken);
+  const { data: board, isFetching: isFetchingBoardData } = useGetBoardDataQuery(
+    activeBoard?.id ? activeBoard?.id : skipToken
+  );
   const user = useAppSelector(selectUser);
   const [showAddNewTaskModal, setShowAddNewTaskModal] = useState(false);
   const columnsExist = board?.columns && board?.columns?.length > 0;
@@ -101,27 +103,31 @@ const Header = ({
               variant="primary"
               className={isMobile ? "py-[1rem] px-[1.8rem]" : "px-[2.4rem]"}
               onClick={onAddNewTask}
-              disabled={!columnsExist || isFetchingBoardData }
+              disabled={!columnsExist || isFetchingBoardData}
             >
               {isMobile ? <Image src={AddIcon} alt="add" /> : "+Add New Task"}
             </Button>
           ) : null}
-          {isSuccessBoardList && activeBoard && !isFetchingBoardData && <BoardMenu />}
+          {isSuccessBoardList && activeBoard && !isFetchingBoardData && (
+            <BoardMenu />
+          )}
           {user && <UserMenu />}
         </div>
       </header>
-      {showAddNewTaskModal && (
-        <TaskModal statusOptions={board?.columns!} onClose={onCloseNewTask} />
-      )}
-      {showMobileMenu && isMobile && (
-        <MobileMenu
-          theme={theme}
-          setTheme={setTheme}
-          onClose={onToggleMobileMenu}
-        >
-          {children}
-        </MobileMenu>
-      )}
+      <TaskModal
+        showModal={showAddNewTaskModal}
+        statusOptions={board?.columns!}
+        onClose={onCloseNewTask}
+      />
+
+      <MobileMenu
+        showModal={showMobileMenu && isMobile}
+        theme={theme}
+        setTheme={setTheme}
+        onClose={onToggleMobileMenu}
+      >
+        {children}
+      </MobileMenu>
     </>
   );
 };

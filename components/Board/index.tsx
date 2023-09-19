@@ -100,15 +100,16 @@ const Board = ({ isSuccessBoardList, errorBoardList }: BoardDataProps) => {
           </>
         )}
       </main>
-      {showCreateBoardModal && (
-        <BoardModal onClose={() => setShowCreateBoardModal(false)} />
-      )}
-      {showAddColumnModal && (
-        <AddColumn
-          onClose={() => setShowAddColumnModal(false)}
-          boardData={boardData}
-        />
-      )}
+      <BoardModal
+        showModal={showCreateBoardModal}
+        onClose={() => setShowCreateBoardModal(false)}
+      />
+
+      <AddColumn
+        onClose={() => setShowAddColumnModal(false)}
+        showModal={showAddColumnModal}
+        boardData={boardData}
+      />
     </>
   );
 };

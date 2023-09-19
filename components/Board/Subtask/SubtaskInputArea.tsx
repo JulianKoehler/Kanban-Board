@@ -4,6 +4,7 @@ import Input from "@/components/UI/InputFields/TextInput";
 import { ISubtask } from "@/types/data/board.model";
 import React from "react";
 import uuid from "react-uuid";
+import { motion, AnimatePresence } from "framer-motion";
 
 type Props = {
   subtasks: ISubtask[];
@@ -60,32 +61,42 @@ const SubtaskInputArea = ({
   }
   return (
     <>
-      {subtasks.map((subtask, index) => {
-        return subtask.markedForDeletion ? null : (
-          <div key={subtask.id} className="relative flex gap-[1.6rem]">
-            <Input
-              value={subtask.title}
-              className={
-                isFormSubmitted && subtask.title.length < 1 ? "input-error" : ""
-              }
-              onChange={handleSubtaskInput(index)}
-              placeholder="e.g. Make coffee"
-            />
-            <button
-              type="button"
-              onClick={onDeleteSubtaskInput(index)}
-              className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
+      <AnimatePresence>
+        {subtasks.map((subtask, index) => {
+          return subtask.markedForDeletion ? null : (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              key={subtask.id}
+              className="relative flex gap-[1.6rem]"
             >
-              <DeleteIcon />
-            </button>
-            {subtask.title.length < 1 && isFormSubmitted && (
-              <p className="absolute bottom-[0.9rem] right-[4.6rem] text-base font-medium text-red">
-                Can't be empty
-              </p>
-            )}
-          </div>
-        );
-      })}
+              <Input
+                value={subtask.title}
+                className={
+                  isFormSubmitted && subtask.title.length < 1
+                    ? "input-error"
+                    : ""
+                }
+                onChange={handleSubtaskInput(index)}
+                placeholder="e.g. Make coffee"
+              />
+              <button
+                type="button"
+                onClick={onDeleteSubtaskInput(index)}
+                className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
+              >
+                <DeleteIcon />
+              </button>
+              {subtask.title.length < 1 && isFormSubmitted && (
+                <p className="absolute bottom-[0.9rem] right-[4.6rem] text-base font-medium text-red">
+                  Can't be empty
+                </p>
+              )}
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
       <Button variant="secondary" type="button" onClick={onAddNewSubtaskInput}>
         + Add New Subtask
       </Button>

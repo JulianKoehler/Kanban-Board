@@ -12,10 +12,11 @@ import { useCreateColumnMutation } from "@/redux/slices/apiSlice";
 
 type Props = {
   onClose: () => void;
+  showModal: boolean;
   boardData: IBoard | undefined;
 };
 
-const AddColumn = ({ onClose, boardData }: Props) => {
+const AddColumn = ({ onClose, showModal, boardData }: Props) => {
   const [createNewColumn, result] = useCreateColumnMutation();
   const [color, setColor] = useState("#67E2AE");
   const nameRef = useRef<HTMLInputElement>(null);
@@ -46,6 +47,7 @@ const AddColumn = ({ onClose, boardData }: Props) => {
 
   return (
     <GenericModalContainer
+      isShowing={showModal}
       onClose={onClose}
       additionalClassNames="gap-12 w-[48rem]"
     >

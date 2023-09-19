@@ -4,6 +4,8 @@ import { useMarkSubtaskMutation } from "@/redux/slices/apiSlice";
 import { toast } from "react-hot-toast";
 import { useAppSelector } from "@/redux/hooks";
 import { selectActiveBoard } from "@/redux/slices/boardSlice";
+import { motion } from "framer-motion";
+
 
 const Subtask = ({
   checked,
@@ -53,7 +55,7 @@ const Subtask = ({
         !isCompleted && "hover:bg-[#635fc740] dark:hover:bg-[#635fc740]"
       }`}
     >
-      <input
+      <motion.input
         id={id}
         className="absolute cursor-pointer opacity-0"
         checked={isCompleted}
@@ -61,7 +63,7 @@ const Subtask = ({
         type="checkbox"
       />
       <label
-        className={`flex w-[41.6rem] cursor-pointer items-center p-[1.2rem] text-sm font-bold ${
+        className={`flex w-[41.6rem] before:transition-all before:duration-300 transition-all duration-300 cursor-pointer items-center p-[1.2rem] text-sm font-bold ${
           isCompleted
             ? "text-grey-medium line-through decoration-lines-light decoration-[0.1rem] before:bg-purple-main before:bg-checkIcon before:bg-center before:bg-no-repeat dark:decoration-lines-dark dark:before:bg-purple-main"
             : ""

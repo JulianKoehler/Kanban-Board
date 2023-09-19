@@ -32,8 +32,10 @@ const TaskModal = ({
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const activeBoard = useAppSelector(selectActiveBoard)
 
+  console.log("rendered");
+
   const isEditing = task ? true : false;
-  const currentColumnId = task?.column ?? statusOptions[0].id;
+  const currentColumnId = task?.column ?? statusOptions?.[0]?.id ;
   const taskID = task?.id ?? uuid();
   let timestamp = task?.timestamp ?? new Date().getTime();
   const [title, setTitle] = useState(task?.title ?? "");
@@ -52,8 +54,8 @@ const TaskModal = ({
         ]
   );
   const [status, setStatus] = useState<IStatus>({
-    name: task?.status?.name ?? statusOptions[0].name,
-    columnID: task?.status?.columnID ?? statusOptions[0].id,
+    name: task?.status?.name ?? statusOptions?.[0].name ?? "",
+    columnID: task?.status?.columnID ?? statusOptions?.[0].id ?? "",
   });
 
   function handleStatusChange(selectedColumn: IColumn) {

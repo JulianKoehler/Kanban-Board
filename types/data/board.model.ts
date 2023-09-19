@@ -6,7 +6,7 @@ export interface IBoard {
   columns?: IColumn[];
   index: number;
   users: {
-    creator: string;
+    creator: string | undefined;
     contributors?: string[];
   };
 }

@@ -67,15 +67,15 @@ const UserMenu = ({}: Props) => {
           </button>
         </DropDownContainer>
       )}
-      {showDeleteAccountWarning && (
-        <DeletionWarning
-          title={""}
-          type="user"
-          onClose={() => setShowDeleteAccountWarning(false)}
-          deleteFunction={handleAccountDeletion}
-          isLoading={deletingUser}
-        />
-      )}
+
+      <DeletionWarning
+        showDeletionWarning={showDeleteAccountWarning}
+        title={""}
+        type="user"
+        onClose={() => setShowDeleteAccountWarning(false)}
+        deleteFunction={handleAccountDeletion}
+        isLoading={deletingUser}
+      />
     </>
   );
 };

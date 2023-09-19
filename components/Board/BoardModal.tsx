@@ -22,12 +22,14 @@ import {
 import { BoardModalProps } from "@/types/component-props/boardModal.model";
 import ColumnInputArea from "./ColumnInputArea";
 
-const BoardModal = ({ board, onClose }: BoardModalProps) => {
+const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
   const dispatch = useAppDispatch();
   const [user] = useAuthState(auth);
   const { data: boardList } = useGetBoardListQuery(user?.uid ?? "");
-  const [updateBoard, { isLoading: isUpdatingBoard, isError: errorUpdate }] = useUpdateBoardMutation();
-  const [createBoard, { isLoading: isCreatingBoard, isError: errorCreation }] = useCreateBoardMutation();
+  const [updateBoard, { isLoading: isUpdatingBoard, isError: errorUpdate }] =
+    useUpdateBoardMutation();
+  const [createBoard, { isLoading: isCreatingBoard, isError: errorCreation }] =
+    useCreateBoardMutation();
   const isLoading = isUpdatingBoard || isCreatingBoard;
   const isError = errorUpdate || errorCreation;
   const isEditMode = board ? true : false;
@@ -39,7 +41,7 @@ const BoardModal = ({ board, onClose }: BoardModalProps) => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [boardName, setBoardName] = useState(board ? board.name : "");
   const boardId = board?.id ?? uuid();
-  const users = isEditMode ? board!.users : { creator: user!.uid };
+  const users = isEditMode ? board?.users! : { creator: user?.uid };
   const [columns, setColumns] = useState<IColumn[]>(
     isEditMode
       ? (board?.columns as IColumn[])
@@ -82,12 +84,14 @@ const BoardModal = ({ board, onClose }: BoardModalProps) => {
 
     const response = new Promise(async (resolve, reject) => {
       try {
-        const result = isEditMode ? await updateBoard(newBoardData) : await createBoard(newBoardData)
-        resolve(result)
-      } catch(error) {
-        reject(error)
+        const result = isEditMode
+          ? await updateBoard(newBoardData)
+          : await createBoard(newBoardData);
+        resolve(result);
+      } catch (error) {
+        reject(error);
       }
-    })
+    });
 
     toast.promise(response, {
       loading: "Sending...",
@@ -98,7 +102,7 @@ const BoardModal = ({ board, onClose }: BoardModalProps) => {
         } your board: ${err.toString()}`,
     });
 
-    await response
+    await response;
 
     if (!isError) {
       dispatch(
@@ -115,6 +119,7 @@ const BoardModal = ({ board, onClose }: BoardModalProps) => {
 
   return (
     <GenericModalContainer
+      isShowing={showModal}
       onClose={onClose}
       additionalClassNames="w-[48rem] max-h-[71rem]"
     >

@@ -4,6 +4,7 @@ import Input from "../UI/InputFields/TextInput";
 import DeleteIcon from "../UI/Icons/DeleteIcon";
 import Button from "../UI/Button";
 import uuid from "react-uuid";
+import { motion, AnimatePresence } from "framer-motion";
 
 type Props = {
   columns: IColumn[];
@@ -78,41 +79,48 @@ const ColumnInputArea = ({
   return (
     <>
       <div className="flex max-h-[14.7rem] flex-col gap-[1.2rem] overflow-y-auto">
-        {columns.map((column, index) => {
-          return column.markedForDeletion ? null : (
-            <div
-              key={column.id}
-              className="relative flex items-center gap-[1.6rem]"
-            >
-              <Input
-                value={column.name}
-                className={
-                  isFormSubmitted && column.name.length < 1 ? "input-error" : ""
-                }
-                onChange={(e) => handleColumnInput(e, index)}
-                placeholder="e.g. Backlog"
-              />
-              <button
-                type="button"
-                onClick={() => onDeleteColumnInput(index)}
-                className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
+        <AnimatePresence>
+          {columns.map((column, index) => {
+            return column.markedForDeletion ? null : (
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                key={column.id}
+                className="relative flex items-center gap-[1.6rem]"
               >
-                <DeleteIcon />
-              </button>
-              <input
-                onChange={(e) => onColorInput(e, index)}
-                className="w-12"
-                type="color"
-                value={column.color}
-              />
-              {column.name.length < 1 && isFormSubmitted && (
-                <p className="absolute bottom-[0.9rem] right-[8.6rem] text-base font-medium text-red">
-                  Can't be empty
-                </p>
-              )}
-            </div>
-          );
-        })}
+                <Input
+                  value={column.name}
+                  className={
+                    isFormSubmitted && column.name.length < 1
+                      ? "input-error"
+                      : ""
+                  }
+                  onChange={(e) => handleColumnInput(e, index)}
+                  placeholder="e.g. Backlog"
+                />
+                <button
+                  type="button"
+                  onClick={() => onDeleteColumnInput(index)}
+                  className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
+                >
+                  <DeleteIcon />
+                </button>
+                <input
+                  onChange={(e) => onColorInput(e, index)}
+                  className="w-12"
+                  type="color"
+                  value={column.color}
+                />
+                {column.name.length < 1 && isFormSubmitted && (
+                  <p className="absolute bottom-[0.9rem] right-[8.6rem] text-base font-medium text-red">
+                    Can't be empty
+                  </p>
+                )}
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
       <Button variant="secondary" type="button" onClick={onAddNewColumnInput}>
         + Add New Column

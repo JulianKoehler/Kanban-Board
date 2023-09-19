@@ -45,9 +45,7 @@ const BoardMenu = () => {
     await response;
 
     setShowDeleteBoardWarning(false);
-    dispatch(
-      setActiveBoard(undefined)
-    );
+    dispatch(setActiveBoard(undefined));
   }
 
   return (
@@ -78,21 +76,20 @@ const BoardMenu = () => {
           </button>
         </DropDownContainer>
       )}
-      {showEditBoardModal && (
-        <BoardModal
-          board={board}
-          onClose={() => setShowEditBoardModal(false)}
-        />
-      )}
-      {showDeleteBoardWarning && (
-        <DeletionWarning
-          title={board?.name ?? ""}
-          type="board"
-          onClose={() => setShowDeleteBoardWarning(false)}
-          deleteFunction={handleDeleteCurrentBoard}
-          isLoading={boardDeletion.isLoading}
-        />
-      )}
+      <BoardModal
+        showModal={showEditBoardModal}
+        board={board}
+        onClose={() => setShowEditBoardModal(false)}
+      />
+
+      <DeletionWarning
+        showDeletionWarning={showDeleteBoardWarning}
+        title={board?.name ?? ""}
+        type="board"
+        onClose={() => setShowDeleteBoardWarning(false)}
+        deleteFunction={handleDeleteCurrentBoard}
+        isLoading={boardDeletion.isLoading}
+      />
     </>
   );
 };
