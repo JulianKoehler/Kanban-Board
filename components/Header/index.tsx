@@ -115,6 +115,7 @@ const Header = ({
         </div>
       </header>
       <TaskModal
+        key={board?.id}
         showModal={showAddNewTaskModal}
         statusOptions={board?.columns!}
         onClose={onCloseNewTask}

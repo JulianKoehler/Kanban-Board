@@ -32,8 +32,6 @@ const TaskModal = ({
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const activeBoard = useAppSelector(selectActiveBoard)
 
-  console.log("rendered");
-
   const isEditing = task ? true : false;
   const currentColumnId = task?.column ?? statusOptions?.[0]?.id ;
   const taskID = task?.id ?? uuid();
