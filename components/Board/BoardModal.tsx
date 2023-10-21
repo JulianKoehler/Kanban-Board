@@ -117,6 +117,31 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
     }
   }
 
+  function resetForm() {
+    if (isEditMode) {
+      setBoardName(board?.name ?? "");
+      setColumns(board?.columns ?? []);
+    } else {
+      setBoardName("");
+      setColumns([
+        {
+          id: uuid(),
+          index: 0,
+          color: "#49C4E5",
+          markedForDeletion: false,
+          name: "",
+          boardId,
+          tasks: [],
+        },
+      ]);
+    }
+    setIsFormSubmitted(false);
+  }
+
+  useEffect(() => {
+    !showModal && resetForm();
+  }, [showModal]);
+
   return (
     <GenericModalContainer
       isShowing={showModal}

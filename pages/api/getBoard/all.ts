@@ -28,10 +28,7 @@ export default async function requestHandler(
   }
 
   try {
-    const boards = (await getCollection(
-      "boards",
-      req.headers.authorization
-    )) as IBoard[];
+    const boards = await getCollection("boards", req.headers.authorization) as IBoard[];
     const sortedByIndex = boards.sort(
       (a: IBoard, b: IBoard) => a.index - b.index
     );
@@ -47,16 +44,13 @@ export default async function requestHandler(
   }
 }
 
-async function getCollection(
-  collectionName: string,
-  userId: string | undefined
-) {
+async function getCollection(collectionName: string, userId: string | undefined) {
   const results: Array<CollectionTypes> = [];
 
   const collectionRef = collection(db, collectionName);
   const q = query(
     collectionRef,
-    where(new FieldPath("users", "creator"), "==", userId)
+    where(new FieldPath("users", "creator" || "contributor"), "==", userId)
   );
   const snapshot = await getDocs(q);
 

@@ -1,20 +1,20 @@
 import DropDownContainer from "@/components/UI/DropDown/DropDownContainer";
 import useMenuHandler from "@/hooks/useMenuHandler";
-import { IColumn, ITask } from "@/types/data/board.model";
+import { IColumn } from "@/types/data/board.model";
 import { useRef, useState } from "react";
 
 type Props = {
-  task?: ITask;
+  currentOption?: string;
   dropDownOptions: IColumn[];
   onStatusChange: (column: IColumn) => void;
 };
 
-const DropDown = ({ task, dropDownOptions, onStatusChange }: Props) => {
+const DropDown = ({ currentOption, dropDownOptions, onStatusChange }: Props) => {
   const dropDownRef = useRef<HTMLDivElement>(null);
   const { showElement: showDropDown, setShowElement: setShowDropDown } =
     useMenuHandler(dropDownRef);
   const [displayedStatus, setDisplayedStatus] = useState(
-    task?.status.name || dropDownOptions[0].name
+    currentOption || dropDownOptions[0].name
   );
 
   function handleSelectOption(selectedColumn: IColumn) {
@@ -24,7 +24,7 @@ const DropDown = ({ task, dropDownOptions, onStatusChange }: Props) => {
   }
 
   return (
-    <div role="select" className="max-w-full">
+    <div role="select" className="max-w-full relative">
       <button
         type="button"
         onClick={() => setShowDropDown((prevState) => !prevState)}
@@ -37,10 +37,11 @@ const DropDown = ({ task, dropDownOptions, onStatusChange }: Props) => {
       </button>
       <DropDownContainer
         ref={dropDownRef}
-        additionalClassNames={`absolute w-full max-w-[42rem] transition-all duration-300 transition opacity-0 translate-y-[-1rem] rounded-none rounded-b-xl ${
+        show={showDropDown}
+        additionalClassNames={`w-full max-w-[42rem] transition-all duration-300 transition opacity-0 translate-y-[-1rem] rounded-none rounded-b-xl ${
           showDropDown
-            ? "opacity-100 translate-y-[0.5rem]"
-            : "pointer-events-none"
+            ? "opacity-100 translate-y-[1rem]"
+            : "hidden"
         }`}
       >
         {dropDownOptions.map((status, index) => (

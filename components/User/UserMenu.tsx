@@ -48,25 +48,24 @@ const UserMenu = ({}: Props) => {
   return (
     <>
       {user && <Avatar onClick={() => setShowUserMenu(true)} user={user} />}
-      {showUserMenu && (
-        <DropDownContainer
-          additionalClassNames="absolute right-0 top-[6rem]"
-          ref={userMenuRef}
+      <DropDownContainer
+        show={showUserMenu}
+        additionalClassNames="absolute right-0 top-[6rem]"
+        ref={userMenuRef}
+      >
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center rounded-t-xl px-[1.6rem] pt-[1.6rem] pb-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
         >
-          <button
-            onClick={handleLogout}
-            className="flex w-full items-center rounded-t-xl px-[1.6rem] pt-[1.6rem] pb-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
-          >
-            Logout <SlLogout className="ml-3 text-purple-main" />
-          </button>
-          <button
-            onClick={() => setShowDeleteAccountWarning(true)}
-            className="flex items-center rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
-          >
-            Delete Account <TiUserDelete className="ml-3" />
-          </button>
-        </DropDownContainer>
-      )}
+          Logout <SlLogout className="ml-3 text-purple-main" />
+        </button>
+        <button
+          onClick={() => setShowDeleteAccountWarning(true)}
+          className="flex items-center rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
+        >
+          Delete Account <TiUserDelete className="ml-3" />
+        </button>
+      </DropDownContainer>
 
       <DeletionWarning
         showDeletionWarning={showDeleteAccountWarning}

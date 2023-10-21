@@ -7,8 +7,8 @@ import {
   ITaskChanged,
   TaskDataServerResponse,
 } from "@/types/data/board.model";
+import { DeletionPayload } from "@/types/rtk-query/task-deletion";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
 
 const BASE_URL = "/api/";
 
@@ -174,13 +174,39 @@ export const boardApi = createApi({
         }
       },
     }),
-    deleteTask: builder.mutation<void, Pick<ITask, "id">>({
-      query: (id) => ({
+    deleteTask: builder.mutation<void, DeletionPayload>({
+      query: (payload) => ({
         url: API_ENDPOINTS.deleteTask,
         method: "DELETE",
-        body: id,
+        body: payload.id,
       }),
-      invalidatesTags: ["BoardData"],
+      async onQueryStarted(payload, { dispatch, queryFulfilled }) {
+        const { id, column, boardId } = payload;
+        try {
+          await queryFulfilled;
+
+          dispatch(
+            boardApi.util.updateQueryData(
+              "getBoardData",
+              boardId ?? "",
+              (draft) => {
+                const columnIndex = draft?.columns?.findIndex(
+                  (col) => col.id === column
+                );
+                if (columnIndex === undefined)
+                  throw new Error("No column found for this task.");
+
+                draft.columns![columnIndex].tasks = draft?.columns![
+                  columnIndex
+                ]?.tasks?.filter((task) => task.id !== id);
+              }
+            )
+          );
+        } catch (err) {
+          console.log(err);
+          dispatch(boardApi.util.invalidateTags(["BoardData"]));
+        }
+      },
     }),
     markSubtask: builder.mutation<
       void,
@@ -203,11 +229,19 @@ export const boardApi = createApi({
             "getBoardData",
             boardId ?? "",
             (draft) => {
-              const column = draft.columns?.findIndex(column => column.tasks?.some(task => task.id === taskId))
-              const task = draft.columns![column!].tasks?.findIndex(task => task.id === taskId)
-              const subtask = draft.columns![column!].tasks![task!].subtasks.findIndex(subtask => subtask.id === subtaskId)
+              const column = draft.columns?.findIndex((column) =>
+                column.tasks?.some((task) => task.id === taskId)
+              );
+              const task = draft.columns![column!].tasks?.findIndex(
+                (task) => task.id === taskId
+              );
+              const subtask = draft.columns![column!].tasks![
+                task!
+              ].subtasks.findIndex((subtask) => subtask.id === subtaskId);
 
-              draft.columns![column!].tasks![task!].subtasks![subtask!].isCompleted = isCompleted
+              draft.columns![column!].tasks![task!].subtasks![
+                subtask!
+              ].isCompleted = isCompleted;
             }
           )
         );

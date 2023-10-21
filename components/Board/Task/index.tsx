@@ -19,6 +19,7 @@ import { TaskProps } from "@/types/component-props/TaskProps.model";
 import { useAppSelector } from "@/redux/hooks";
 import { selectActiveBoard } from "@/redux/slices/boardSlice";
 import getSubtaskHeadline from "@/util/getSubtaskHeadline";
+import MenuButton from "@/components/UI/Button/MenuButton";
 
 const Task = ({ currentBoard, task }: TaskProps) => {
   const [deleteTask, deleteResult] = useDeleteTaskMutation();
@@ -44,7 +45,8 @@ const Task = ({ currentBoard, task }: TaskProps) => {
   }
 
   async function handleDeleteCurrentTask() {
-    const response = deleteTask({ id: task.id });
+    const payload = { id: task.id, boardId: currentBoard.id, column: task.column }
+    const response = deleteTask(payload);
 
     toast.promise(response, {
       loading: "Sending...",
@@ -121,36 +123,34 @@ const Task = ({ currentBoard, task }: TaskProps) => {
         additionalClassNames="w-[48rem] gap-[2.4rem]"
         onClose={() => setShowTaskModal(false)}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between relative">
           <h2 className="text-xl font-bold">{task.title}</h2>
-          <button
+          <MenuButton
             onClick={() => setShowEditTaskMenu((prevState) => !prevState)}
-            className="relative h-fit w-12 px-[1rem]"
           >
             <Image src={OptionsIcon} alt="options" />
-            {showEditTaskMenu && (
-              <DropDownContainer
-                ref={menuRef}
-                additionalClassNames="absolute right-1/2 translate-x-1/2 top-16"
-              >
-                <button
-                  onClick={handleEditCurrentBoard}
-                  className="w-full rounded-t-xl px-[1.6rem] pt-[1.6rem] pb-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  Edit Task
-                </button>
-                <button
-                  onClick={() => setShowDeletionWarning(true)}
-                  className="rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  Delete Task
-                </button>
-              </DropDownContainer>
-            )}
-          </button>
+          </MenuButton>
+          <DropDownContainer
+            show={showEditTaskMenu}
+            ref={menuRef}
+            additionalClassNames="absolute translate-x-[120%] top-12"
+          >
+            <button
+              onClick={handleEditCurrentBoard}
+              className="w-full rounded-t-xl px-[1.6rem] pt-[1.6rem] pb-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              Edit Task
+            </button>
+            <button
+              onClick={() => setShowDeletionWarning(true)}
+              className="rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              Delete Task
+            </button>
+          </DropDownContainer>
         </div>
         <p
-          className="text-base font-medium text-grey-medium"
+          className="text-base font-medium text-grey-medium translate-x-"
           dangerouslySetInnerHTML={{
             __html: taskDescription || "No further details available",
           }}
@@ -177,7 +177,7 @@ const Task = ({ currentBoard, task }: TaskProps) => {
         <div className="flex flex-col gap-[1.6rem]">
           <h4 className="text-sm font-bold text-grey-medium">Current Status</h4>
           <DropDown
-            task={task}
+            currentOption={task?.status?.name}
             dropDownOptions={currentBoard.columns!}
             onStatusChange={(selectedColumn) =>
               handleStatusChange(selectedColumn)
@@ -186,6 +186,7 @@ const Task = ({ currentBoard, task }: TaskProps) => {
         </div>
       </GenericModalContainer>
       <TaskModal
+        key={task.id}
         task={task}
         statusOptions={currentBoard.columns!}
         subtaskList={subtasks}

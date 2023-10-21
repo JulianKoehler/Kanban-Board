@@ -122,7 +122,7 @@ const Header = ({
       />
 
       <MobileMenu
-        showModal={showMobileMenu && isMobile}
+        showModal={isMobile && showMobileMenu}
         theme={theme}
         setTheme={setTheme}
         onClose={onToggleMobileMenu}

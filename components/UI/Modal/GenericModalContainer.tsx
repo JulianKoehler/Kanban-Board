@@ -46,7 +46,7 @@ const ModalOverlay = ({
       animate={{ opacity: 1, y: -0 }}
       exit={{ opacity: 0, y: -50 }}
       onClick={e => e.stopPropagation()}
-      className={`z-40 flex h-fit max-h-[90%] max-w-[90%] flex-col overflow-y-auto rounded-xl bg-white p-[2.4rem] shadow-sm dark:bg-grey-very-dark tablet:overflow-visible tablet:p-[3.2rem] ${additionalClassNames}`}
+      className={`z-40 flex max-h-[90%] max-w-[90%] flex-col !overflow-y-auto overflow-x-visible rounded-xl bg-white p-[2.4rem] shadow-sm dark:bg-grey-very-dark tablet:p-[3.2rem] ${additionalClassNames}`}
     >
       {children}
     </motion.div>

@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import uuid from "react-uuid";
 import toast from "react-hot-toast";
-import { IColumn, IStatus, ISubtask, ITaskChanged } from "@/types/data/board.model";
+import {
+  IColumn,
+  IStatus,
+  ISubtask,
+  ITaskChanged,
+} from "@/types/data/board.model";
 import GenericModalContainer from "@/components/UI/Modal/GenericModalContainer";
 import Input from "@/components/UI/InputFields/TextInput";
 import Button from "@/components/UI/Button";
@@ -30,10 +35,10 @@ const TaskModal = ({
   const [createTask, createResult] = useCreateTaskMutation();
   const [updateTask, updateResult] = useUpdateTaskMutation();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const activeBoard = useAppSelector(selectActiveBoard)
+  const activeBoard = useAppSelector(selectActiveBoard);
 
   const isEditing = task ? true : false;
-  const currentColumnId = task?.column ?? statusOptions?.[0]?.id ;
+  const currentColumnId = task?.column ?? statusOptions?.[0]?.id;
   const taskID = task?.id ?? uuid();
   let timestamp = task?.timestamp ?? new Date().getTime();
   const [title, setTitle] = useState(task?.title ?? "");
@@ -52,8 +57,8 @@ const TaskModal = ({
         ]
   );
   const [status, setStatus] = useState<IStatus>({
-    name: task?.status?.name ?? statusOptions?.[0].name ?? "",
-    columnID: task?.status?.columnID ?? statusOptions?.[0].id ?? "",
+    name: task?.status?.name ?? statusOptions?.[0]?.name ?? "",
+    columnID: task?.status?.columnID ?? statusOptions?.[0]?.id ?? "",
   });
 
   function handleStatusChange(selectedColumn: IColumn) {
@@ -64,15 +69,18 @@ const TaskModal = ({
   }
 
   function onChangeTitle(e: React.ChangeEvent<HTMLInputElement>) {
-    // @ts-ignore
-    if (title.length > 100 && e.nativeEvent.inputType !== "deleteContentBackward") {
+    if (
+      title.length > 100 &&
+      // @ts-ignore
+      e.nativeEvent.inputType !== "deleteContentBackward"
+    ) {
       toast("Consider putting the details into the description", {
         icon: "🚫",
         id: taskID,
       });
-      return
+      return;
     }
-    setTitle(e.target.value)
+    setTitle(e.target.value);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -109,24 +117,45 @@ const TaskModal = ({
       toast.promise(response, {
         loading: "Updating your task...",
         success: "Your task has been updated.",
-        error: () => `Your task could not be updated: ${updateResult.error}`
-      })
+        error: () => `Your task could not be updated: ${updateResult.error}`,
+      });
     } else {
       const response = createTask(newTaskData).unwrap();
       toast.promise(response, {
         loading: "Creating your task...",
         success: "Your task has been created.",
-        error: () => `Your task could not be created: ${createResult.error}`
-      })
+        error: () => `Your task could not be created: ${createResult.error}`,
+      });
+    }
+  }
+
+  function resetForm() {
+    if (isEditing) {
+      setSubtasks(task!.subtasks);
+      setTitle(task!.title);
+      setDescription(task!.details);
+      setIsFormSubmitted(false);
+    } else {
+      setSubtasks([]);
+      setTitle("");
+      setDescription("");
+      setIsFormSubmitted(false);
     }
   }
 
   useEffect(() => {
-    (createResult.isSuccess || updateResult.isSuccess) && onClose()
-  }, [createResult.isSuccess, updateResult.isSuccess])
+    (createResult.isSuccess || updateResult.isSuccess) && onClose();
+  }, [createResult.isSuccess, updateResult.isSuccess]);
+
+  useEffect(() => {
+    !showModal && resetForm();
+  }, [showModal]);
 
   return (
-    <GenericModalContainer isShowing={showModal} additionalClassNames="w-[48rem] max-h-[71rem]">
+    <GenericModalContainer
+      isShowing={showModal}
+      additionalClassNames="w-[48rem] max-h-[71rem]"
+    >
       <Form onSubmit={handleSubmit}>
         <h2 className="text-xl font-bold">
           {task ? "Edit Task" : "Add New Task"}
@@ -156,7 +185,7 @@ const TaskModal = ({
         </FormGroup>
         <FormGroup>
           <H5>Subtasks</H5>
-          <div className="max-w- flex max-h-[9.6rem] flex-col gap-[1.2rem] overflow-y-auto">
+          <div className="max-w- flex flex-col gap-[1.2rem] overflow-y-auto">
             <SubtaskInputArea
               subtasks={subtasks}
               setSubtasks={setSubtasks}
@@ -171,7 +200,7 @@ const TaskModal = ({
               handleStatusChange(selectedColumn)
             }
             dropDownOptions={statusOptions}
-            task={task}
+            currentOption={task?.status?.name}
           />
         </FormGroup>
         <div className="flex gap-4">

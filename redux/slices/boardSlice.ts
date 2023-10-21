@@ -1,8 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { BoardListItem } from "@/types/data/board.model";
 import { RootState } from "../store";
-import localStorageIdentifiers from "@/util/localStorageIdentifiers";
-import { boardApi } from "./apiSlice";
+
 export interface BoardsState {
   activeBoard: BoardListItem | undefined;
 }

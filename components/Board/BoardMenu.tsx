@@ -15,6 +15,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectActiveBoard, setActiveBoard } from "@/redux/slices/boardSlice";
 import { selectUser } from "@/redux/slices/authSlice";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import MenuButton from "../UI/Button/MenuButton";
 
 const BoardMenu = () => {
   const dispatch = useAppDispatch();
@@ -23,7 +24,6 @@ const BoardMenu = () => {
   const [showDeleteBoardWarning, setShowDeleteBoardWarning] = useState(false);
   const user = useAppSelector(selectUser);
   const activeBoard = useAppSelector(selectActiveBoard);
-  const { data: boardList } = useGetBoardListQuery(user?.uid ?? "");
   const { data: board } = useGetBoardDataQuery(activeBoard?.id ?? skipToken);
   const [deleteBoard, boardDeletion] = useDeleteBoardMutation();
   const { showElement: showBoardMenu, setShowElement: setShowBoardMenu } =
@@ -50,15 +50,15 @@ const BoardMenu = () => {
 
   return (
     <>
-      <button
+      <MenuButton
         onClick={() => setShowBoardMenu((prevState) => !prevState)}
         className="duration 300 rounded-full p-[1rem] transition-all hover:bg-gray-200"
       >
         <Image src={OptionsIcon} alt="options" />
-      </button>
-      {showBoardMenu && (
+      </MenuButton>
         <DropDownContainer
           additionalClassNames="absolute right-0 top-[6rem]"
+          show={showBoardMenu}
           ref={boardMenuRef}
         >
           <button
@@ -75,7 +75,6 @@ const BoardMenu = () => {
             Delete Board
           </button>
         </DropDownContainer>
-      )}
       <BoardModal
         showModal={showEditBoardModal}
         board={board}
