@@ -21,7 +21,7 @@ import { selectActiveBoard } from "@/redux/slices/boardSlice";
 import getSubtaskHeadline from "@/util/getSubtaskHeadline";
 import MenuButton from "@/components/UI/Button/MenuButton";
 
-const Task = ({ currentBoard, task }: TaskProps) => {
+const Task = ({ currentBoard, task, index }: TaskProps) => {
   const [deleteTask, deleteResult] = useDeleteTaskMutation();
   const [updateTask, { error: taskUpdatingError, isLoading: isUpdatingTask }] =
     useUpdateTaskMutation();
@@ -45,7 +45,11 @@ const Task = ({ currentBoard, task }: TaskProps) => {
   }
 
   async function handleDeleteCurrentTask() {
-    const payload = { id: task.id, boardId: currentBoard.id, column: task.column }
+    const payload = {
+      id: task.id,
+      boardId: currentBoard.id,
+      column: task.column,
+    };
     const response = deleteTask(payload);
 
     toast.promise(response, {
@@ -108,10 +112,10 @@ const Task = ({ currentBoard, task }: TaskProps) => {
         transition={{
           type: "spring",
           duration: 0.3,
-          delay: 0.25,
+          delay: index * 0.1,
         }}
         onClick={() => setShowTaskModal(true)}
-        className="group flex max-w-[28rem] cursor-pointer flex-col gap-[0.8rem] rounded-xl bg-white py-[2.3rem] px-[1.6rem] shadow-md hover:z-30 dark:bg-grey-dark dark:shadow-md-dark"
+        className="group flex max-w-[28rem] cursor-pointer flex-col gap-[0.8rem] rounded-xl bg-white px-[1.6rem] py-[2.3rem] shadow-md hover:z-30 dark:bg-grey-dark dark:shadow-md-dark"
       >
         <h3 className="text-lg font-bold group-hover:text-purple-main ">
           {task.title}
@@ -123,34 +127,35 @@ const Task = ({ currentBoard, task }: TaskProps) => {
         additionalClassNames="w-[48rem] gap-[2.4rem]"
         onClose={() => setShowTaskModal(false)}
       >
-        <div className="flex items-center justify-between relative">
-          <h2 className="text-xl font-bold">{task.title}</h2>
-          <MenuButton
-            onClick={() => setShowEditTaskMenu((prevState) => !prevState)}
-          >
-            <Image src={OptionsIcon} alt="options" />
-          </MenuButton>
-          <DropDownContainer
-            show={showEditTaskMenu}
-            ref={menuRef}
-            additionalClassNames="absolute translate-x-[120%] top-12"
-          >
-            <button
-              onClick={handleEditCurrentBoard}
-              className="w-full rounded-t-xl px-[1.6rem] pt-[1.6rem] pb-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
+        <div className="relative flex items-center justify-between">
+          <h2 className="text-xl font-bold flex-1">{task.title}</h2>
+          <div id="menu-dropdown" className="" ref={menuRef}>
+            <MenuButton
+              onClick={() => setShowEditTaskMenu((prevState) => !prevState)}
             >
-              Edit Task
-            </button>
-            <button
-              onClick={() => setShowDeletionWarning(true)}
-              className="rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
+              <Image src={OptionsIcon} alt="options" />
+            </MenuButton>
+            <DropDownContainer
+              show={showEditTaskMenu}
+              additionalClassNames="right-0 top-[4.2rem]"
             >
-              Delete Task
-            </button>
-          </DropDownContainer>
+              <button
+                onClick={handleEditCurrentBoard}
+                className="w-full rounded-t-xl px-[1.6rem] pb-[0.8rem] pt-[1.6rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                Edit Task
+              </button>
+              <button
+                onClick={() => setShowDeletionWarning(true)}
+                className="rounded-b-xl px-[1.6rem] pb-[1.6rem] pt-[0.8rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                Delete Task
+              </button>
+            </DropDownContainer>
+          </div>
         </div>
         <p
-          className="text-base font-medium text-grey-medium translate-x-"
+          className="text-base font-medium text-grey-medium"
           dangerouslySetInnerHTML={{
             __html: taskDescription || "No further details available",
           }}

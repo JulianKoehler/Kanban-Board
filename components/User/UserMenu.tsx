@@ -46,12 +46,11 @@ const UserMenu = ({}: Props) => {
   }
 
   return (
-    <>
-      {user && <Avatar onClick={() => setShowUserMenu(true)} user={user} />}
+    <div id="dropdown-menu" ref={userMenuRef}>
+      {user && <Avatar onClick={() => setShowUserMenu(prev => !prev)} user={user} />}
       <DropDownContainer
         show={showUserMenu}
         additionalClassNames="absolute right-0 top-[6rem]"
-        ref={userMenuRef}
       >
         <button
           onClick={handleLogout}
@@ -75,7 +74,7 @@ const UserMenu = ({}: Props) => {
         deleteFunction={handleAccountDeletion}
         isLoading={deletingUser}
       />
-    </>
+    </div>
   );
 };
 

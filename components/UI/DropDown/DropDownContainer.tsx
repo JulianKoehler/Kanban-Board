@@ -1,3 +1,5 @@
+import { cn } from "@/util/combineStyles";
+import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
 
 type Props = {
@@ -9,14 +11,24 @@ type Props = {
 export type RefDiv = HTMLDivElement;
 
 const DropDownContainer = React.forwardRef<RefDiv, Props>(
-  ({ children, additionalClassNames = "", show }, ref) => {    
+  ({ children, additionalClassNames = "", show }, ref) => {
     return (
-      <div
-        ref={ref}
-        className={`z-10 absolute transition-all flex h-fit w-fit min-w-[19.2rem] flex-col rounded-xl bg-white p-0 shadow-sm dark:bg-grey-very-dark ${show ? "opacity-1 translate-y-2" : "opacity-0 -translate-y-2 pointer-events-none"} ${additionalClassNames}`}
-      >
-        {children}
-      </div>
+      <AnimatePresence>
+        {show && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            ref={ref}
+            className={cn(
+              "absolute z-10 flex h-fit w-fit min-w-[19.2rem] flex-col rounded-xl bg-white p-0 shadow-sm dark:bg-grey-very-dark",
+              additionalClassNames
+            )}
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
     );
   }
 );

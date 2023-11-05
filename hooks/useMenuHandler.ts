@@ -15,7 +15,7 @@ const useMenuHandler = (ref: React.RefObject<HTMLDivElement>) => {
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, []);
+  }, [ref, setShowElement]);
 
   return {
     showElement,

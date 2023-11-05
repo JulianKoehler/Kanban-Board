@@ -77,8 +77,8 @@ const Board = ({ isSuccessBoardList, errorBoardList }: BoardDataProps) => {
           <>
             {boardData?.columns?.map((column) => (
               <Column key={column.id} column={column}>
-                {column.tasks?.map((task) => (
-                  <Task key={task.id} currentBoard={boardData!} task={task} />
+                {column.tasks?.map((task, idx) => (
+                  <Task key={task.id} currentBoard={boardData!} task={task} index={idx} />
                 ))}
               </Column>
             ))}

@@ -134,13 +134,12 @@ const TaskModal = ({
       setSubtasks(task!.subtasks);
       setTitle(task!.title);
       setDescription(task!.details);
-      setIsFormSubmitted(false);
     } else {
       setSubtasks([]);
       setTitle("");
       setDescription("");
-      setIsFormSubmitted(false);
     }
+    setIsFormSubmitted(false);
   }
 
   useEffect(() => {

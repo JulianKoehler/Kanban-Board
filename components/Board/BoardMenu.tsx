@@ -50,31 +50,32 @@ const BoardMenu = () => {
 
   return (
     <>
-      <MenuButton
-        onClick={() => setShowBoardMenu((prevState) => !prevState)}
-        className="duration 300 rounded-full p-[1rem] transition-all hover:bg-gray-200"
-      >
-        <Image src={OptionsIcon} alt="options" />
-      </MenuButton>
+      <div id="menu-dropdown" ref={boardMenuRef}>
+        <MenuButton
+          onClick={() => setShowBoardMenu((prevState) => !prevState)}
+          className="rounded-full p-[1rem] transition-all hover:bg-gray-200"
+        >
+          <Image src={OptionsIcon} alt="options" />
+        </MenuButton>
         <DropDownContainer
           additionalClassNames="absolute right-0 top-[6rem]"
           show={showBoardMenu}
-          ref={boardMenuRef}
         >
           <button
             onClick={handleEditCurrentBoard}
-            className="w-full rounded-t-xl px-[1.6rem] pt-[1.6rem] pb-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="w-full rounded-t-xl px-[1.6rem] pb-[0.8rem] pt-[1.6rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
           >
             Edit Board
           </button>
 
           <button
             onClick={() => setShowDeleteBoardWarning(true)}
-            className="rounded-b-xl px-[1.6rem] pt-[0.8rem] pb-[1.6rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="rounded-b-xl px-[1.6rem] pb-[1.6rem] pt-[0.8rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
           >
             Delete Board
           </button>
         </DropDownContainer>
+      </div>
       <BoardModal
         showModal={showEditBoardModal}
         board={board}

@@ -32,6 +32,9 @@ export default function Kanban() {
   const skeletonBaseColor = theme === "dark" ? "#1f1d24" : "#dbdbdb";
   const skeletonHighlightColor = theme === "dark" ? "#2c2d33": "#c2c2c2"
 
+  console.log("User: ", user);
+  console.log("active board: ", activeBoard);
+
   const {
     data: boardList,
     isFetching: isLoadingBoardList,
@@ -46,7 +49,6 @@ export default function Kanban() {
     user && dispatch(login(serializedUser)) && refetchBoardList();
   }, [user, loadingUser]);
 
-  /* Avoid hydration mismatch */
   useEffect(() => {
     setAppIsMounted(true);
   }, []);

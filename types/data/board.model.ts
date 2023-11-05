@@ -41,6 +41,7 @@ export type TaskDataServerResponse = {
   message: string;
   data: Pick<ITaskChanged, "id" | "column" | "oldColumn" | "boardId">
 }
+
 export interface ISubtask {
   id: string;
   index: number;
