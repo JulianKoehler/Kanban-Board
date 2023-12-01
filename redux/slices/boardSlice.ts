@@ -1,9 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BoardListItem } from "@/types/data/board.model";
 import { RootState } from "../store";
 
 export interface BoardsState {
-  activeBoard: BoardListItem | undefined;
+  activeBoard: Omit<BoardListItem, "createdAt"> | undefined;
 }
 
 const initialState: BoardsState = {
@@ -16,7 +15,7 @@ export const boardSlice = createSlice({
   reducers: {
     setActiveBoard: (
       state,
-      action: PayloadAction<BoardListItem | undefined>
+      action: PayloadAction<Omit<BoardListItem, "createdAt"> | undefined>
     ) => {
       state.activeBoard = action.payload;
     },

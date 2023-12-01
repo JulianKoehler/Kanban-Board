@@ -1,6 +1,5 @@
-import { IColumn } from "../data/board.model";
 
-export type ColumnProps = {
+export type StageProps = {
   children?: React.ReactNode;
-  column: IColumn;
+  stage: StageResponse;
 };

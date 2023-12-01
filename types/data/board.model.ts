@@ -1,32 +1,54 @@
-export type KanbanData = IBoard[];
+import { V4Options } from "uuid";
 
 export interface IBoard {
-  id: string;
-  name: string;
-  columns?: IColumn[];
-  index: number;
-  users: {
-    creator: string | undefined;
-    contributors?: string[];
-  };
+  // id: string;
+  title: string;
+  stages?: IStage[];
+  // index: number;
+  // owner: string;
+  // contributors: string[];
 }
 
-export interface IColumn {
+export interface IBoardCreate {
+  title: string;
+  stages: IStageCreate[]
+}
+
+export interface IBoardCreateResponse {
+  title: string;
+  id: string;
+  createdAt: string;
+}
+
+export interface IBoardListItem {
+  id: string;
+  title: string;
+  createdAt: number;
+}
+
+export interface IStage {
   id: string;
   index: number;
-  markedForDeletion: boolean;
-  name: string;
+  markedForDeletion?: boolean;
+  title: string;
+  color: string;
+  // boardId?: string;
+  tasks?: ITask[];
+}
+
+export interface IStageCreate {
+  title: string;
+  index: number;
   color: string;
   boardId: string;
-  tasks?: ITask[];
 }
 
 export interface ITask {
   id: string;
-  column: string;
+  stage: string;
   timestamp: number;
   title: string;
-  details: string;
+  description: string;
   status: IStatus;
   subtasks: ISubtask[];
 }
@@ -43,21 +65,14 @@ export type TaskDataServerResponse = {
 }
 
 export interface ISubtask {
-  id: string;
+  id?: string;
   index: number;
   title: string;
   isCompleted: boolean;
-  markedForDeletion: boolean;
+  markedForDeletion?: boolean;
 }
 
 export interface IStatus {
-  name: string;
-  columnID: string;
-}
-
-export interface BoardListItem {
-  id: string;
-  name: string;
-  index: number;
-  userId: string;
+  title: string;
+  stageId: string;
 }

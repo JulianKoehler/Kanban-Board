@@ -1,0 +1,27 @@
+import { boardsApiSlice } from './endpoints';
+import { BoardMutationQueryFulfilled, Dispatch } from './types';
+
+async function updateBoard(
+    queryFulfilled: BoardMutationQueryFulfilled<BoardDataResponse>,
+    dispatch: Dispatch,
+    id: string,
+) {
+    try {
+        const { data } = await queryFulfilled;
+
+        dispatch(
+            boardsApiSlice.util.updateQueryData('getBoardDataById', id ?? 'no_id', draft => {
+                draft.id = data.id;
+                draft.stages = data.stages;
+                draft.title = data.title;
+            }),
+        );
+    } catch (err) {
+        console.log(err);
+        dispatch(boardsApiSlice.util.invalidateTags(['BoardData']));
+    }
+}
+
+export const pessimisticUpdate = {
+    updateBoard,
+};

@@ -21,7 +21,6 @@ What is planned for the future:
 * Collaboration: Giving other users permission to work on your boards
 * Consequently searching for other users either with name or ID to add them to your boards
 * Assign Tasks to specific users
-* Dashboard Page for the user
 
 Also checkout the Roadmap at the very bottom where I list my smaller updates planned to enhance the codebase and the existing features!
 
@@ -29,11 +28,13 @@ Also checkout the Roadmap at the very bottom where I list my smaller updates pla
 
 **Client:** React (NextJS), Redux, TailwindCSS
 
-**Server:** NextJS, Firebase
+**Server:** NextJS, Firebase (soon fastAPI in combination with Postgresql!)
 
 The data fetching is being managed by RTK Query since it offers a great package with all different kind of fetching states, caching and integration to an existing RTK Store.
 
 Allthough I know that I would not need the NextJS API Routes per se, I wanted to separate concerns and created a seperate API Route for each task to perform. These endpoints are then reaching out to the actual firebase database.
+
+UPDATE: I am working heavily on getting my very own backend system finished. It is written in python with the fastAPI framework. I switched to a relational database (Postgres) since I noticed my data is heavily connected. The production system will be deployed in a docker container on a Linux VM Droplet on Digital Ocean. Nginx is sitting in front of the server. It will offer a huge performance increase in loading the board data. My CI/CD Pipeline via Github Actions will make sure to deploy the latest changes.
 
 
 ## Deployment
@@ -78,10 +79,10 @@ Start the server
 
 ## Roadmap
 
-- Optimistic Updates
-- Loading Skeleton UI
-- Testing
-- Animationen w/ Framer Motion
+- FastAPI Backend
+- User Collaboration
+- Update the codebase on Next 14 and utilizing the App Router
+- Unit tests for both frontend and backend
 
 
 ## Lessons Learned
