@@ -1,6 +1,4 @@
 import { ChangeEventHandler } from "react";
-import { User } from "firebase/auth";
-import { BoardListItem, IBoard } from "../data/board.model";
 
 export type HeaderProps = {
   children?: React.ReactNode;

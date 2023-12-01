@@ -1,8 +1,8 @@
-import { SlLogout } from "react-icons/sl";
-import Tooltip from "../Tooltips/Tooltip";
+import { SlLogout } from 'react-icons/sl';
+import Tooltip from '../Tooltips/Tooltip';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  showToolTip?: boolean;
+    showToolTip?: boolean;
 }
 
 /**
@@ -11,12 +11,12 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
  */
 
 const LogoutBtn = ({ showToolTip, ...btnProps }: ButtonProps) => {
-  return (
-    <button {...btnProps}>
-      <SlLogout className="text-purple-main" />
-      {showToolTip && <Tooltip>Logout</Tooltip>}
-    </button>
-  );
+    return (
+        <button {...btnProps}>
+            <SlLogout className="text-purple-main" />
+            {showToolTip && <Tooltip>Logout</Tooltip>}
+        </button>
+    );
 };
 
 export default LogoutBtn;

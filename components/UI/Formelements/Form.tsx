@@ -1,21 +1,13 @@
-import { DetailedHTMLProps, FormHTMLAttributes } from "react";
+import { DetailedHTMLProps, FormHTMLAttributes } from 'react';
 
-interface Props
-  extends DetailedHTMLProps<
-    FormHTMLAttributes<HTMLFormElement>,
-    HTMLFormElement
-  > {}
+interface FormProps extends DetailedHTMLProps<FormHTMLAttributes<HTMLFormElement>, HTMLFormElement> {}
 
-const Form = ({ children, ...restProps }: Props) => {
-  return (
-    <form
-      autoComplete="off"
-      className="flex max-w-full flex-col gap-[2.4rem]"
-      {...restProps}
-    >
-      {children}
-    </form>
-  );
+const Form = ({ children, ...restProps }: FormProps) => {
+    return (
+        <form autoComplete="off" className="flex max-w-full flex-col gap-[2.4rem]" {...restProps}>
+            {children}
+        </form>
+    );
 };
 
 export default Form;
