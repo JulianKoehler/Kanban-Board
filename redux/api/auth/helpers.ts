@@ -1,3 +1,5 @@
+import { UserLogin } from "@/types/data/user";
+
 export const buildFormDataPayloadString = (json: Record<string, unknown>) => {
     const keys = Object.keys(json);
     let payloadString = '';
@@ -11,8 +13,7 @@ export const buildFormDataPayloadString = (json: Record<string, unknown>) => {
 };
 
 /**
- *
- * Backend is expecting a field called username instead of password: https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/
+ * Backend is expecting a field called username instead of email: https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/
  */
 export const parseLoginData = ({ email, password }: UserLogin) => ({
     username: email,

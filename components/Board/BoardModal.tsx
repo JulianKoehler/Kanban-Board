@@ -12,6 +12,8 @@ import GenericModalContainer from '@/components/UI/Modal/GenericModalContainer';
 import { LoadingSpinner_TailSpin as TailSpin } from '@/components/UI/LoadingSpinner';
 import StageInputArea from './StageInputField';
 import { restApi } from '@/redux/api';
+import { BoardCreate, BoardDataResponse, BoardUpdate } from '@/types/data/board';
+import { StageUpdate } from '@/types/data/stages';
 
 export type BoardModalProps = {
     onClose: () => void;

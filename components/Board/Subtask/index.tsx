@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { useAppSelector } from '@/redux/hooks';
-import { selectActiveBoard } from '@/redux/slices/boardSlice';
 import { motion } from 'framer-motion';
 import { restApi } from '@/redux/api';
 

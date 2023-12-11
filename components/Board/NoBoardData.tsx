@@ -1,4 +1,3 @@
-import { IBoardListItem } from '@/types/data/board.model';
 import React from 'react';
 import Button from '../UI/Button';
 import Image from 'next/image';

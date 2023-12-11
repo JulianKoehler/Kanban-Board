@@ -1,30 +1,32 @@
-interface BoardBase {
+import { StageCreate, StageResponse, StageUpdate } from "./stages";
+
+export interface BoardBase {
   title: string;
 }
 
-interface BoardListItem extends BoardBase {
+export interface BoardListItem extends BoardBase {
   id: string;
   createdAt: string;
 }
 
-interface BoardCreate extends BoardBase {
+export interface BoardCreate extends BoardBase {
   stages: StageCreate[];
 }
 
-interface BoardUpdate extends BoardBase {
+export interface BoardUpdate extends BoardBase {
   stages: StageUpdate[];
 }
 
-interface BoardCreateResponse extends BoardListItem {
+export interface BoardCreateResponse extends BoardListItem {
   stages: StageResponse[];
 }
 
-interface BoardListResponse {
+export interface BoardListResponse {
   own_boards: BoardListItem[];
   contributing: BoardListItem[];
 }
 
-interface BoardDataResponse extends BoardBase {
+export interface BoardDataResponse extends BoardBase {
   id: string;
   stages: StageResponse[];
 }

@@ -1,3 +1,4 @@
+import { BoardDataResponse } from '@/types/data/board';
 import { boardsApiSlice } from './endpoints';
 import { BoardMutationQueryFulfilled, Dispatch } from './types';
 

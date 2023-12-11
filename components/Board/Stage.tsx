@@ -1,5 +1,10 @@
-import { StageProps } from '@/types/component-props/column.model';
+import { StageResponse } from '@/types/data/stages';
 import { motion } from 'framer-motion';
+
+export type StageProps = {
+    children?: React.ReactNode;
+    stage: StageResponse;
+};
 
 const Stage = ({ stage, children }: StageProps) => {
     return (

@@ -1,10 +1,11 @@
+import { BoardCreate, BoardCreateResponse, BoardDataResponse, BoardListItem, BoardListResponse, BoardUpdate } from "@/types/data/board";
 import { api } from "../api";
 import { pessimisticUpdate } from "./pessimistic-updates";
 
 export const boardsApiSlice = api.injectEndpoints({
   endpoints: (builder) => ({
     getBoardList: builder.query<BoardListItem[], void>({
-      query: () => "boards",
+      query: () => "boards/",
       transformResponse: (response: BoardListResponse) => response.own_boards,
       providesTags: ["BoardList"],
     }),
@@ -14,7 +15,7 @@ export const boardsApiSlice = api.injectEndpoints({
     }),
     createBoard: builder.mutation<BoardCreateResponse, BoardCreate>({
       query: ({ title, stages }) => ({
-        url: "boards",
+        url: "boards/",
         method: "POST",
         body: {
           title,

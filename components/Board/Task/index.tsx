@@ -15,6 +15,9 @@ import { selectActiveBoard } from '@/redux/slices/boardSlice';
 import getSubtaskHeadline from '@/util/getSubtaskHeadline';
 import MenuButton from '@/components/UI/Button/MenuButton';
 import { restApi } from '@/redux/api';
+import { BoardDataResponse } from '@/types/data/board';
+import { TaskResponse } from '@/types/data/tasks';
+import { StageResponse } from '@/types/data/stages';
 
 type TaskProps = {
     currentBoard: BoardDataResponse;

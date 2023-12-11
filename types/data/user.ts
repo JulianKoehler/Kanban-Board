@@ -1,38 +1,38 @@
-interface User {
+export interface User {
     id: string;
     name: string;
     email: string;
     password: string;
 }
 
-interface UserCreate {
+export interface UserCreate {
     userName: string;
     email: string;
     password: string;
 }
 
-interface UserReturn {
+export interface UserReturn {
     id: string;
     first_name: string;
     last_name?: string;
     email: string;
 }
 
-interface UserInfoReturn extends UserReturn {
+export interface UserInfoReturn extends UserReturn {
     createdAt: string;
     isVerified: boolean;
 }
 
-interface UserLogin {
+export interface UserLogin {
     email: string;
     password: string;
 }
 
-interface PasswordRequestReset {
+export interface PasswordRequestReset {
     email: string;
 }
 
-interface NewUserPassword {
+export interface NewUserPassword {
     accessToken: string;
     tokenType: 'Bearer';
     password: string;

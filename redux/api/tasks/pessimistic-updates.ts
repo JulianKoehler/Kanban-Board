@@ -1,3 +1,4 @@
+import { TaskCreate, TaskDeleteResponse, TaskResponse, TaskUpdate } from '@/types/data/tasks';
 import { boardsApiSlice } from '../boards/endpoints';
 import { Dispatch, TaskMutationQueryFulfilled } from './types';
 

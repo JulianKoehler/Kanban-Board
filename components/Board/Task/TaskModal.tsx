@@ -13,13 +13,16 @@ import SubtaskInputArea from '../Subtask/SubtaskInputArea';
 import { useAppSelector } from '@/redux/hooks';
 import { selectActiveBoard } from '@/redux/slices/boardSlice';
 import { restApi } from '@/redux/api';
+import { Subtask } from '@/types/data/subtask';
+import { Status } from '@/types/data/stages';
+import { TaskCreate, TaskResponse, TaskUpdate } from '@/types/data/tasks';
 
 type TaskModalProps = {
     statusOptions: Status[];
     task?: TaskResponse;
     onClose: VoidFunction;
     showModal: boolean;
-    subtaskList?: SubtaskUpdate[];
+    subtaskList?: Subtask[];
 };
 
 const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) => {
@@ -33,7 +36,7 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
     const taskID = task?.id;
     const [title, setTitle] = useState(task?.title ?? '');
     const [description, setDescription] = useState(task?.description ?? '');
-    const [subtasks, setSubtasks] = useState<SubtaskUpdate[]>([]);
+    const [subtasks, setSubtasks] = useState<Subtask[]>([]);
     const [status, setStatus] = useState<Status>({
         title: task?.status?.title ?? statusOptions?.[0]?.title ?? '',
         id: task?.status?.id ?? statusOptions?.[0]?.id ?? '',
@@ -99,12 +102,13 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
 
         await response;
     }
+
     async function submitUpdateRequest(id: string, data: TaskUpdate) {
         const updatedTask: TaskUpdate = {
             ...data,
             prevStageId: currentStageId,
         };
-
+        
         const response = updateTask({ id, task: updatedTask }).unwrap();
         toast.promise(response, {
             loading: 'Updating your task...',

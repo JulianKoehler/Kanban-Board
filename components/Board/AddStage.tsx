@@ -10,6 +10,7 @@ import { restApi } from '@/redux/api';
 import { useAppSelector } from '@/redux/hooks';
 import { selectActiveBoard } from '@/redux/slices/boardSlice';
 import { skipToken } from '@reduxjs/toolkit/query';
+import { StageCreate } from '@/types/data/stages';
 
 type Props = {
     onClose: () => void;
