@@ -1,5 +1,6 @@
 import DropDownContainer from '@/components/UI/DropDown/DropDownContainer';
 import useMenuHandler from '@/hooks/useMenuHandler';
+import { Status } from '@/types/data/stages';
 import { cn } from '@/util/combineStyles';
 import { useEffect, useRef, useState } from 'react';
 
