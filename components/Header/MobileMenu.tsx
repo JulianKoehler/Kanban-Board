@@ -1,6 +1,15 @@
 import GenericModalContainer from '../UI/Modal/GenericModalContainer';
 import ThemeSwitcher from '../UI/ThemeSwitch';
-import { MobileMenuProps } from '@/types/component-props/mobile-menu.model';
+import { ChangeEventHandler } from "react";
+
+export type MobileMenuProps = {
+  children: React.ReactNode;
+  showModal: boolean;
+  theme: string;
+  setTheme: React.Dispatch<React.SetStateAction<string>> &
+    ChangeEventHandler<HTMLInputElement>;
+  onClose: VoidFunction;
+};
 
 const MobileMenu = ({ children, showModal, theme, setTheme, onClose }: MobileMenuProps) => {
     return (

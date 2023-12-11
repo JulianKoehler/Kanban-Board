@@ -6,6 +6,7 @@ import { LoadingSpinner_TailSpin } from '@/components/UI/LoadingSpinner';
 import logo from '@/public/assets/logo-dark.svg';
 import { restApi } from '@/redux/api';
 import { HTTPExceptionResponse } from '@/redux/api/auth/types';
+import { UserReturn } from '@/types/data/user';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import Image from 'next/image';
 import Link from 'next/link';

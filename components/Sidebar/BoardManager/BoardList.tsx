@@ -2,11 +2,16 @@ import BoardIcon from '@/components/UI/Icons/BoardIcon';
 import useViewport from '@/hooks/useViewport';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { selectActiveBoard, setActiveBoard } from '@/redux/slices/boardSlice';
-import localStorageIdentifiers from '@/util/localStorageIdentifiers';
-import { BoardListProps } from '@/types/component-props/boardList.model';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { motion } from 'framer-motion';
 import { cn } from '@/util/combineStyles';
+import { BoardListItem } from '@/types/data/board';
+
+export type BoardListProps = {
+    boardList: BoardListItem[] | undefined;
+    onMobileClose: () => void;
+  };
+
 
 const BoardList = ({ boardList, onMobileClose }: BoardListProps) => {
     const dispatch = useAppDispatch();

@@ -1,13 +1,13 @@
-import { IStage } from '@/types/data/board.model';
 import React from 'react';
 import Input from '../UI/InputFields/TextInput';
 import DeleteIcon from '../UI/Icons/DeleteIcon';
 import Button from '../UI/Button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { StageUpdate } from '@/types/data/stages';
 
 type Props = {
-    stages: IStage[];
-    setStages: React.Dispatch<React.SetStateAction<IStage[]>>;
+    stages: StageUpdate[];
+    setStages: React.Dispatch<React.SetStateAction<StageUpdate[]>>;
     isFormSubmitted: boolean;
 };
 

@@ -1,3 +1,4 @@
+import { NewUserPassword, PasswordRequestReset, UserCreate, UserInfoReturn, UserLogin, UserReturn } from '@/types/data/user';
 import { api } from '../api';
 import { buildFormDataPayloadString, parseLoginData } from './helpers';
 import { HTTPExceptionResponse } from './types';
@@ -6,7 +7,7 @@ export const authApiSlice = api.injectEndpoints({
     endpoints: builder => ({
         register: builder.mutation<UserReturn | HTTPExceptionResponse, UserCreate>({
             query: ({ userName, email, password }) => ({
-                url: 'users',
+                url: 'users/',
                 method: 'POST',
                 body: {
                     user_name: userName,

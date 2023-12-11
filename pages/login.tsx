@@ -41,11 +41,11 @@ const Login = () => {
             router.push('/');
         }
         if (isError) {
+            console.error(error);
             toast.error(
                 ((error as FetchBaseQueryError).data as HTTPExceptionResponse).detail ??
                     'Leider ist etwas schief gelaufen',
             );
-            console.error(error);
         }
     }, [isSuccess, isError]);
 

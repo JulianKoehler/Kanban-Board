@@ -1,14 +1,13 @@
 import Button from '@/components/UI/Button';
 import DeleteIcon from '@/components/UI/Icons/DeleteIcon';
 import Input from '@/components/UI/InputFields/TextInput';
-import { ISubtask } from '@/types/data/board.model';
-import React from 'react';
-import uuid from 'react-uuid';
+import { Dispatch, SetStateAction } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Subtask } from '@/types/data/subtask';
 
 type SubtaskInputAreaProps = {
-    subtasks: SubtaskUpdate[];
-    setSubtasks: React.Dispatch<React.SetStateAction<SubtaskUpdate[]>>;
+    subtasks: Subtask[];
+    setSubtasks: Dispatch<SetStateAction<Subtask[]>>;
     isFormSubmitted: boolean;
 };
 
@@ -38,11 +37,17 @@ const SubtaskInputArea = ({ subtasks, setSubtasks, isFormSubmitted }: SubtaskInp
                     markedForDeletion: true,
                 };
 
+                // Remove newly created subtasks directly in the frontend before submitting them to the API
+                if (subtasks[index]?.isNew) {
+                    subtasks.splice(index, 1)
+                }
+
                 return subtasks;
             });
         };
     }
 
+    // Id will be set after submit by Postgresql
     function onAddNewSubtaskInput() {
         setSubtasks(prevSubtasks => [
             ...prevSubtasks,
@@ -51,6 +56,7 @@ const SubtaskInputArea = ({ subtasks, setSubtasks, isFormSubmitted }: SubtaskInp
                 title: '',
                 is_completed: false,
                 id: '',
+                isNew: true,
             },
         ]);
     }

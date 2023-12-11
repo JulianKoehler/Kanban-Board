@@ -1,3 +1,4 @@
+import { StageResponse } from '@/types/data/stages';
 import { boardsApiSlice } from '../boards/endpoints';
 import { BoardMutationQueryFulfilled, Dispatch } from './types';
 

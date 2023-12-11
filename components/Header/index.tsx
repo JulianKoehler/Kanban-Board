@@ -12,11 +12,28 @@ import Button from '@/components/UI/Button';
 import TaskModal from '../Board/Task/TaskModal';
 import useViewport from '@/hooks/useViewport';
 import MobileMenu from './MobileMenu';
-import { HeaderProps } from '@/types/component-props/header.model';
 import UserMenu from '../User/UserMenu';
 import BoardMenu from '../Board/BoardMenu';
 import { selectUser } from '@/redux/slices/authSlice';
 import { restApi } from '@/redux/api';
+import { ChangeEventHandler } from "react";
+import { BoardListItem } from '@/types/data/board';
+
+
+export type HeaderProps = {
+    children?: React.ReactNode;
+    showSidebar: boolean;
+    theme: string;
+    setTheme: React.Dispatch<React.SetStateAction<string>> &
+      ChangeEventHandler<HTMLInputElement>;
+    setIsMobile: (isMobile: boolean) => void;
+    onToggleMobileMenu: () => void;
+    showMobileMenu: boolean;
+    boardList: BoardListItem[] | undefined;
+    isLoadingBoardList: boolean;
+    isSuccessBoardList: boolean;
+  };
+  
 
 const Header = ({
     children,

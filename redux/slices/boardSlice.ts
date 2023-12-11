@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
+import { BoardListItem } from "@/types/data/board";
 
 export interface BoardsState {
   activeBoard: Omit<BoardListItem, "createdAt"> | undefined;

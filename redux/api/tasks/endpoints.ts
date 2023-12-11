@@ -1,15 +1,23 @@
+import { TaskCreate, TaskDeleteResponse, TaskResponse, TaskStageUpdate, TaskUpdate } from '@/types/data/tasks';
 import { api } from '../api';
 import { pessimisticUpdate } from './pessimistic-updates';
 
 export const tasksApiSlice = api.injectEndpoints({
     endpoints: builder => ({
         createTask: builder.mutation<TaskResponse, TaskCreate>({
-            query: ({ boardId, stageId, ...props }) => ({
-                url: 'tasks',
+            query: ({ boardId, stageId, subtasks, ...props }) => ({
+                url: 'tasks/',
                 method: 'POST',
                 body: {
                     board_id: boardId,
                     stage_id: stageId,
+                    subtasks: subtasks.map(subtask => {
+                        const { isNew, ...rest } = subtask
+                        return {
+                            ...rest,
+                            is_new: isNew,
+                        };
+                    }),
                     ...props,
                 },
             }),
@@ -18,12 +26,19 @@ export const tasksApiSlice = api.injectEndpoints({
             },
         }),
         updateTask: builder.mutation<TaskResponse, { id: string; task: TaskUpdate }>({
-            query: ({ id, task: { boardId, stageId, prevStageId, ...props } }) => ({
+            query: ({ id, task: { boardId, stageId, prevStageId, subtasks, ...props } }) => ({
                 url: `tasks/${id}`,
                 method: 'PUT',
                 body: {
                     board_id: boardId,
                     stage_id: stageId,
+                    subtasks: subtasks.map(subtask => {
+                        const { isNew, ...rest } = subtask
+                        return {
+                            ...rest,
+                            is_new: isNew,
+                        };
+                    }),
                     ...props,
                 },
             }),
