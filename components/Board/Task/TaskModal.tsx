@@ -144,7 +144,7 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
 
     useEffect(() => {
         !showModal && initFormValues();
-    }, [showModal]);
+    }, [showModal, data]);
 
     return (
         <GenericModalContainer isShowing={showModal} additionalClassNames="w-[48rem] max-h-[71rem]">
