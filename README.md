@@ -24,6 +24,11 @@ What is planned for the future:
 
 Also checkout the Roadmap at the very bottom where I list my smaller updates planned to enhance the codebase and the existing features!
 
+Known current limitations:
+
+* At the moment this app is not usable via Safari Browser. I am aware of that issue and working on it.
+
+
 ## Tech Stack
 
 **Client:** React (NextJS), Redux, TailwindCSS
