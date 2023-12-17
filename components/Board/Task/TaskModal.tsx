@@ -16,6 +16,7 @@ import { restApi } from '@/redux/api';
 import { Subtask } from '@/types/data/subtask';
 import { Status } from '@/types/data/stages';
 import { TaskCreate, TaskResponse, TaskUpdate } from '@/types/data/tasks';
+import { skipToken } from '@reduxjs/toolkit/query';
 
 type TaskModalProps = {
     statusOptions: Status[];
@@ -29,6 +30,7 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
     const activeBoard = useAppSelector(selectActiveBoard);
     const [createTask, createResult] = restApi.tasks.useCreateTaskMutation();
     const [updateTask, updateResult] = restApi.tasks.useUpdateTaskMutation();
+    const { data } = restApi.boards.useGetBoardDataByIdQuery(activeBoard ? activeBoard.id : skipToken )
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
     const isEditMode = !!task;
@@ -48,6 +50,10 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
             id,
         });
     }
+
+    console.log(data);
+    console.log(subtasks);
+    
 
     function onChangeTitle(e: React.ChangeEvent<HTMLInputElement>) {
         if (

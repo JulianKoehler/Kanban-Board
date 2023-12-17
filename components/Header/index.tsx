@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
 import { selectActiveBoard } from '@/redux/slices/boardSlice';
 import Image from 'next/image';
@@ -16,24 +16,22 @@ import UserMenu from '../User/UserMenu';
 import BoardMenu from '../Board/BoardMenu';
 import { selectUser } from '@/redux/slices/authSlice';
 import { restApi } from '@/redux/api';
-import { ChangeEventHandler } from "react";
+import { ChangeEventHandler } from 'react';
 import { BoardListItem } from '@/types/data/board';
-
+import { cn } from '@/util/combineStyles';
 
 export type HeaderProps = {
     children?: React.ReactNode;
     showSidebar: boolean;
     theme: string;
-    setTheme: React.Dispatch<React.SetStateAction<string>> &
-      ChangeEventHandler<HTMLInputElement>;
+    setTheme: Dispatch<SetStateAction<string>> & ChangeEventHandler<HTMLInputElement>;
     setIsMobile: (isMobile: boolean) => void;
     onToggleMobileMenu: () => void;
     showMobileMenu: boolean;
     boardList: BoardListItem[] | undefined;
     isLoadingBoardList: boolean;
     isSuccessBoardList: boolean;
-  };
-  
+};
 
 const Header = ({
     children,
@@ -73,9 +71,10 @@ const Header = ({
     return (
         <>
             <header
-                className={`flex ${
-                    isMobile ? 'h-[6.4rem]' : 'h-[9.6rem]'
-                } max-w-[100%] items-center justify-start gap-8 border-b border-lines-light bg-white pl-[1.6rem] pr-[0.6rem] dark:border-lines-dark dark:bg-grey-dark tablet:pl-[2.4rem] tablet:pr-[2.2rem]`}
+                className={cn(
+                    isMobile ? 'h-[6.4rem]' : 'h-[9.6rem]',
+                    'flex max-w-[100%] items-center justify-start gap-8 border-b border-lines-light bg-white pl-[1.6rem] pr-[0.6rem] dark:border-lines-dark dark:bg-grey-dark tablet:pl-[2.4rem] tablet:pr-[2.2rem]',
+                )}
             >
                 {!showSidebar && !isMobile && (
                     <div className="flex h-full items-center border-r-[0.1rem] border-lines-light pr-[3.2rem] dark:border-lines-dark">
@@ -104,7 +103,7 @@ const Header = ({
                     </button>
                 )}
                 <div className="relative ml-auto flex min-w-fit items-center gap-[1rem]">
-                    {isSuccessBoardList && activeBoard ? (
+                    {!!activeBoard && (
                         <Button
                             large
                             variant="primary"
@@ -114,8 +113,8 @@ const Header = ({
                         >
                             {isMobile ? <Image src={AddIcon} alt="add" /> : '+Add New Task'}
                         </Button>
-                    ) : null}
-                    {activeBoard && !isFetchingBoardData && <BoardMenu />}
+                    )}
+                    {activeBoard && <BoardMenu />}
                     {user && <UserMenu />}
                 </div>
             </header>

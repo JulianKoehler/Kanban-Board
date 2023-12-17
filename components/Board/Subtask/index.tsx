@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { restApi } from '@/redux/api';
+import { useAppSelector } from '@/redux/hooks';
+import { selectActiveBoard } from '@/redux/slices/boardSlice';
 
 export type SubtaskProps = {
     checked: boolean;
@@ -14,11 +16,12 @@ export type SubtaskProps = {
 const Subtask = ({ checked, id, index, title, updateState }: SubtaskProps) => {
     const [isCompleted, setIsCompleted] = useState(checked);
     const [toggleSubtask, result] = restApi.subtasks.useToggleSubtaskCompleteMutation();
+    const activeBoard = useAppSelector(selectActiveBoard)
 
     function handleCheck() {
         setIsCompleted(completed => !completed);
         updateState(index);
-        toggleSubtask(id);
+        toggleSubtask({id, boardId: activeBoard!.id });
     }
 
     useEffect(() => {

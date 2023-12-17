@@ -18,7 +18,7 @@ const BoardMenu = () => {
     const [showEditBoardModal, setShowEditBoardModal] = useState(false);
     const [showDeleteBoardWarning, setShowDeleteBoardWarning] = useState(false);
     const activeBoard = useAppSelector(selectActiveBoard);
-    const { data: board } = restApi.boards.useGetBoardDataByIdQuery(activeBoard?.id ?? skipToken);
+    const { data: board, isFetching } = restApi.boards.useGetBoardDataByIdQuery(activeBoard?.id ?? skipToken);
     const [deleteBoard, boardDeletion] = restApi.boards.useDeleteBoardMutation();
     const { showElement: showBoardMenu, setShowElement: setShowBoardMenu } = useMenuHandler(boardMenuRef);
 
@@ -46,7 +46,8 @@ const BoardMenu = () => {
             <div id="menu-dropdown" ref={boardMenuRef}>
                 <MenuButton
                     onClick={() => setShowBoardMenu(prevState => !prevState)}
-                    className="rounded-full p-[1rem] transition-all hover:bg-gray-200"
+                    disabled={isFetching}
+                    className="rounded-full p-[1rem] transition-all hover:bg-gray-200 disabled:cursor-not-allowed"
                 >
                     <Image src={OptionsIcon} alt="options" />
                 </MenuButton>

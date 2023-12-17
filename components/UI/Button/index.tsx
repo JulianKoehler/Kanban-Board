@@ -20,7 +20,7 @@ const Button = ({ children, className, variant = 'primary', large = false, ...re
     const getBgColor = () => {
         switch (variant) {
             case 'primary':
-                return 'bg-purple-main hover:bg-purple-main-hover disabled:bg-purple-main-hover disabled:cursor-not-allowed';
+                return 'bg-purple-main hover:bg-purple-main-hover disabled:cursor-not-allowed';
             case 'secondary':
                 return 'dark:bg-white bg-button-secondary-lightmode-idle hover:bg-button-secondary-lightmode-hover';
             case 'destructive':
