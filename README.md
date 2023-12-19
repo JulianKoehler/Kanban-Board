@@ -6,6 +6,16 @@
 
 # Kanban Task Manager
 
+Check out the live Version via the following Link:
+
+https://kanban-board-jet.vercel.app/
+
+Feel free to create your own account or use the following Demo User Account:
+
+email: test@account.com
+
+password: Welcome123
+
 This is my current and biggest private project, in which I invested by far the most time compared to all the other projects. The work is still in progress.
 
 It is basically an application for managing tasks based on the Kanban concept. I learned really a lot along this project, which I started in March 2023, even before my first Job as a developer and am totally aware of the fact that some parts of the codebase may need some refactoring. WORK IN PROGRESS =)
@@ -31,28 +41,24 @@ Known current limitations:
 
 ## Tech Stack
 
-**Client:** React (NextJS), Redux, TailwindCSS
+**Client:** TypeScript, React (NextJS), Redux, TailwindCSS
 
-**Server:** NextJS, Firebase (soon fastAPI in combination with Postgresql!)
-
+Currently the codebase is running on Next14 but still on pages Router. The plan is to switch to app Router and also refactor the code design, make the components way smaller and modular.
 The data fetching is being managed by RTK Query since it offers a great package with all different kind of fetching states, caching and integration to an existing RTK Store.
 
-Allthough I know that I would not need the NextJS API Routes per se, I wanted to separate concerns and created a seperate API Route for each task to perform. These endpoints are then reaching out to the actual firebase database.
+**Server:** Python, fastAPI, Postgresql, SQLAlchemy as ORM
 
-UPDATE: I am working heavily on getting my very own backend system finished. It is written in python with the fastAPI framework. I switched to a relational database (Postgres) since I noticed my data is heavily connected. The production system will be deployed in a docker container on a Linux VM Droplet on Digital Ocean. Nginx is sitting in front of the server. It will offer a huge performance increase in loading the board data. My CI/CD Pipeline via Github Actions will make sure to deploy the latest changes.
+Finally I coded my very own backend system for this app. The results are amazing, even when having a huge board with lots of stages and tasks the loading time is reduced heavily. I realized that SQL is way more efficient in this case than trying to model relational data with NoSQL. Also I am able to connect the user data according to the requirements which was not possible with the Firestore.
 
 
 ## Deployment
 
-Check out the live Version via the following Link:
+**Client**
+Vercel
 
-https://kanban-board-jet.vercel.app/
-
-Feel free to create your own account or use the following Demo User Account:
-
-email: test@account.com
-
-password: Welcome123
+**Server**
+Linux VM Droplet on Digital Ocean
+Nginx as Reverse Proxy in combination with Cerbot for SSL communication
 
 
 ## Run Locally
