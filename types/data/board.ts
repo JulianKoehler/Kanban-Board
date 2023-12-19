@@ -1,4 +1,5 @@
 import { StageCreate, StageResponse, StageUpdate } from "./stages";
+import { UserInfoReturn } from "./user";
 
 export interface BoardBase {
   title: string;
@@ -29,4 +30,6 @@ export interface BoardListResponse {
 export interface BoardDataResponse extends BoardBase {
   id: string;
   stages: StageResponse[];
+  owner: UserInfoReturn;
+  contributors: UserInfoReturn[]
 }

@@ -10,6 +10,9 @@ export const usersApiSlice = api.injectEndpoints({
         getUserById: builder.query<UserInfoReturn, string>({
             query: id => `users/${id}`,
         }),
+        searchAllUsers: builder.query<UserInfoReturn[], string>({
+            query: q => `users/?q=${encodeURI(q)}`,
+        }),
         deleteUserAccount: builder.mutation<void, void>({
             query: () => ({
                 url: '/users/',

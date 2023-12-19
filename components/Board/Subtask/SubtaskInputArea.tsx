@@ -30,7 +30,7 @@ const SubtaskInputArea = ({ subtasks, setSubtasks, isFormSubmitted }: SubtaskInp
     function onDeleteSubtaskInput(index: number) {
         return () => {
             setSubtasks(prevSubtasks => {
-                const subtasks = [...prevSubtasks!];
+                const subtasks = [...prevSubtasks];
 
                 subtasks[index] = {
                     ...subtasks[index],
