@@ -37,3 +37,8 @@ export interface NewUserPassword {
     tokenType: 'Bearer';
     password: string;
 }
+
+export interface ContributorUpdate extends UserInfoReturn {
+    isNew?: boolean;
+    markedForDeletion?: boolean;
+}

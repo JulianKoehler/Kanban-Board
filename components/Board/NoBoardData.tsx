@@ -15,7 +15,7 @@ const NoBoardData = ({ setShowAddColumnModal, setShowCreateBoardModal }: NoBoard
     const { data: boardList } = restApi.boards.useGetBoardListQuery();
     const activeBoard = useAppSelector(selectActiveBoard);
 
-    const userHasBoards = boardList && boardList.length > 0;
+    const userHasBoards = boardList && (boardList.own_boards.length > 0 || boardList?.contributing.length > 0);
     const nothingSelected = !activeBoard;
 
     return (
@@ -24,7 +24,7 @@ const NoBoardData = ({ setShowAddColumnModal, setShowCreateBoardModal }: NoBoard
                 <p className="text-center text-xl font-bold text-grey-medium">
                     {activeBoard
                         ? 'This board is empty. Create a new column to get started.'
-                        : boardList && boardList.length > 0
+                        : boardList && userHasBoards
                         ? 'Welcome! Select one of your boards in the sidebar to get started'
                         : "You don't have any boards. Create one to get started."}
                 </p>

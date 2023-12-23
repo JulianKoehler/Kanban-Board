@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import toast from 'react-hot-toast';
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveBoard } from '@/redux/slices/boardSlice';
 import checkFormValidity from '@/util/checkFormValidity';
 import Button from '@/components/UI/Button';
@@ -10,10 +10,21 @@ import H5 from '@/components/UI/Headings/H5';
 import Input from '@/components/UI/InputFields/TextInput';
 import GenericModalContainer from '@/components/UI/Modal/GenericModalContainer';
 import { LoadingSpinner_TailSpin as TailSpin } from '@/components/UI/LoadingSpinner';
-import StageInputArea from './StageInputField';
+import StageInputArea from './StageInputArea';
 import { restApi } from '@/redux/api';
 import { BoardCreate, BoardDataResponse, BoardUpdate } from '@/types/data/board';
 import { StageUpdate } from '@/types/data/stages';
+import Badge from '../UI/Badge';
+import debounce from '@/util/debounce';
+import DropDownContainer from '../UI/DropDown/DropDownContainer';
+import { selectUser } from '@/redux/slices/authSlice';
+import { cn } from '@/util/combineStyles';
+import { ContributorUpdate, UserInfoReturn } from '@/types/data/user';
+import Avatar from '../UI/Avatar';
+import DeleteIcon from '../UI/Icons/DeleteIcon';
+import { AnimatePresence, motion } from 'framer-motion';
+import Tooltip from '../UI/Tooltips/Tooltip';
+import TeamMembers from './TeamMembers';
 
 export type BoardModalProps = {
     onClose: () => void;
@@ -29,9 +40,47 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
         restApi.boards.useCreateBoardMutation();
     const isLoading = isUpdatingBoard || isCreatingBoard;
     const isEditMode = !!board;
+    const currentUser = useAppSelector(selectUser);
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
     const [boardTitle, setBoardTitle] = useState(isEditMode ? board.title : '');
     const [stages, setStages] = useState<StageUpdate[]>([]);
+    const [contributors, setContributors] = useState<ContributorUpdate[]>(board?.contributors ?? []);
+    const [owner, setOwner] = useState<UserInfoReturn>(
+        board?.owner ?? currentUser ?? ({} as unknown as UserInfoReturn),
+    );
+
+    function handleAddContributor(user: ContributorUpdate) {
+        if (user?.isNew) {
+            setContributors(state => [...state, user]);
+        } else {
+            setContributors(state => {
+                const currentState = [...state];
+                const userIndex = currentState.findIndex(item => item.id === user.id);
+
+                currentState[userIndex] = { ...user };
+
+                return currentState;
+            });
+        }
+    }
+
+    function handleRemoveContributor(user: ContributorUpdate) {
+        if (user?.isNew) {
+            setContributors(state => state.filter(contributor => contributor.id !== user.id));
+        }
+
+        setContributors(state => {
+            const currenState = [...state];
+
+            const index = currenState.findIndex(contributor => contributor.id === user.id);
+            currenState[index] = {
+                ...currenState[index],
+                markedForDeletion: true,
+            };
+
+            return currenState;
+        });
+    }
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -50,6 +99,12 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
         const newBoardData: BoardUpdate = {
             title: boardTitle,
             stages,
+            owner: owner.id,
+            contributors: contributors.map(user => ({
+                id: user.id,
+                isNew: user?.isNew,
+                markedForDeletion: user?.markedForDeletion,
+            })),
         };
         const taskId = isEditMode ? board.id : '';
 
@@ -80,6 +135,8 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
     }
 
     async function submitUpdateRequest(id: string, data: BoardUpdate) {
+        console.log(data.contributors);
+
         const response = updateBoard({ id, data }).unwrap();
 
         toast.promise(response, {
@@ -93,10 +150,14 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
         await response;
     }
 
+    console.log(board);
+
     function initFormValues() {
         if (isEditMode) {
             setBoardTitle(board.title);
             setStages(board.stages);
+            setOwner(board.owner);
+            setContributors(board.contributors);
         } else {
             setBoardTitle('');
             setStages([
@@ -107,13 +168,15 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
                     title: '',
                 },
             ]);
+            setOwner(currentUser ?? ({} as unknown as UserInfoReturn));
+            setContributors([]);
         }
         setIsFormSubmitted(false);
     }
 
     useEffect(() => {
         (!showModal || board) && initFormValues();
-    }, [showModal, board]);
+    }, [showModal, board, currentUser]);
 
     return (
         <GenericModalContainer isShowing={showModal} onClose={onClose} additionalClassNames="w-[48rem] max-h-[71rem]">
@@ -134,9 +197,15 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
                     )}
                 </FormGroup>
                 <FormGroup className="flex flex-col gap-[1.6rem]">
-                    <H5>Columns</H5>
+                    <H5>Stages</H5>
                     <StageInputArea stages={stages} setStages={setStages} isFormSubmitted={isFormSubmitted} />
                 </FormGroup>
+                <TeamMembers
+                    owner={owner}
+                    contributors={contributors}
+                    onAddContributor={handleAddContributor}
+                    onRemoveContributor={handleRemoveContributor}
+                />
                 <Button type="submit" variant="primary" className="flex justify-center">
                     {isLoading ? TailSpin : isEditMode ? 'Save Changes' : 'Create Board'}
                 </Button>

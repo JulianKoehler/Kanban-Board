@@ -70,7 +70,7 @@ const BoardMenu = () => {
             <BoardModal showModal={showEditBoardModal} board={board} onClose={() => setShowEditBoardModal(false)} />
 
             <DeletionWarning
-                showDeletionWarning={showDeleteBoardWarning}
+                show={showDeleteBoardWarning}
                 title={board?.title ?? ''}
                 type="board"
                 onClose={() => setShowDeleteBoardWarning(false)}

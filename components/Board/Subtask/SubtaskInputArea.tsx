@@ -4,6 +4,7 @@ import Input from '@/components/UI/InputFields/TextInput';
 import { Dispatch, SetStateAction } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Subtask } from '@/types/data/subtask';
+import Tooltip from '@/components/UI/Tooltips/Tooltip';
 
 type SubtaskInputAreaProps = {
     subtasks: Subtask[];
@@ -30,7 +31,7 @@ const SubtaskInputArea = ({ subtasks, setSubtasks, isFormSubmitted }: SubtaskInp
     function onDeleteSubtaskInput(index: number) {
         return () => {
             setSubtasks(prevSubtasks => {
-                const subtasks = [...prevSubtasks!];
+                const subtasks = [...prevSubtasks];
 
                 subtasks[index] = {
                     ...subtasks[index],
@@ -39,7 +40,7 @@ const SubtaskInputArea = ({ subtasks, setSubtasks, isFormSubmitted }: SubtaskInp
 
                 // Remove newly created subtasks directly in the frontend before submitting them to the API
                 if (subtasks[index]?.isNew) {
-                    subtasks.splice(index, 1)
+                    subtasks.splice(index, 1);
                 }
 
                 return subtasks;
@@ -71,7 +72,7 @@ const SubtaskInputArea = ({ subtasks, setSubtasks, isFormSubmitted }: SubtaskInp
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0, opacity: 0 }}
                             key={subtask.id}
-                            className="relative flex gap-[1.6rem]"
+                            className="relative flex gap-[1.6rem] items-center"
                         >
                             <Input
                                 value={subtask.title}
@@ -79,16 +80,18 @@ const SubtaskInputArea = ({ subtasks, setSubtasks, isFormSubmitted }: SubtaskInp
                                 onChange={handleSubtaskInput(index)}
                                 placeholder="e.g. Make coffee"
                             />
-                            <motion.button
-                                initial={{ scale: 0, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0, opacity: 0 }}
-                                type="button"
-                                onClick={onDeleteSubtaskInput(index)}
-                                className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
-                            >
-                                <DeleteIcon />
-                            </motion.button>
+                            <Tooltip message='Delete'>
+                                <motion.button
+                                    initial={{ scale: 0, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    exit={{ scale: 0, opacity: 0 }}
+                                    type="button"
+                                    onClick={onDeleteSubtaskInput(index)}
+                                    className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
+                                >
+                                    <DeleteIcon />
+                                </motion.button>
+                            </Tooltip>
                             {subtask.title.length < 1 && isFormSubmitted && (
                                 <p className="absolute bottom-[0.9rem] right-[4.6rem] text-base font-medium text-red">
                                     Can't be empty

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { restApi } from '@/redux/api';
 import { useAppSelector } from '@/redux/hooks';
 import { selectActiveBoard } from '@/redux/slices/boardSlice';
+import { cn } from '@/util/combineStyles';
 
 export type SubtaskProps = {
     checked: boolean;
@@ -30,9 +31,7 @@ const Subtask = ({ checked, id, index, title, updateState }: SubtaskProps) => {
 
     return (
         <div
-            className={`flex cursor-pointer items-center rounded-md bg-grey-light focus:border-[0.1rem] focus:border-[purple-main] dark:bg-grey-dark ${
-                !isCompleted && 'hover:bg-[#635fc740] dark:hover:bg-[#635fc740]'
-            }`}
+            className={cn('flex cursor-pointer items-center rounded-md bg-grey-light focus:border-[0.1rem] focus:border-[purple-main] dark:bg-grey-dark', !isCompleted && 'hover:bg-[#635fc740] dark:hover:bg-[#635fc740]')}
         >
             <motion.input
                 id={id}

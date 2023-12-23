@@ -15,6 +15,8 @@ async function updateBoard(
                 draft.id = data.id;
                 draft.stages = data.stages;
                 draft.title = data.title;
+                draft.owner = data.owner;
+                draft.contributors = data.contributors;
             }),
         );
     } catch (err) {

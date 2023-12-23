@@ -9,7 +9,7 @@ export default function MenuButton({ children, className, ...rest }: MenuButtonP
     return (
         <button
             {...rest}
-            className={cn('duration 300 rounded-full p-[1rem] transition-all hover:bg-gray-200', className)}
+            className={cn('duration 300 rounded-full p-[1rem] transition-all hover:bg-gray-200 dark:hover:bg-slate-800', className)}
         >
             {children}
         </button>

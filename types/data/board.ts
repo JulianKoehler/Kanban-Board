@@ -1,32 +1,40 @@
-import { StageCreate, StageResponse, StageUpdate } from "./stages";
+import { StageCreate, StageResponse, StageUpdate } from './stages';
+import { ContributorUpdate, UserInfoReturn } from './user';
 
 export interface BoardBase {
-  title: string;
+    title: string;
 }
 
 export interface BoardListItem extends BoardBase {
-  id: string;
-  createdAt: string;
+    id: string;
+    createdAt: string;
 }
 
+// We only need the IDs of owner and contributors
 export interface BoardCreate extends BoardBase {
-  stages: StageCreate[];
+    stages: StageCreate[];
+    owner: string;
+    contributors: { id: string; isNew: boolean | undefined; markedForDeletion: boolean | undefined }[];
 }
 
 export interface BoardUpdate extends BoardBase {
-  stages: StageUpdate[];
+    stages: StageUpdate[];
+    owner: string;
+    contributors: { id: string; isNew: boolean | undefined; markedForDeletion: boolean | undefined }[];
 }
 
 export interface BoardCreateResponse extends BoardListItem {
-  stages: StageResponse[];
+    stages: StageResponse[];
 }
 
 export interface BoardListResponse {
-  own_boards: BoardListItem[];
-  contributing: BoardListItem[];
+    own_boards: BoardListItem[];
+    contributing: BoardListItem[];
 }
 
 export interface BoardDataResponse extends BoardBase {
-  id: string;
-  stages: StageResponse[];
+    id: string;
+    stages: StageResponse[];
+    owner: UserInfoReturn;
+    contributors: UserInfoReturn[];
 }

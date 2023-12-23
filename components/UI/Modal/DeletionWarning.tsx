@@ -4,12 +4,12 @@ import GenericModalContainer from './GenericModalContainer';
 import { LoadingSpinner_TailSpin as Tailspin } from '@/components/UI/LoadingSpinner';
 
 export type DeletionWarningProps = {
-    type: 'board' | 'task' | 'user';
+    type: 'board' | 'task' | 'user' | 'board member';
     title: string;
     isLoading?: boolean;
     deleteFunction: VoidFunction;
     onClose: VoidFunction;
-    showDeletionWarning: boolean;
+    show: boolean;
 };
 
 const DeletionWarning = ({
@@ -18,7 +18,7 @@ const DeletionWarning = ({
     isLoading,
     deleteFunction,
     onClose,
-    showDeletionWarning,
+    show,
 }: DeletionWarningProps) => {
     function getWarningMessage() {
         switch (type) {
@@ -28,12 +28,14 @@ const DeletionWarning = ({
                 return `Are you sure you want to delete the "${title}" task and its subtasks? This action cannot be reversed.`;
             case 'user':
                 return 'Do you really want to delete your account? You will lose access to all of your boards, also the ones you created!';
-        }
+            case 'board member':
+                return `Are you sure you want to remove ${title} from your board?`
+            }
     }
 
     return (
         <GenericModalContainer
-            isShowing={showDeletionWarning}
+            isShowing={show}
             additionalClassNames="w-[48rem] gap-[2.4rem]"
             onClose={onClose}
         >

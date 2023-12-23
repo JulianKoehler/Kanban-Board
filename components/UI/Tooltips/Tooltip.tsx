@@ -1,12 +1,16 @@
+import { cn } from '@/util/combineStyles';
 import { ReactNode } from 'react';
 
 type TooltipProps = {
+    message: string;
+    className?: string;
     children: ReactNode;
+    [key: string]: any;
 };
 
-const Tooltip = ({ children }: TooltipProps) => {
+const Tooltip = ({ message, children, className = '', ...props }: TooltipProps) => {
     return (
-        <div className="absolute -right-12 top-12 z-10 scale-0 rounded-lg bg-gray-500 px-4 py-2 text-lg text-white transition-transform duration-200 group-hover:scale-100">
+        <div data-tooltip={message} className={cn(className, 'tooltip')} {...props}>
             {children}
         </div>
     );
