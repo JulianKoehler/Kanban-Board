@@ -36,7 +36,7 @@ Also checkout the Roadmap at the very bottom where I list my smaller updates pla
 
 Known current limitations:
 
-* At the moment this app is not usable via Safari Browser. I am aware of that issue and working on it.
+* At the moment this app might not work with Safari, if so please allow cross-site tracking for the cookie that bears your access token.
 
 
 ## Tech Stack
@@ -57,7 +57,7 @@ Finally I coded my very own backend system for this app. The results are amazing
 Vercel
 
 **Server**
-Linux VM Droplet on Digital Ocean
+Linux VM Droplet on Digital Ocean,
 Nginx as Reverse Proxy in combination with Cerbot for SSL communication
 
 
@@ -90,7 +90,6 @@ Start the server
 
 ## Roadmap
 
-- FastAPI Backend
 - User Collaboration
 - Update the codebase on Next 14 and utilizing the App Router
 - Unit tests for both frontend and backend
