@@ -4,6 +4,7 @@ import DeleteIcon from '../UI/Icons/DeleteIcon';
 import Button from '../UI/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StageUpdate } from '@/types/data/stages';
+import Tooltip from '../UI/Tooltips/Tooltip';
 
 type Props = {
     stages: StageUpdate[];
@@ -12,6 +13,8 @@ type Props = {
 };
 
 const StageInputArea = ({ stages, setStages, isFormSubmitted }: Props) => {
+    console.log(stages);
+
     function handleColumnInput(e: React.ChangeEvent<HTMLInputElement>, index: number) {
         setStages(prevStages => {
             const stages = [...prevStages];
@@ -41,17 +44,17 @@ const StageInputArea = ({ stages, setStages, isFormSubmitted }: Props) => {
     function onDeleteStageInput(index: number) {
         setStages(prevStages => {
             const stages = [...prevStages];
-
-            // If a new stage gets deleted it obviously won't exist in the database yet, hence we just filter it out.
             const isNewStage = stages[index].id === '';
-            if (isNewStage) {
-                return stages.filter(stage => stage.id !== stages[index].id);
-            }
 
             stages[index] = {
                 ...stages[index],
                 markedForDeletion: true,
             };
+
+            // Remove newly created stages directly in the frontend before submitting them to the API
+            if (isNewStage) {
+                stages.splice(index, 1);
+            }
 
             return stages;
         });
@@ -71,7 +74,7 @@ const StageInputArea = ({ stages, setStages, isFormSubmitted }: Props) => {
 
     return (
         <>
-            <div className="max-w- flex flex-col gap-[1.2rem] overflow-y-auto overflow-x-hidden">
+            <div className="max-w- flex flex-col gap-[1.2rem]">
                 <AnimatePresence>
                     {stages.map((stage, index) => {
                         return stage.markedForDeletion ? null : (
@@ -88,19 +91,23 @@ const StageInputArea = ({ stages, setStages, isFormSubmitted }: Props) => {
                                     onChange={e => handleColumnInput(e, index)}
                                     placeholder="e.g. Backlog"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={() => onDeleteStageInput(index)}
-                                    className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
-                                >
-                                    <DeleteIcon />
-                                </button>
-                                <input
-                                    onChange={e => onColorInput(e, index)}
-                                    className="w-12"
-                                    type="color"
-                                    value={stage.color}
-                                />
+                                <Tooltip message="Delete">
+                                    <button
+                                        type="button"
+                                        onClick={() => onDeleteStageInput(index)}
+                                        className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
+                                    >
+                                        <DeleteIcon />
+                                    </button>
+                                </Tooltip>
+                                <Tooltip message='Change Color' className='w-12 h-11'>
+                                    <input
+                                        onChange={e => onColorInput(e, index)}
+                                        className='w-full h-full cursor-pointer'
+                                        type="color"
+                                        value={stage.color}
+                                    />
+                                </Tooltip>
                                 {stage.title.length < 1 && isFormSubmitted && (
                                     <p className="absolute bottom-[0.9rem] right-[8.6rem] text-base font-medium text-red">
                                         Can't be empty

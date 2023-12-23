@@ -31,6 +31,7 @@ export default function Kanban() {
     const skeletonHighlightColor = theme === 'dark' ? '#2c2d33' : '#c2c2c2';
 
     const [getBoardList, boardListResult] = restApi.boards.useLazyGetBoardListQuery();
+    const allBoards = [...(boardListResult.data?.own_boards ?? []), ...(boardListResult.data?.contributing ?? [])];
 
     useEffect(() => {
         !user && !isLoadingUser && router.replace('/login');
@@ -67,10 +68,10 @@ export default function Kanban() {
                     setShowSidebar={setShowSidebar}
                     boardManager={
                         <BoardManager
-                            boardListLength={boardListResult.data?.length ?? 0}
+                            boardListLength={(allBoards && allBoards.length) ?? 0}
                             isLoading={boardListResult.isLoading}
                         >
-                            <BoardList boardList={boardListResult.data} onMobileClose={() => null} />
+                            <BoardList boardList={allBoards} onMobileClose={() => null} />
                         </BoardManager>
                     }
                 />
@@ -93,16 +94,13 @@ export default function Kanban() {
                         onToggleMobileMenu={onToggleMobileMenu}
                         showMobileMenu={showMobileMenu}
                         setIsMobile={(isMobile: boolean) => setIsMobile(isMobile)}
-                        boardList={boardListResult.data}
-                        isLoadingBoardList={boardListResult.isLoading}
-                        isSuccessBoardList={boardListResult.isSuccess}
                     >
                         {isMobile && (
                             <BoardManager
-                                boardListLength={boardListResult.data?.length ?? 0}
+                                boardListLength={(allBoards && allBoards.length) ?? 0}
                                 isLoading={boardListResult.isLoading}
                             >
-                                <BoardList boardList={boardListResult.data} onMobileClose={onToggleMobileMenu} />
+                                <BoardList boardList={allBoards} onMobileClose={onToggleMobileMenu} />
                             </BoardManager>
                         )}
                     </Header>

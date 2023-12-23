@@ -17,7 +17,6 @@ import BoardMenu from '../Board/BoardMenu';
 import { selectUser } from '@/redux/slices/authSlice';
 import { restApi } from '@/redux/api';
 import { ChangeEventHandler } from 'react';
-import { BoardListItem } from '@/types/data/board';
 import { cn } from '@/util/combineStyles';
 
 export type HeaderProps = {
@@ -28,9 +27,6 @@ export type HeaderProps = {
     setIsMobile: (isMobile: boolean) => void;
     onToggleMobileMenu: () => void;
     showMobileMenu: boolean;
-    boardList: BoardListItem[] | undefined;
-    isLoadingBoardList: boolean;
-    isSuccessBoardList: boolean;
 };
 
 const Header = ({
@@ -41,7 +37,6 @@ const Header = ({
     theme,
     setTheme,
     setIsMobile,
-    isSuccessBoardList,
 }: HeaderProps) => {
     const activeBoard = useAppSelector(selectActiveBoard);
     const [getBoardData, { data: board, isFetching: isFetchingBoardData }] =

@@ -172,7 +172,7 @@ const Task = ({ currentBoard, task, index }: TaskProps) => {
             />
 
             <DeletionWarning
-                showDeletionWarning={showDeletionWarning}
+                show={showDeletionWarning}
                 type="task"
                 title={task.title}
                 onClose={() => setShowDeletionWarning(false)}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import toast from 'react-hot-toast';
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveBoard } from '@/redux/slices/boardSlice';
 import checkFormValidity from '@/util/checkFormValidity';
 import Button from '@/components/UI/Button';
@@ -17,7 +17,14 @@ import { StageUpdate } from '@/types/data/stages';
 import Badge from '../UI/Badge';
 import debounce from '@/util/debounce';
 import DropDownContainer from '../UI/DropDown/DropDownContainer';
-import DropDown from '../UI/DropDown/DropDown';
+import { selectUser } from '@/redux/slices/authSlice';
+import { cn } from '@/util/combineStyles';
+import { ContributorUpdate, UserInfoReturn } from '@/types/data/user';
+import Avatar from '../UI/Avatar';
+import DeleteIcon from '../UI/Icons/DeleteIcon';
+import { AnimatePresence, motion } from 'framer-motion';
+import Tooltip from '../UI/Tooltips/Tooltip';
+import TeamMembers from './TeamMembers';
 
 export type BoardModalProps = {
     onClose: () => void;
@@ -31,25 +38,49 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
         restApi.boards.useUpdateBoardMutation();
     const [createBoard, { isLoading: isCreatingBoard, isError: isErrorCreation }] =
         restApi.boards.useCreateBoardMutation();
-    const [searchUsers, userSearchResult] = restApi.users.useLazySearchAllUsersQuery();
     const isLoading = isUpdatingBoard || isCreatingBoard;
     const isEditMode = !!board;
-    const [isAddingMembers, setIsAddingMembers] = useState(false);
+    const currentUser = useAppSelector(selectUser);
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
     const [boardTitle, setBoardTitle] = useState(isEditMode ? board.title : '');
     const [stages, setStages] = useState<StageUpdate[]>([]);
-    const boardOwner = board?.owner.first_name + ' ' + board?.owner.last_name;
-    const userSearchResultDropdownOptions = userSearchResult.data?.map(user => ({
-        id: user.id,
-        title: `${user.first_name} ${user.last_name || ''}`
-    }))
+    const [contributors, setContributors] = useState<ContributorUpdate[]>(board?.contributors ?? []);
+    const [owner, setOwner] = useState<UserInfoReturn>(
+        board?.owner ?? currentUser ?? ({} as unknown as UserInfoReturn),
+    );
 
-    async function handleUserSearch(e: ChangeEvent<HTMLInputElement>) {
-        searchUsers(e.target.value);
+    function handleAddContributor(user: ContributorUpdate) {
+        if (user?.isNew) {
+            setContributors(state => [...state, user]);
+        } else {
+            setContributors(state => {
+                const currentState = [...state];
+                const userIndex = currentState.findIndex(item => item.id === user.id);
+
+                currentState[userIndex] = { ...user };
+
+                return currentState;
+            });
+        }
     }
 
-    const DEBOUNCE_INTERVAL = 500;
-    const debouncedUserSearch = debounce(handleUserSearch, DEBOUNCE_INTERVAL);
+    function handleRemoveContributor(user: ContributorUpdate) {
+        if (user?.isNew) {
+            setContributors(state => state.filter(contributor => contributor.id !== user.id));
+        }
+
+        setContributors(state => {
+            const currenState = [...state];
+
+            const index = currenState.findIndex(contributor => contributor.id === user.id);
+            currenState[index] = {
+                ...currenState[index],
+                markedForDeletion: true,
+            };
+
+            return currenState;
+        });
+    }
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -68,6 +99,12 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
         const newBoardData: BoardUpdate = {
             title: boardTitle,
             stages,
+            owner: owner.id,
+            contributors: contributors.map(user => ({
+                id: user.id,
+                isNew: user?.isNew,
+                markedForDeletion: user?.markedForDeletion,
+            })),
         };
         const taskId = isEditMode ? board.id : '';
 
@@ -98,6 +135,8 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
     }
 
     async function submitUpdateRequest(id: string, data: BoardUpdate) {
+        console.log(data.contributors);
+
         const response = updateBoard({ id, data }).unwrap();
 
         toast.promise(response, {
@@ -111,10 +150,14 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
         await response;
     }
 
+    console.log(board);
+
     function initFormValues() {
         if (isEditMode) {
             setBoardTitle(board.title);
             setStages(board.stages);
+            setOwner(board.owner);
+            setContributors(board.contributors);
         } else {
             setBoardTitle('');
             setStages([
@@ -125,15 +168,15 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
                     title: '',
                 },
             ]);
+            setOwner(currentUser ?? ({} as unknown as UserInfoReturn));
+            setContributors([]);
         }
         setIsFormSubmitted(false);
     }
 
     useEffect(() => {
         (!showModal || board) && initFormValues();
-    }, [showModal, board]);
-
-    console.log(userSearchResult);
+    }, [showModal, board, currentUser]);
 
     return (
         <GenericModalContainer isShowing={showModal} onClose={onClose} additionalClassNames="w-[48rem] max-h-[71rem]">
@@ -157,29 +200,12 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
                     <H5>Stages</H5>
                     <StageInputArea stages={stages} setStages={setStages} isFormSubmitted={isFormSubmitted} />
                 </FormGroup>
-                <FormGroup additionalClasses='relative'>
-                    <H5>Team members</H5>
-                    <div className="flex items-center gap-3 p-2">
-                        <span className="text-lg text-grey-dark">{boardOwner}</span>
-                        <Badge userType="owner" />
-                    </div>
-                    {isAddingMembers && <Input onChange={debouncedUserSearch} />}
-                    <DropDownContainer show={userSearchResult.isSuccess} additionalClassNames='bottom-0'>
-                        {userSearchResult.data
-                            ? userSearchResult.data.map(user => (
-                                  <button
-                                      onClick={() => {}}
-                                      className="w-full rounded-t-xl px-[1.6rem] pb-[0.8rem] pt-[1.6rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
-                                  >
-                                      {user.first_name} {user.last_name}
-                                  </button>
-                              ))
-                            : null}
-                    </DropDownContainer>
-                    <Button variant="secondary" type="button" onClick={() => setIsAddingMembers(true)}>
-                        + Add New Team Member
-                    </Button>
-                </FormGroup>
+                <TeamMembers
+                    owner={owner}
+                    contributors={contributors}
+                    onAddContributor={handleAddContributor}
+                    onRemoveContributor={handleRemoveContributor}
+                />
                 <Button type="submit" variant="primary" className="flex justify-center">
                     {isLoading ? TailSpin : isEditMode ? 'Save Changes' : 'Create Board'}
                 </Button>

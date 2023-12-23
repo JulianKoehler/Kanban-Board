@@ -18,7 +18,7 @@ const Avatar = ({ user, className = '', ...props }: AvatarProps) => {
     return (
         <div
             className={cn(
-                'neumorphism tracking-tight flex h-[4rem] w-[4rem] cursor-pointer items-center justify-center rounded-full font-bold text-white',
+                'neumorphism shadow-light-mode tracking-tight flex h-[4rem] w-[4rem] cursor-pointer items-center justify-center rounded-full font-bold text-white',
                 className,
             )}
             {...props}

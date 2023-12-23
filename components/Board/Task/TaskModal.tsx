@@ -49,11 +49,7 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
             title,
             id,
         });
-    }
-
-    console.log(data);
-    console.log(subtasks);
-    
+    }    
 
     function onChangeTitle(e: React.ChangeEvent<HTMLInputElement>) {
         if (
@@ -175,7 +171,7 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
                 </FormGroup>
                 <FormGroup>
                     <H5>Subtasks</H5>
-                    <div className="max-w- flex flex-col gap-[1.2rem] overflow-y-auto overflow-x-hidden">
+                    <div className="max-w- flex flex-col gap-[1.2rem]">
                         <SubtaskInputArea
                             subtasks={subtasks}
                             setSubtasks={setSubtasks}

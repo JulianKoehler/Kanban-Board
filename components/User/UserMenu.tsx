@@ -68,7 +68,7 @@ const UserMenu = () => {
             </DropDownContainer>
 
             <DeletionWarning
-                showDeletionWarning={showDeleteAccountWarning}
+                show={showDeleteAccountWarning}
                 title={''}
                 type="user"
                 onClose={() => setShowDeleteAccountWarning(false)}
