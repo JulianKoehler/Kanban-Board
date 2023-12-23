@@ -14,7 +14,7 @@ const LogoutBtn = ({ showToolTip, ...btnProps }: ButtonProps) => {
     return (
         <button {...btnProps}>
             <SlLogout className="text-purple-main" />
-            {showToolTip && <Tooltip>Logout</Tooltip>}
+            {showToolTip && <Tooltip message='Logout'>Logout</Tooltip>}
         </button>
     );
 };
