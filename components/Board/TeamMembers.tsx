@@ -144,27 +144,30 @@ const TeamMembers = ({ owner, contributors, onAddContributor, onRemoveContributo
                             initial={{ scale: 0, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0, opacity: 0 }}
+                            className="relative"
                         >
                             <Input onChange={onChangeUserSearch} value={userSearchTerm} />
+                            <DropDownContainer show={showSearchResults} additionalClassNames="top-18 w-full">
+                                {filteredUserSearchResult
+                                    ? filteredUserSearchResult.map(user => (
+                                          <button
+                                              type="button"
+                                              onClick={handleAddUserToBoard(user)}
+                                              className="dark:grey-light w-full rounded-t-xl px-[1.6rem] pb-[0.8rem] pt-[1.6rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
+                                          >
+                                              {user.first_name} {user.last_name} - {user.email}
+                                          </button>
+                                      ))
+                                    : null}
+                            </DropDownContainer>
                         </motion.div>
                     )}
                 </AnimatePresence>
-                <DropDownContainer show={showSearchResults} additionalClassNames="bottom-3 w-full">
-                    {filteredUserSearchResult
-                        ? filteredUserSearchResult.map(user => (
-                              <button
-                                  type="button"
-                                  onClick={handleAddUserToBoard(user)}
-                                  className="dark:grey-light w-full rounded-t-xl px-[1.6rem] pb-[0.8rem] pt-[1.6rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
-                              >
-                                  {user.first_name} {user.last_name}
-                              </button>
-                          ))
-                        : null}
-                </DropDownContainer>
-                {isAbleToManageTeam && <Button variant="secondary" type="button" onClick={handleShowSearchInput}>
-                    {isAddingMembers ? 'Close' : '+ Add New Team Member'}
-                </Button>}
+                {isAbleToManageTeam && (
+                    <Button variant="secondary" type="button" onClick={handleShowSearchInput}>
+                        {isAddingMembers ? 'Close' : '+ Add New Team Member'}
+                    </Button>
+                )}
             </FormGroup>
         </>
     );
