@@ -179,7 +179,7 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
     }, [showModal, board, currentUser]);
 
     return (
-        <GenericModalContainer isShowing={showModal} onClose={onClose} additionalClassNames="w-[48rem] max-h-[71rem]">
+        <GenericModalContainer isShowing={showModal} onClose={onClose} additionalClassNames="w-[48rem] max-h-[71rem] overflow-x-hidden">
             <Form onSubmit={handleSubmit}>
                 <h2 className="text-xl font-bold">{isEditMode ? 'Edit Board' : 'Add New Board'}</h2>
                 <FormGroup>
