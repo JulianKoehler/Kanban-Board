@@ -58,6 +58,12 @@ export const boardsApiSlice = api.injectEndpoints({
                 pessimisticUpdate.updateBoard(queryFulfilled, dispatch, id);
             },
         }),
+        setBoardOwner: builder.mutation<void, { boardId: string; userId: string }>({
+            query: ({ boardId, userId }) => ({
+                url: `boards/${boardId}/owner/${userId}`,
+                method: 'PUT',
+            }),
+        }),
         deleteBoard: builder.mutation<void, string>({
             query: id => ({
                 url: `boards/${id}`,

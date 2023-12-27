@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveBoard } from '@/redux/slices/boardSlice';
@@ -14,16 +14,8 @@ import StageInputArea from './StageInputArea';
 import { restApi } from '@/redux/api';
 import { BoardCreate, BoardDataResponse, BoardUpdate } from '@/types/data/board';
 import { StageUpdate } from '@/types/data/stages';
-import Badge from '../UI/Badge';
-import debounce from '@/util/debounce';
-import DropDownContainer from '../UI/DropDown/DropDownContainer';
 import { selectUser } from '@/redux/slices/authSlice';
-import { cn } from '@/util/combineStyles';
 import { ContributorUpdate, UserInfoReturn } from '@/types/data/user';
-import Avatar from '../UI/Avatar';
-import DeleteIcon from '../UI/Icons/DeleteIcon';
-import { AnimatePresence, motion } from 'framer-motion';
-import Tooltip from '../UI/Tooltips/Tooltip';
 import TeamMembers from './TeamMembers';
 
 export type BoardModalProps = {
@@ -34,10 +26,12 @@ export type BoardModalProps = {
 
 const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
     const dispatch = useAppDispatch();
-    const [updateBoard, { isLoading: isUpdatingBoard, isError: ísErrorUpdate }] =
-        restApi.boards.useUpdateBoardMutation();
     const [createBoard, { isLoading: isCreatingBoard, isError: isErrorCreation }] =
         restApi.boards.useCreateBoardMutation();
+    const [updateBoard, { isLoading: isUpdatingBoard, isError: ísErrorUpdate }] =
+        restApi.boards.useUpdateBoardMutation();
+    const [setBoardOwner, { isLoading: isUpdatingOwner, isError: isErrorOwnerUpdate }] =
+        restApi.boards.useSetBoardOwnerMutation();
     const isLoading = isUpdatingBoard || isCreatingBoard;
     const isEditMode = !!board;
     const currentUser = useAppSelector(selectUser);
@@ -82,6 +76,33 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
         });
     }
 
+    async function handlePromoteToOwner(user: UserInfoReturn) {
+        try {
+            const response = setBoardOwner({ boardId: board!.id, userId: user.id }).unwrap();
+
+            toast.promise(response, {
+                loading: 'Sending...',
+                success: `Board owner successfully updated!`,
+                error: err => `Could not update owner: ${err?.data && err.data?.detail && err.data.detail}`,
+            });
+
+            if (isErrorOwnerUpdate) return;
+
+            await response;
+
+            setContributors(state => {
+                const currentState = [...state].filter(contributor => contributor.id !== user.id);
+                const newState = [owner, ...currentState];
+
+                return newState;
+            });
+
+            setOwner(user);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setIsFormSubmitted(true);
@@ -119,7 +140,7 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
         toast.promise(response, {
             loading: 'Sending...',
             success: `Your board has been created!`,
-            error: err => `Could not create your board: ${err.toString()}`,
+            error: err => `Could not create your board: ${JSON.stringify(err)}`,
         });
 
         if (isErrorCreation) return;
@@ -142,15 +163,13 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
         toast.promise(response, {
             loading: 'Sending...',
             success: `Your board has been updated!`,
-            error: err => `Could not update your board: ${err.toString()}`,
+            error: err => `Could not update your board: ${JSON.stringify(err)}`,
         });
 
         if (ísErrorUpdate) return;
 
         await response;
     }
-
-    console.log(board);
 
     function initFormValues() {
         if (isEditMode) {
@@ -179,7 +198,11 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
     }, [showModal, board, currentUser]);
 
     return (
-        <GenericModalContainer isShowing={showModal} onClose={onClose} additionalClassNames="w-[48rem] max-h-[71rem] overflow-x-hidden">
+        <GenericModalContainer
+            isShowing={showModal}
+            onClose={onClose}
+            additionalClassNames="w-[48rem] max-h-[71rem] overflow-x-hidden"
+        >
             <Form onSubmit={handleSubmit}>
                 <h2 className="text-xl font-bold">{isEditMode ? 'Edit Board' : 'Add New Board'}</h2>
                 <FormGroup>
@@ -203,8 +226,10 @@ const BoardModal = ({ board, onClose, showModal }: BoardModalProps) => {
                 <TeamMembers
                     owner={owner}
                     contributors={contributors}
+                    isEditMode={isEditMode}
                     onAddContributor={handleAddContributor}
                     onRemoveContributor={handleRemoveContributor}
+                    onPromoteToOwner={handlePromoteToOwner}
                 />
                 <Button type="submit" variant="primary" className="flex justify-center">
                     {isLoading ? TailSpin : isEditMode ? 'Save Changes' : 'Create Board'}

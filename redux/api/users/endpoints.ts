@@ -5,7 +5,7 @@ export const usersApiSlice = api.injectEndpoints({
     endpoints: builder => ({
         getCurrenUserInfo: builder.query<UserInfoReturn, void>({
             query: () => 'users/current',
-            keepUnusedDataFor: 5,
+            keepUnusedDataFor: 0,
         }),
         getUserById: builder.query<UserInfoReturn, string>({
             query: id => `users/${id}`,
@@ -18,6 +18,16 @@ export const usersApiSlice = api.injectEndpoints({
                 url: '/users/',
                 method: 'DELETE',
             }),
+        }),
+        leaveBoard: builder.mutation<void, string>({
+            query: (boardId) => ({
+                url: '/users/',
+                method: 'PUT',
+                body: {
+                    board_id: boardId
+                }
+            }),
+            invalidatesTags: ['BoardList'],
         }),
     }),
 });

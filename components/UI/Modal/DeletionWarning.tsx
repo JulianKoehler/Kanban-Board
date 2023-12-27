@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '../Button';
 import GenericModalContainer from './GenericModalContainer';
 import { LoadingSpinner_TailSpin as Tailspin } from '@/components/UI/LoadingSpinner';
@@ -20,6 +20,7 @@ const DeletionWarning = ({
     onClose,
     show,
 }: DeletionWarningProps) => {
+    const [warningMessage, setWarningMessage] = useState(getWarningMessage())
     function getWarningMessage() {
         switch (type) {
             case 'board':
@@ -33,6 +34,12 @@ const DeletionWarning = ({
             }
     }
 
+    useEffect(() => {
+        console.log('hello');
+        
+        setWarningMessage(getWarningMessage())
+    }, [show])
+
     return (
         <GenericModalContainer
             isShowing={show}
@@ -40,7 +47,7 @@ const DeletionWarning = ({
             onClose={onClose}
         >
             <h2 className="text-xl font-bold text-red">Delete this {type}?</h2>
-            <p className="text-base font-medium text-grey-medium">{getWarningMessage()}</p>
+            <p className="text-base font-medium text-grey-medium">{warningMessage}</p>
             <div className="flex w-full flex-col gap-[1.6rem] tablet:flex-row">
                 <Button variant="destructive" onClick={deleteFunction} className="flex justify-center">
                     {isLoading ? Tailspin : 'Delete'}

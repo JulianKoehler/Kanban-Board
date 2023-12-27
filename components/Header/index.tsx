@@ -86,8 +86,8 @@ const Header = ({
                         !showSidebar && !isTablet && !isMobile && 'ml-[3.2rem]'
                     } ${!showSidebar && isTablet && 'ml-[2.4rem]'}`}
                 >
-                    {board?.title.slice(0, maxLengthBoardName) || ''}
-                    {board?.title && board?.title.length > maxLengthBoardName ? '...' : ''}
+                    {activeBoard?.title.slice(0, maxLengthBoardName) || ''}
+                    {activeBoard?.title && activeBoard?.title.length > maxLengthBoardName ? '...' : ''}
                 </h1>
                 {isMobile && (
                     <button

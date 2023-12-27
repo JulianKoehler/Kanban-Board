@@ -1,7 +1,7 @@
-import React, { ChangeEvent, useMemo, useState } from 'react';
+import React, { ChangeEvent, Dispatch, SetStateAction, useMemo, useState } from 'react';
 import FormGroup from '../UI/Formelements/FormGroup';
 import H5 from '../UI/Headings/H5';
-import { useAppSelector } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { selectUser } from '@/redux/slices/authSlice';
 import { restApi } from '@/redux/api';
 import debounce from '@/util/debounce';
@@ -17,21 +17,39 @@ import Input from '../UI/InputFields/TextInput';
 import Button from '../UI/Button';
 import DeletionWarning from '../UI/Modal/DeletionWarning';
 import PromoteIcon from '../UI/Icons/PromoteIcon';
+import ExitIcon from '../UI/Icons/ExitIcon';
+import ConstructiveWarning from '../UI/Modal/ConstructiveWarning';
+import { selectActiveBoard, setActiveBoard } from '@/redux/slices/boardSlice';
 
 type TeamMembersProps = {
     owner: UserInfoReturn;
     contributors: ContributorUpdate[];
+    isEditMode: boolean;
     onAddContributor: (user: ContributorUpdate) => void;
     onRemoveContributor: (user: ContributorUpdate) => void;
+    onPromoteToOwner: (user: UserInfoReturn) => void;
 };
 
-const TeamMembers = ({ owner, contributors, onAddContributor, onRemoveContributor }: TeamMembersProps) => {
+const TeamMembers = ({
+    owner,
+    contributors,
+    isEditMode,
+    onAddContributor,
+    onRemoveContributor,
+    onPromoteToOwner,
+}: TeamMembersProps) => {
+    const dispatch = useAppDispatch()
     const currentUser = useAppSelector(selectUser);
+    const activeBoard = useAppSelector(selectActiveBoard);
+    const [selectedMember, setSelectedMember] = useState<ContributorUpdate | null>(null);
     const [userSearchTerm, setUserSearchTerm] = useState('');
     const [searchUsers, userSearchResult] = restApi.users.useLazySearchAllUsersQuery();
+    const [leaveBoard, leaveBoardResult] = restApi.users.useLeaveBoardMutation();
     const [isAddingMembers, setIsAddingMembers] = useState(false);
     const [showDeletionWarning, setShowDeletionWarning] = useState(false);
+    const [showPromoteWarning, setShowPromoteWarning] = useState(false);
     const [showSearchResults, setShowSearchResults] = useState(false);
+    const [showLeaveBoardWarning, setShowLeaveBoardWarning] = useState(false);
 
     const filteredUserSearchResult = useMemo(
         () =>
@@ -42,6 +60,8 @@ const TeamMembers = ({ owner, contributors, onAddContributor, onRemoveContributo
     );
     const teamMembers = [owner, ...contributors.filter(member => !member?.markedForDeletion)];
     const isAbleToManageTeam = currentUser?.id === owner?.id;
+    const promoteWarningMessage = `Are you sure you want to promote ${selectedMember?.first_name} ${selectedMember?.last_name} to the owner of this board? By confirming you will give all owner specific permissions to this user.`;
+    const leaveBoardMessage = 'Are you sure you want to leave this board? By Confirming you will loose access until the owner adds you again.'
 
     async function handleUserSearch(value: string) {
         searchUsers(value);
@@ -71,11 +91,23 @@ const TeamMembers = ({ owner, contributors, onAddContributor, onRemoveContributo
         };
     }
 
-    function handleRemoveUser(user: ContributorUpdate) {
-        return () => {
-            onRemoveContributor({ ...user, markedForDeletion: true });
-            setShowDeletionWarning(false);
-        };
+    function handleRemoveUser() {
+        if (!selectedMember) return;
+
+        onRemoveContributor({ ...selectedMember, markedForDeletion: true });
+        setShowDeletionWarning(false);
+    }
+
+    function handlePromoteToOwner() {
+        if (!selectedMember) return;
+
+        onPromoteToOwner(selectedMember);
+        setShowPromoteWarning(false);
+    }
+
+    function handleLeaveBoard() {
+        leaveBoard(activeBoard!.id)
+        dispatch(setActiveBoard(undefined))
     }
 
     function handleShowSearchInput() {
@@ -84,15 +116,25 @@ const TeamMembers = ({ owner, contributors, onAddContributor, onRemoveContributo
         setIsAddingMembers(bool => !bool);
     }
 
+    function handleMemberAction(memberAction: Dispatch<SetStateAction<boolean>>) {
+        return (value: boolean) => (member: UserInfoReturn) => {
+            setSelectedMember(member);
+            memberAction(value);
+        };
+    }
+
     return (
         <>
             <FormGroup additionalClasses="relative">
                 <H5>Team members</H5>
                 {teamMembers.map(member => {
+                    const isNewMember = contributors.find(user => user.id === member.id)?.isNew;
                     const removable = isAbleToManageTeam && member.id !== owner.id;
-                    const promotable = removable; // seperate in case in future I need different requirements
+                    const promotable = removable && isEditMode && !isNewMember
+                    const leavable = !isAbleToManageTeam && member.id === currentUser?.id;
+
                     return (
-                        <div className="flex items-center gap-3 p-1">
+                        <div key={member.id} className="flex items-center gap-3 p-1">
                             <Avatar
                                 className="text-md h-[3.5rem] w-[3.5rem]"
                                 user={{ firstName: member.first_name, lastName: member.last_name }}
@@ -105,12 +147,12 @@ const TeamMembers = ({ owner, contributors, onAddContributor, onRemoveContributo
                             >
                                 {member.first_name + ' ' + member.last_name}
                             </span>
-                            <Badge userType={member.id === owner.id ? 'owner' : 'member'} />
+                            <Badge userType={member.id === owner.id ? 'owner' : 'member'} className='mr-auto'/>
                             {promotable && (
-                                <Tooltip className="ml-auto mt-1" message="Promote to Owner">
+                                <Tooltip className="mt-1" message="Promote to Owner">
                                     <button
                                         type="button"
-                                        onClick={() => alert('Work in progress!')}
+                                        onClick={() => handleMemberAction(setShowPromoteWarning)(true)(member)}
                                         className="w-[1.485rem aspect-square fill-grey-medium transition-colors duration-200 hover:fill-red"
                                     >
                                         <PromoteIcon />
@@ -121,23 +163,48 @@ const TeamMembers = ({ owner, contributors, onAddContributor, onRemoveContributo
                                 <Tooltip message="Remove">
                                     <button
                                         type="button"
-                                        onClick={() => setShowDeletionWarning(true)}
+                                        onClick={() => handleMemberAction(setShowDeletionWarning)(true)(member)}
                                         className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
                                     >
                                         <DeleteIcon />
                                     </button>
                                 </Tooltip>
                             )}
-                            <DeletionWarning
-                                type="board member"
-                                title={`${member.first_name} ${member.last_name}`}
-                                deleteFunction={handleRemoveUser(member)}
-                                onClose={() => setShowDeletionWarning(false)}
-                                show={showDeletionWarning}
-                            />
+                            {leavable && (
+                                <Tooltip className="mr-2 mt-auto" message="Leave board">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowLeaveBoardWarning(true)}
+                                        className="w-[1.485rem aspect-square fill-grey-medium transition-colors duration-200 hover:fill-red"
+                                    >
+                                        <ExitIcon />
+                                    </button>
+                                </Tooltip>
+                            )}
                         </div>
                     );
                 })}
+                <DeletionWarning
+                    type="board member"
+                    title={`${selectedMember?.first_name} ${selectedMember?.last_name}`}
+                    deleteFunction={handleRemoveUser}
+                    onClose={() => setShowDeletionWarning(false)}
+                    show={showDeletionWarning}
+                />
+                <ConstructiveWarning
+                    title="Promote this board member"
+                    message={promoteWarningMessage}
+                    callbackFn={handlePromoteToOwner}
+                    onClose={() => setShowPromoteWarning(false)}
+                    show={showPromoteWarning}
+                />
+                <ConstructiveWarning
+                    title="Leave this board?"
+                    message={leaveBoardMessage}
+                    callbackFn={handleLeaveBoard}
+                    onClose={() => setShowLeaveBoardWarning(false)}
+                    show={showLeaveBoardWarning}
+                />
                 <AnimatePresence>
                     {isAddingMembers && (
                         <motion.div
@@ -146,7 +213,11 @@ const TeamMembers = ({ owner, contributors, onAddContributor, onRemoveContributo
                             exit={{ scale: 0, opacity: 0 }}
                             className="relative"
                         >
-                            <Input onChange={onChangeUserSearch} value={userSearchTerm} />
+                            <Input
+                                onChange={onChangeUserSearch}
+                                value={userSearchTerm}
+                                placeholder="Search by name or exact email"
+                            />
                             <DropDownContainer show={showSearchResults} additionalClassNames="top-18 w-full">
                                 {filteredUserSearchResult
                                     ? filteredUserSearchResult.map(user => (

@@ -3,9 +3,10 @@ import { capitalize } from '@/util/stringUtil';
 
 type BadgeProps = {
     userType: 'owner' | 'member';
+    className?: string;
 };
 
-const Badge = ({ userType }: BadgeProps) => {
+const Badge = ({ userType, className = '' }: BadgeProps) => {
     let badgeColor = '';
     let fontColor = ''
 
@@ -23,7 +24,7 @@ const Badge = ({ userType }: BadgeProps) => {
     }
 
     return (
-        <div className={cn(badgeColor, fontColor, 'inline-block text-sm rounded-full px-4 py-2 font-bold')}>
+        <div className={cn(badgeColor, fontColor, 'inline-block text-sm rounded-full px-4 py-2 font-bold', className)}>
             {capitalize(userType)}
         </div>
     );
