@@ -1,5 +1,6 @@
 import { Status } from "./stages";
 import { Subtask } from "./subtask";
+import { UserInfoReturn } from "./user";
 
 export interface TaskBase {
   title: string;
@@ -9,6 +10,7 @@ export interface TaskBase {
 export interface TaskMutation extends TaskBase {
   boardId: string;
   stageId: string;
+  assignedUserId: string | null;
 }
 
 export interface TaskCreate extends TaskMutation {
@@ -27,10 +29,16 @@ export interface TaskStageUpdate {
   newStageId: string;
 }
 
+export interface TaskUpdateAssignedUser {
+  taskId: string;
+  assignedUserId: string | null;
+}
+
 export interface TaskResponse extends TaskBase {
   id: string;
   status: Status;
   subtasks: Subtask[];
+  assigned_user: UserInfoReturn;
 }
 
 export interface TaskDeleteResponse {

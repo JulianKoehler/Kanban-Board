@@ -17,6 +17,7 @@ import { Subtask } from '@/types/data/subtask';
 import { Status } from '@/types/data/stages';
 import { TaskCreate, TaskResponse, TaskUpdate } from '@/types/data/tasks';
 import { skipToken } from '@reduxjs/toolkit/query';
+import { UserInfoReturn } from '@/types/data/user';
 
 type TaskModalProps = {
     statusOptions: Status[];
@@ -30,26 +31,34 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
     const activeBoard = useAppSelector(selectActiveBoard);
     const [createTask, createResult] = restApi.tasks.useCreateTaskMutation();
     const [updateTask, updateResult] = restApi.tasks.useUpdateTaskMutation();
-    const { data } = restApi.boards.useGetBoardDataByIdQuery(activeBoard ? activeBoard.id : skipToken )
+    const { data: board } = restApi.boards.useGetBoardDataByIdQuery(activeBoard ? activeBoard.id : skipToken);
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
-    const isEditMode = !!task;
-    const currentStageId = task?.status.id ?? statusOptions?.[0]?.id;
-    const taskID = task?.id;
     const [title, setTitle] = useState(task?.title ?? '');
     const [description, setDescription] = useState(task?.description ?? '');
     const [subtasks, setSubtasks] = useState<Subtask[]>([]);
+    const [assignedUser, setAssignedUser] = useState<UserInfoReturn | null>(task?.assigned_user ?? null);
     const [status, setStatus] = useState<Status>({
         title: task?.status?.title ?? statusOptions?.[0]?.title ?? '',
         id: task?.status?.id ?? statusOptions?.[0]?.id ?? '',
     });
+
+    const isEditMode = !!task;
+    const currentStageId = task?.status.id ?? statusOptions?.[0]?.id;
+    const taskID = task?.id;
+    const teamMembers = [board?.owner, ...(board?.contributors ?? [])] as UserInfoReturn[];
+    const assignedUserName = `${assignedUser?.first_name} ${assignedUser?.last_name}`;
 
     function handleStatusChange(id: string, title: string) {
         setStatus({
             title,
             id,
         });
-    }    
+    }
+
+    function handleAssignmentChange(_: string, __: string, user: typeof assignedUser) {
+        setAssignedUser(user);
+    }
 
     function onChangeTitle(e: React.ChangeEvent<HTMLInputElement>) {
         if (
@@ -84,6 +93,7 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
             boardId: activeBoard!.id,
             title,
             description,
+            assignedUserId: assignedUser?.id ?? null,
             subtasks,
         };
 
@@ -110,7 +120,7 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
             ...data,
             prevStageId: currentStageId,
         };
-        
+
         const response = updateTask({ id, task: updatedTask }).unwrap();
         toast.promise(response, {
             loading: 'Updating your task...',
@@ -121,15 +131,21 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
         await response;
     }
 
+    
+    
     function initFormValues() {
         if (isEditMode) {
+            console.log(task.assigned_user);
+            
             setSubtasks(task.subtasks);
             setTitle(task.title);
             setDescription(task.description);
+            setAssignedUser(task.assigned_user);
         } else {
             setSubtasks([]);
             setTitle('');
             setDescription('');
+            setAssignedUser(null);
         }
         setIsFormSubmitted(false);
     }
@@ -140,7 +156,7 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
 
     useEffect(() => {
         !showModal && initFormValues();
-    }, [showModal]);
+    }, [showModal, task]);
 
     return (
         <GenericModalContainer isShowing={showModal} additionalClassNames="w-[48rem] max-h-[71rem]">
@@ -179,10 +195,23 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
                         />
                     </div>
                 </FormGroup>
+                {activeBoard && (
+                    <FormGroup>
+                        <H5>Assigned User</H5>
+                        <DropDown
+                            onOptionChange={handleAssignmentChange}
+                            dropDownOptions={teamMembers.map(user => ({
+                                ...user,
+                                title: `${user?.first_name} ${user?.last_name}`,
+                            }))}
+                            currentOption={assignedUser ? assignedUserName : ''}
+                        />
+                    </FormGroup>
+                )}
                 <FormGroup>
                     <H5>Status</H5>
                     <DropDown
-                        onStatusChange={handleStatusChange}
+                        onOptionChange={handleStatusChange}
                         dropDownOptions={statusOptions}
                         currentOption={task?.status?.title}
                     />

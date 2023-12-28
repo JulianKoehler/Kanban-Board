@@ -24,9 +24,15 @@ const BoardMenu = () => {
 
     function handleEditCurrentBoard() {
         setShowEditBoardModal(true);
+        setShowBoardMenu(false)
     }
 
-    async function handleDeleteCurrentBoard() {
+    function handleDeleteCurrentBoard() {
+        setShowDeleteBoardWarning(true)
+        setShowBoardMenu(false)
+    }
+
+    async function deleteCurrentBoard() {
         const response = deleteBoard(activeBoard?.id ?? '').unwrap();
 
         toast.promise(response, {
@@ -60,7 +66,7 @@ const BoardMenu = () => {
                     </button>
 
                     <button
-                        onClick={() => setShowDeleteBoardWarning(true)}
+                        onClick={handleDeleteCurrentBoard}
                         className="rounded-b-xl px-[1.6rem] pb-[1.6rem] pt-[0.8rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
                     >
                         Delete Board
@@ -74,7 +80,7 @@ const BoardMenu = () => {
                 title={board?.title ?? ''}
                 type="board"
                 onClose={() => setShowDeleteBoardWarning(false)}
-                deleteFunction={handleDeleteCurrentBoard}
+                deleteFunction={deleteCurrentBoard}
                 isLoading={boardDeletion.isLoading}
             />
         </>

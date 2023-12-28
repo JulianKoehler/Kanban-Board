@@ -18,6 +18,9 @@ import { restApi } from '@/redux/api';
 import { BoardDataResponse } from '@/types/data/board';
 import { TaskResponse } from '@/types/data/tasks';
 import { StageResponse } from '@/types/data/stages';
+import { UserReturn } from '@/types/data/user';
+import SanitizedHTML from 'react-sanitized-html';
+import Avatar from '@/components/UI/Avatar';
 
 type TaskProps = {
     currentBoard: BoardDataResponse;
@@ -27,10 +30,11 @@ type TaskProps = {
 
 const Task = ({ currentBoard, task, index }: TaskProps) => {
     const [deleteTask, deleteResult] = restApi.tasks.useDeleteTaskMutation();
-    const [updateStage, { isSuccess: isSuccessUpdateStage, isError, isLoading }] =
-        restApi.tasks.useUpdateStageMutation();
+    const [updateStage, stageUpdateResult] = restApi.tasks.useUpdateStageMutation();
+    const [updateAssingedUser, assignmentResult] = restApi.tasks.useUpdateAssingedUserMutation();
     const [subtasks, setSubtasks] = useState(task.subtasks);
     const activeBoard = useAppSelector(selectActiveBoard);
+    const assignedUserName = `${task.assigned_user?.first_name} ${task?.assigned_user?.last_name}`;
 
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [showEditTaskModal, setShowEditTaskModal] = useState(false);
@@ -38,15 +42,21 @@ const Task = ({ currentBoard, task, index }: TaskProps) => {
     const menuRef = useRef<HTMLDivElement>(null);
     const { showElement: showEditTaskMenu, setShowElement: setShowEditTaskMenu } = useMenuHandler(menuRef);
 
-    const taskDescription = task.description.replace(/\n/g, '<br>');
     const subtaskHeadline = getSubtaskHeadline(subtasks);
+    const teamMembers = [currentBoard.owner, ...currentBoard.contributors];
 
     function handleEditCurrentBoard() {
         setShowEditTaskModal(true);
         setShowTaskModal(false);
+        setShowEditTaskMenu(false);
     }
 
-    async function handleDeleteCurrentTask() {
+    function handleDeleteCurrentTask() {
+        setShowDeletionWarning(true);
+        setShowEditTaskMenu(false);
+    }
+
+    async function deleteCurrentTask() {
         const response = deleteTask(task.id).unwrap();
 
         toast.promise(response, {
@@ -76,16 +86,24 @@ const Task = ({ currentBoard, task, index }: TaskProps) => {
             boardId: activeBoard?.id ?? '',
         });
 
-        if (!isLoading && isError) {
+        if (!stageUpdateResult.isLoading && stageUpdateResult.isError) {
             toast.error('Could not update the task status.');
         }
     }
 
+    async function handleChangeAssignedUser(userId: UserReturn['id']) {
+        await updateAssingedUser({ taskId: task.id, assignedUserId: userId });
+
+        if (!assignmentResult.isLoading && assignmentResult.isError) {
+            toast.error('Could not assign the task, please try again.');
+        }
+    }
+
     useEffect(() => {
-        if (deleteResult.isSuccess || isSuccessUpdateStage) {
+        if (deleteResult.isSuccess || stageUpdateResult.isSuccess) {
             setShowTaskModal(false);
         }
-    }, [deleteResult.isSuccess, isSuccessUpdateStage]);
+    }, [deleteResult.isSuccess, stageUpdateResult.isSuccess]);
 
     useEffect(() => {
         setSubtasks(task.subtasks);
@@ -102,10 +120,16 @@ const Task = ({ currentBoard, task, index }: TaskProps) => {
                     delay: index * 0.1,
                 }}
                 onClick={() => setShowTaskModal(true)}
-                className="group flex max-w-[28rem] cursor-pointer flex-col gap-[0.8rem] rounded-xl bg-white px-[1.6rem] py-[2.3rem] shadow-md hover:z-30 dark:bg-grey-dark dark:shadow-md-dark"
+                className="group max-w-[28rem] relative flex items-end cursor-pointer rounded-xl bg-white px-[1.6rem] py-[2.3rem] shadow-md hover:z-30 dark:bg-grey-dark dark:shadow-md-dark"
             >
-                <h3 className="text-lg font-bold group-hover:text-purple-main ">{task.title}</h3>
-                <p className="text-sm font-bold text-grey-medium">{subtaskHeadline}</p>
+                <div className='flex flex-col gap-[0.8rem]'>
+                    <h3 className="text-lg font-bold group-hover:text-purple-main ">{task.title}</h3>
+                    <p className="text-sm font-bold text-grey-medium">{subtaskHeadline}</p>
+                </div>
+                {task?.assigned_user && <Avatar className='w-[3rem] h-[3rem] text-sm absolute right-4 bottom-4' user={{
+                    firstName: task?.assigned_user?.first_name,
+                    lastName: task?.assigned_user?.last_name
+                }} />}
             </motion.div>
             <GenericModalContainer
                 isShowing={!showDeletionWarning && showTaskModal}
@@ -126,7 +150,7 @@ const Task = ({ currentBoard, task, index }: TaskProps) => {
                                 Edit Task
                             </button>
                             <button
-                                onClick={() => setShowDeletionWarning(true)}
+                                onClick={handleDeleteCurrentTask}
                                 className="rounded-b-xl px-[1.6rem] pb-[1.6rem] pt-[0.8rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
                             >
                                 Delete Task
@@ -134,12 +158,15 @@ const Task = ({ currentBoard, task, index }: TaskProps) => {
                         </DropDownContainer>
                     </div>
                 </div>
-                <p
-                    className="text-base font-medium text-grey-medium"
-                    dangerouslySetInnerHTML={{
-                        __html: taskDescription || 'No further details available',
-                    }}
-                ></p>
+                <p className="text-base font-medium text-grey-medium">
+                    <SanitizedHTML
+                        allowedTags={['br', 'span']}
+                        html={`
+                        <span>
+                            ${task.description.replace(/\n/g, '<br>') || 'No further details.'}
+                        </span>`}
+                    />
+                </p>
                 <div className="flex flex-col gap-[0.8rem]">
                     <h4 className="mb-[0.8rem] text-sm font-bold text-grey-medium">{subtaskHeadline}</h4>
                     {subtasks.map((subtask, index) => (
@@ -154,11 +181,22 @@ const Task = ({ currentBoard, task, index }: TaskProps) => {
                     ))}
                 </div>
                 <div className="flex flex-col gap-[1.6rem]">
+                    <h4 className="text-sm font-bold text-grey-medium">Assinged To:</h4>
+                    <DropDown
+                        currentOption={task.assigned_user ? assignedUserName : ''}
+                        dropDownOptions={teamMembers.map(user => ({
+                            ...user,
+                            title: `${user.first_name} ${user.last_name}`,
+                        }))}
+                        onOptionChange={handleChangeAssignedUser}
+                    />
+                </div>
+                <div className="flex flex-col gap-[1.6rem]">
                     <h4 className="text-sm font-bold text-grey-medium">Current Status</h4>
                     <DropDown
                         currentOption={task?.status?.title}
                         dropDownOptions={currentBoard.stages}
-                        onStatusChange={handleStatusChange}
+                        onOptionChange={handleStatusChange}
                     />
                 </div>
             </GenericModalContainer>
@@ -176,7 +214,7 @@ const Task = ({ currentBoard, task, index }: TaskProps) => {
                 type="task"
                 title={task.title}
                 onClose={() => setShowDeletionWarning(false)}
-                deleteFunction={handleDeleteCurrentTask}
+                deleteFunction={deleteCurrentTask}
                 isLoading={deleteResult.isLoading}
             />
         </>

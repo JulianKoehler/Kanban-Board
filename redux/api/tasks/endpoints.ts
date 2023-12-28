@@ -1,18 +1,19 @@
-import { TaskCreate, TaskDeleteResponse, TaskResponse, TaskStageUpdate, TaskUpdate } from '@/types/data/tasks';
+import { TaskCreate, TaskDeleteResponse, TaskResponse, TaskStageUpdate, TaskUpdate, TaskUpdateAssignedUser } from '@/types/data/tasks';
 import { api } from '../api';
 import { pessimisticUpdate } from './pessimistic-updates';
 
 export const tasksApiSlice = api.injectEndpoints({
     endpoints: builder => ({
         createTask: builder.mutation<TaskResponse, TaskCreate>({
-            query: ({ boardId, stageId, subtasks, ...props }) => ({
+            query: ({ boardId, stageId, subtasks, assignedUserId, ...props }) => ({
                 url: 'tasks/',
                 method: 'POST',
                 body: {
                     board_id: boardId,
                     stage_id: stageId,
+                    assigned_user_id: assignedUserId,
                     subtasks: subtasks.map(subtask => {
-                        const { isNew, ...rest } = subtask
+                        const { isNew, ...rest } = subtask;
                         return {
                             ...rest,
                             is_new: isNew,
@@ -26,14 +27,15 @@ export const tasksApiSlice = api.injectEndpoints({
             },
         }),
         updateTask: builder.mutation<TaskResponse, { id: string; task: TaskUpdate }>({
-            query: ({ id, task: { boardId, stageId, prevStageId, subtasks, ...props } }) => ({
+            query: ({ id, task: { boardId, stageId, subtasks, assignedUserId, ...props } }) => ({
                 url: `tasks/${id}`,
                 method: 'PUT',
                 body: {
                     board_id: boardId,
                     stage_id: stageId,
+                    assigned_user_id: assignedUserId,
                     subtasks: subtasks.map(subtask => {
-                        const { isNew, ...rest } = subtask
+                        const { isNew, ...rest } = subtask;
                         return {
                             ...rest,
                             is_new: isNew,
@@ -48,13 +50,21 @@ export const tasksApiSlice = api.injectEndpoints({
         }),
         updateStage: builder.mutation<TaskResponse, TaskStageUpdate>({
             query: ({ taskId, newStageId }) => ({
-                url: `tasks/${taskId}`,
+                url: `tasks/stage/${taskId}`,
                 method: 'PATCH',
                 body: { new_stage_id: newStageId },
             }),
             async onQueryStarted({ taskId, prevStageId, newStageId, boardId }, { dispatch, queryFulfilled }) {
                 pessimisticUpdate.updateStage(queryFulfilled, dispatch, boardId, taskId, prevStageId, newStageId);
             },
+        }),
+        updateAssingedUser: builder.mutation<TaskResponse, TaskUpdateAssignedUser>({
+            query: ({ taskId, assignedUserId }) => ({
+                url: `tasks/assignment/${taskId}`,
+                method: 'PATCH',
+                body: { assigned_user_id: assignedUserId },
+            }),
+            invalidatesTags: ['BoardData']
         }),
         deleteTask: builder.mutation<TaskDeleteResponse, string>({
             query: id => ({

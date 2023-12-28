@@ -1,24 +1,28 @@
 import DropDownContainer from '@/components/UI/DropDown/DropDownContainer';
 import useMenuHandler from '@/hooks/useMenuHandler';
-import { Status } from '@/types/data/stages';
 import { cn } from '@/util/combineStyles';
 import { useEffect, useRef, useState } from 'react';
 
-type DropDownProps = {
+type OptionBaseShape = {
+    id: string;
+    title: string;
+}
+
+type DropDownProps<T extends OptionBaseShape> = {
     currentOption?: string;
-    dropDownOptions: Array<Status>;
-    onStatusChange: (stageId: string, stageTitle: string) => void;
+    dropDownOptions: Array<T>;
+    onOptionChange: (id: string, title: string, rest: T) => void;
 };
 
-const DropDown = ({ currentOption, dropDownOptions, onStatusChange }: DropDownProps) => {
+const DropDown = <T extends OptionBaseShape>({ currentOption, dropDownOptions, onOptionChange }: DropDownProps<T>) => {
     const dropDownRef = useRef<HTMLDivElement>(null);
     const bottomContainer = useRef<HTMLDivElement>(null);
     const { showElement: showDropDown, setShowElement: setShowDropDown } = useMenuHandler(dropDownRef);
-    const [displayedStatus, setDisplayedStatus] = useState(currentOption || dropDownOptions[0]?.title);
+    const [selectedOption, setSelectedOption] = useState(currentOption);
 
-    function handleSelectOption(selectedStage: Status) {
-        onStatusChange(selectedStage.id, selectedStage.title);
-        setDisplayedStatus(selectedStage.title);
+    function handleSelectOption(option: T) {
+        onOptionChange(option.id, option.title, {...option});
+        setSelectedOption(option.title);
         setShowDropDown(false);
     }
 
@@ -31,10 +35,10 @@ const DropDown = ({ currentOption, dropDownOptions, onStatusChange }: DropDownPr
             <button
                 type="button"
                 onClick={() => setShowDropDown(prevState => !prevState)}
-                className="flex w-full items-center justify-between rounded-md border-[0.1rem] border-lines-light px-[1.6rem] py-[0.8rem] hover:border-purple-main"
+                className="flex w-full min-h-[4.1rem] items-center justify-between rounded-md border-[0.1rem] border-lines-light px-[1.6rem] py-[0.8rem] hover:border-purple-main"
             >
                 <p className="max-w-[23rem] overflow-hidden text-ellipsis whitespace-nowrap text-base font-medium tablet:max-w-[37rem]">
-                    {displayedStatus}
+                    {selectedOption}
                 </p>
                 <div className="h-4 w-[1.2rem] bg-dropDownArrowDown bg-contain bg-center bg-no-repeat" />
             </button>
@@ -42,17 +46,17 @@ const DropDown = ({ currentOption, dropDownOptions, onStatusChange }: DropDownPr
                 show={showDropDown}
                 additionalClassNames={`w-full max-w-[42rem] rounded-none rounded-b-xl`}
             >
-                {dropDownOptions.map((status, index) => (
+                {dropDownOptions.map((option, index) => (
                     <p
-                        key={status.id}
+                        key={option.id}
                         role="option"
-                        onClick={() => handleSelectOption(status)}
+                        onClick={() => handleSelectOption(option)}
                         className={cn(
                             index === dropDownOptions.length - 1 ? 'rounded-b-xl' : '',
                             'max-w-full overflow-hidden text-ellipsis whitespace-nowrap px-[1.6rem] py-[0.8rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800',
                         )}
                     >
-                        {status.title}
+                        {option.title}
                     </p>
                 ))}
                 <div ref={bottomContainer} className={cn(!showDropDown && 'hidden')} />
