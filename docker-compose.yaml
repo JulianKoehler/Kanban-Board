@@ -1,0 +1,8 @@
+version: '3'
+services:
+  app:
+    image: kanban-frontend:1.0
+    ports:
+      - '3000:3000'
+    environment:
+      - NEXT_PUBLIC_BASE_URL=https://kanban-api.xyz
