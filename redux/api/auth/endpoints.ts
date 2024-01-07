@@ -15,6 +15,7 @@ export const authApiSlice = api.injectEndpoints({
                     password,
                 },
             }),
+            invalidatesTags: ['UserData'],
         }),
         login: builder.mutation<UserInfoReturn, UserLogin>({
             query: userCredentials => ({
@@ -26,6 +27,7 @@ export const authApiSlice = api.injectEndpoints({
                 },
                 body: buildFormDataPayloadString(parseLoginData(userCredentials)),
             }),
+            invalidatesTags: ['UserData'],
         }),
         logout: builder.mutation<void, void>({
             query: () => ({

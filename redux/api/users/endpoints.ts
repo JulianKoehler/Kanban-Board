@@ -5,7 +5,7 @@ export const usersApiSlice = api.injectEndpoints({
     endpoints: builder => ({
         getCurrenUserInfo: builder.query<UserInfoReturn, void>({
             query: () => 'users/current',
-            keepUnusedDataFor: 0,
+            providesTags: ['UserData'],
         }),
         getUserById: builder.query<UserInfoReturn, string>({
             query: id => `users/${id}`,
