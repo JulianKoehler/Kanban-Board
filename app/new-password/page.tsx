@@ -9,17 +9,17 @@ import logo from '@/public/assets/logo-dark.svg';
 import { restApi } from '@/redux/api';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useRef } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 
-export default function NewPasswordPage() {
+export default function NewPasswordPage({ searchParams }: { searchParams: Record<string, string>}) {
     const router = useRouter();
     const passwordRef = useRef<HTMLInputElement>(null);
     const confirmedPasswordRef = useRef<HTMLInputElement>(null);
     const [setNewPassword, result] = restApi.auth.useSetNewPasswordMutation();
 
-    const { token } = router.query;
+    const { token } = searchParams;
 
     async function submitNewPasswordHandler(e: FormEvent) {
         e.preventDefault();
