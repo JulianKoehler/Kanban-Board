@@ -12,7 +12,7 @@ import { UserReturn } from '@/types/data/user';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import React, { FormEvent, useRef, useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 
