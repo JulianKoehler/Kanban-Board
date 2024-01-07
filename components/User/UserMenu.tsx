@@ -7,7 +7,7 @@ import { setActiveBoard } from '@/redux/slices/boardSlice';
 import { toast } from 'react-hot-toast';
 import { TiUserDelete } from 'react-icons/ti';
 import { SlLogout } from 'react-icons/sl';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import DeletionWarning from '../UI/Modal/DeletionWarning';
 import { logout, selectUser } from '@/redux/slices/authSlice';
 import { restApi } from '@/redux/api';
@@ -16,7 +16,7 @@ import { HTTPExceptionResponse } from '@/redux/api/auth/types';
 
 const UserMenu = () => {
     const dispatch = useAppDispatch();
-    const router = useRouter();
+    const { push } = useRouter();
     const [signOut, signOutResult] = restApi.auth.useLogoutMutation();
     const [deleteUser, deleteUserResult] = restApi.users.useDeleteUserAccountMutation();
 
@@ -34,7 +34,7 @@ const UserMenu = () => {
         } else {
             dispatch(setActiveBoard(undefined));
             dispatch(logout());
-            router.push('/login');
+            push('/login');
         }
     }
 
@@ -43,7 +43,7 @@ const UserMenu = () => {
             await deleteUser().unwrap();
             dispatch(setActiveBoard(undefined));
             dispatch(logout());
-            router.push('/login');
+            push('/login');
         } catch (error) {
             toast.error(((error as FetchBaseQueryError).data as HTTPExceptionResponse).detail);
         }

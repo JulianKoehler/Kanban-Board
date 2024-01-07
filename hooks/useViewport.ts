@@ -18,9 +18,7 @@ const useViewport = () => {
         return () => window.removeEventListener('resize', updateMedia);
     }, []);
 
-    const viewports: [boolean, boolean] = [isMobile, isTablet];
-
-    return viewports;
+    return [isMobile, isTablet] as const;
 };
 
 export default useViewport;
