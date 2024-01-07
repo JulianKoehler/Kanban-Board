@@ -1,3 +1,5 @@
+'use client';
+
 import Button from '@/components/UI/Button';
 import AuthCard from '@/components/UI/Cards/AuthCard';
 import FormGroup from '@/components/UI/Formelements/FormGroup';
