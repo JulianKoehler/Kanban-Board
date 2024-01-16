@@ -1,12 +1,13 @@
+import { restApi } from '@/services/redux/api';
 import { useAppDispatch } from '@/services/redux/hooks';
 import { login } from '@/services/redux/slices/authSlice';
-import { UserInfoReturn } from '@/types/data/user';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-export const useRouteProtection = (user: UserInfoReturn | undefined, isLoading: boolean) => {
+export const useRouteProtection = () => {
     const dispatch = useAppDispatch();
     const { replace } = useRouter();
+    const { data: user, isLoading } = restApi.users.useGetCurrenUserInfoQuery();
 
     useEffect(() => {
         !user && !isLoading && replace('/login');

@@ -1,17 +1,21 @@
 import { useAppDispatch } from '@/services/redux/hooks';
 import { setActiveBoard } from '@/services/redux/slices/boardSlice';
-import { useSearchParams } from 'next/navigation';
 import { useGetBoardList } from './useGetBoardList';
+import { useCurrentBoardIdContext } from '@/services/context/active-board/active-board-context';
+import { useEffect } from 'react';
 
 const useActivateBoard = () => {
     const dispatch = useAppDispatch();
-    const boardId = useSearchParams().get('id');
-    const [_, allBoards] = useGetBoardList();
-    const activeBoard = allBoards.find(board => board.id === boardId);
+    const { currentBoardId } = useCurrentBoardIdContext();
+    const [result, allBoards] = useGetBoardList();
+    const activeBoard = allBoards.find(board => board.id === currentBoardId);
+   
 
-    !!activeBoard && dispatch(setActiveBoard(activeBoard));
+    useEffect(() => {
+        dispatch(setActiveBoard(activeBoard));
+    }, [currentBoardId, result.status]);
 
-    return [activeBoard];
+    return activeBoard;
 };
 
 export default useActivateBoard;

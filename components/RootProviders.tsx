@@ -1,5 +1,6 @@
 'use client';
 
+import { CurrentBoardIdProvider } from '@/services/context/active-board/active-board-context';
 import { store } from '@/services/redux/store';
 import { ThemeProvider } from 'next-themes';
 import { ReactNode } from 'react';
@@ -12,9 +13,11 @@ type RootProviders = {
 const RootProviders = ({ children }: RootProviders) => {
     return (
         <Redux store={store}>
-            <ThemeProvider enableSystem={true} attribute="class">
-                {children}
-            </ThemeProvider>
+            <CurrentBoardIdProvider>
+                <ThemeProvider enableSystem={true} attribute="class">
+                    {children}
+                </ThemeProvider>
+            </CurrentBoardIdProvider>
         </Redux>
     );
 };

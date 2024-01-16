@@ -1,28 +1,27 @@
+'use client';
+
 import BoardListButton from '@/components/UI/Button/BoardListButton';
 import BoardIcon from '@/components/UI/Icons/BoardIcon';
 import { useGetBoardList } from '@/hooks/useGetBoardList';
-import useQueryString from '@/hooks/useQueryString';
 import useViewport from '@/hooks/useViewport';
+import { useCurrentBoardIdContext } from '@/services/context/active-board/active-board-context';
 import { useAppDispatch, useAppSelector } from '@/services/redux/hooks';
 import { selectActiveBoard, selectShowMobileMenu, setShowMobileMenu } from '@/services/redux/slices/boardSlice';
 import { cn } from '@/util/combineStyles';
-import { usePathname, useRouter } from 'next/navigation';
 
 const BoardList = () => {
     const dispatch = useAppDispatch();
-    const router = useRouter();
-    const pathname = usePathname();
-
     const activeBoard = useAppSelector(selectActiveBoard);
+
+    const { setCurrentBoardId } = useCurrentBoardIdContext();
     const showMobileMenu = useAppSelector(selectShowMobileMenu);
     const [boardList, allBoards] = useGetBoardList();
-    const createQueryString = useQueryString();
 
     const [isMobile, isTablet] = useViewport();
 
     if (boardList.isError) {
         throw boardList.error;
-    }
+    }    
 
     return (
         <>
@@ -32,7 +31,7 @@ const BoardList = () => {
 
                 function handleBoardSelection() {
                     isMobile && dispatch(setShowMobileMenu(!showMobileMenu));
-                    router.push(pathname + '?' + createQueryString('id', board.id));
+                    setCurrentBoardId(board.id);
                 }
 
                 return (

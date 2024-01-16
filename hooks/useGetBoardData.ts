@@ -1,10 +1,14 @@
+import { useEffect } from 'react';
+import { useCurrentBoardIdContext } from '@/services/context/active-board/active-board-context';
 import { restApi } from '@/services/redux/api';
-import { skipToken } from '@reduxjs/toolkit/query';
-import { useSearchParams } from 'next/navigation';
 
 const useGetBoardData = () => {
-    const id = useSearchParams().get('id');
-    const result = restApi.boards.useGetBoardDataByIdQuery(id ? id : skipToken);
+    const { currentBoardId } = useCurrentBoardIdContext();
+    const [trigger, result] = restApi.boards.useLazyGetBoardDataByIdQuery();
+
+    useEffect(() => {
+        trigger(currentBoardId, true);
+    }, [currentBoardId]);
 
     return result;
 };
