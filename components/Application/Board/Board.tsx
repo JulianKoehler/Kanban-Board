@@ -22,7 +22,7 @@ const Board = () => {
         throw boardResult.error;
     }
 
-    if (boardResult.isLoading) {
+    if (boardResult.isFetching) {
         return (
             <BoardContainer>
                 <LoadingSkeleton />

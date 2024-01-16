@@ -7,7 +7,7 @@ import { useTimeout } from './LoadingSkeleton.hooks';
 const LoadingSkeleton = () => {
     let skeletonTimeout: NodeJS.Timeout;
     let userFeedbackTimeout: NodeJS.Timeout;
-    const DURATION_UNTIL_SKELETON = 1000;
+    const DURATION_UNTIL_SKELETON = 500;
     const DURATION_UNTIL_FEEDBACK = 6000;
     const showSkeleton = useTimeout(skeletonTimeout!, DURATION_UNTIL_SKELETON);
     const showUserFeedback = useTimeout(userFeedbackTimeout!, DURATION_UNTIL_FEEDBACK);

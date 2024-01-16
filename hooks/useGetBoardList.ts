@@ -1,6 +1,7 @@
 import { restApi } from '@/services/redux/api';
 import { useEffect } from 'react';
 import { useGetCurrentUser } from './useGetCurrentUser';
+import { QueryStatus } from '@reduxjs/toolkit/query';
 
 /**
  *
@@ -13,7 +14,7 @@ export const useGetBoardList = () => {
 
     useEffect(() => {
         user && getBoardList(undefined, true);
-    }, [user]);
+    }, [user, queryResult.status]);
 
     return [queryResult, allBoards] as const;
 };
