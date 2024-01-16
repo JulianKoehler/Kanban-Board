@@ -1,5 +1,5 @@
 import Button from '@/components/UI/Button/Button';
-import DropDownContainer from '@/components/UI/DropDown/DropDownContainer';
+import DropdownContainer from '@/components/UI/Dropdown/DropdownContainer';
 import Input from '@/components/UI/InputFields/TextInput';
 import { useBoardModalContext } from '@/services/context/board-modal/board-modal-context';
 import { ActionTypes } from '@/services/context/board-modal/types';
@@ -71,7 +71,7 @@ const UserSearch = ({ show, allowToggle, onClose }: UserSearchProps) => {
                             value={userSearchTerm}
                             placeholder="Search by name or exact email"
                         />
-                        <DropDownContainer show={showSearchResults} className="top-18 w-full">
+                        <DropdownContainer show={showSearchResults} className="top-18 w-full">
                             {filteredUserSearchResult
                                 ? filteredUserSearchResult.map(user => (
                                       <button
@@ -83,7 +83,7 @@ const UserSearch = ({ show, allowToggle, onClose }: UserSearchProps) => {
                                       </button>
                                   ))
                                 : null}
-                        </DropDownContainer>
+                        </DropdownContainer>
                     </motion.div>
                 )}
             </AnimatePresence>
