@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const useMenuHandler = (ref: React.RefObject<HTMLDivElement>) => {
+const useMenuHandler = <T extends HTMLElement>(ref: React.RefObject<T>) => {
     const [showElement, setShowElement] = useState(false);
 
     useEffect(() => {

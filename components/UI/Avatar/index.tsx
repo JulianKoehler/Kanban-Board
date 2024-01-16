@@ -1,5 +1,5 @@
 import { cn } from '@/util/combineStyles';
-import React, { HTMLProps } from 'react';
+import { HTMLProps } from 'react';
 
 interface AvatarProps extends HTMLProps<HTMLDivElement> {
     user: {
@@ -21,8 +21,7 @@ const Avatar = ({ user, className = '', ...props }: AvatarProps) => {
                 'neumorphism shadow-light-mode tracking-tight flex h-[4rem] w-[4rem] cursor-pointer items-center justify-center rounded-full font-bold text-white',
                 className,
             )}
-            {...props}
-        >
+            {...props}>
             {getUserInitials()}
         </div>
     );

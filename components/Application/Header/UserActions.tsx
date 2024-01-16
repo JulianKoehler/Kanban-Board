@@ -1,25 +1,25 @@
-import Button from '@/components/UI/Button';
+import Button from '@/components/UI/Button/Button';
+import UserMenu from '@/components/User/UserMenu';
 import useGetBoardData from '@/hooks/useGetBoardData';
 import useViewport from '@/hooks/useViewport';
-import { useAppSelector } from '@/redux/hooks';
-import { selectUser } from '@/redux/slices/authSlice';
-import { selectActiveBoard } from '@/redux/slices/boardSlice';
-import React, { useState } from 'react';
-import TaskModal from '../Board/Task/TaskModal';
-import Image from 'next/image';
-import BoardMenu from '../Board/BoardMenu';
-import UserMenu from '@/components/User/UserMenu';
 import AddIcon from '@/public/assets/icon-add-task-mobile.svg';
+import { useAppSelector } from '@/services/redux/hooks';
+import { selectUser } from '@/services/redux/slices/authSlice';
+import { selectActiveBoard } from '@/services/redux/slices/boardSlice';
+import Image from 'next/image';
+import { useState } from 'react';
+import BoardMenu from '../Board/BoardMenu';
+import TaskModal from '../Board/Task/TaskModal';
 
 const UserActions = () => {
     const activeBoard = useAppSelector(selectActiveBoard);
     const user = useAppSelector(selectUser);
-    const [boardData, isFetchingBoardData] = useGetBoardData();
+    const { data: board, isFetching } = useGetBoardData();
     const [isMobile] = useViewport();
 
     const [showAddNewTaskModal, setShowAddNewTaskModal] = useState(false);
 
-    const stagesExist = boardData?.stages && boardData?.stages?.length > 0;
+    const stagesExist = board?.stages && board?.stages?.length > 0;
 
     function onAddNewTask() {
         setShowAddNewTaskModal(true);
@@ -38,8 +38,7 @@ const UserActions = () => {
                         variant="primary"
                         className={isMobile ? 'px-[1.8rem] py-[1rem]' : 'px-[2.4rem]'}
                         onClick={onAddNewTask}
-                        disabled={!stagesExist || isFetchingBoardData}
-                    >
+                        disabled={!stagesExist || isFetching}>
                         {isMobile ? <Image src={AddIcon} alt="add" /> : '+Add New Task'}
                     </Button>
                 )}
@@ -47,9 +46,9 @@ const UserActions = () => {
                 {!!user && <UserMenu />}
             </div>
             <TaskModal
-                key={boardData?.id}
+                key={board?.id}
                 showModal={showAddNewTaskModal}
-                statusOptions={boardData?.stages!}
+                statusOptions={board?.stages!}
                 onClose={onCloseNewTask}
             />
         </>

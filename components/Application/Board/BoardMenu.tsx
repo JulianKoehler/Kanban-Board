@@ -1,39 +1,54 @@
-import { useRef, useState, useEffect } from 'react';
-import Image from 'next/image';
+import MenuActionButton from '@/components/UI/Button/Menu/MenuActionButton';
+import MenuToggleButton from '@/components/UI/Button/Menu/MenuToggleButton';
+import DropdownContainer from '@/components/UI/Dropdown/DropdownContainer';
+import WarningModal from '@/components/UI/Modal/WarningModal';
+import useGetBoardData from '@/hooks/useGetBoardData';
 import useMenuHandler from '@/hooks/useMenuHandler';
 import OptionsIcon from '@/public/assets/icon-vertical-ellipsis.svg';
-import DropDownContainer from '@/components/UI/Dropdown/DropdownContainer';
-import BoardModal from './BoardModal';
-import DeletionWarning from '@/components/UI/Modal/DeletionWarning';
+import { BoardState } from '@/services/context/board-modal/types';
+import { restApi } from '@/services/redux/api';
+import { useAppDispatch } from '@/services/redux/hooks';
+import { setActiveBoard } from '@/services/redux/slices/boardSlice';
+import { StageUpdate } from '@/types/data/stages';
+import { ContributorUpdate, UserInfoReturn } from '@/types/data/user';
+import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { selectActiveBoard, setActiveBoard } from '@/redux/slices/boardSlice';
-import { skipToken } from '@reduxjs/toolkit/dist/query';
-import MenuButton from '@/components/UI/Button/MenuButton';
-import { restApi } from '@/redux/api';
+import BoardModal from './BoardModal/BoardModal';
 
 const BoardMenu = () => {
     const dispatch = useAppDispatch();
+    const { replace } = useRouter();
     const boardMenuRef = useRef<HTMLDivElement>(null);
+    const { showElement: showBoardMenu, setShowElement: setShowBoardMenu } = useMenuHandler(boardMenuRef);
     const [showEditBoardModal, setShowEditBoardModal] = useState(false);
     const [showDeleteBoardWarning, setShowDeleteBoardWarning] = useState(false);
-    const activeBoard = useAppSelector(selectActiveBoard);
-    const { data: board, isFetching } = restApi.boards.useGetBoardDataByIdQuery(activeBoard?.id ?? skipToken);
+
+    const currentBoardId = useSearchParams().get('id');
+    const { data: board, isFetching, isError } = useGetBoardData();
     const [deleteBoard, boardDeletion] = restApi.boards.useDeleteBoardMutation();
-    const { showElement: showBoardMenu, setShowElement: setShowBoardMenu } = useMenuHandler(boardMenuRef);
+
+    const parsedBoard: BoardState = {
+        title: board?.title ?? '',
+        stages: board?.stages ?? ([] as StageUpdate[]),
+        contributors: board?.contributors ?? ([] as ContributorUpdate[]),
+        owner: board?.owner ?? ({} as UserInfoReturn),
+        isFormSubmitted: false,
+    };
 
     function handleEditCurrentBoard() {
         setShowEditBoardModal(true);
-        setShowBoardMenu(false)
+        setShowBoardMenu(false);
     }
 
     function handleDeleteCurrentBoard() {
-        setShowDeleteBoardWarning(true)
-        setShowBoardMenu(false)
+        setShowDeleteBoardWarning(true);
+        setShowBoardMenu(false);
     }
 
     async function deleteCurrentBoard() {
-        const response = deleteBoard(activeBoard?.id ?? '').unwrap();
+        const response = deleteBoard(currentBoardId ?? '').unwrap();
 
         toast.promise(response, {
             loading: 'Sending...',
@@ -45,44 +60,49 @@ const BoardMenu = () => {
 
         setShowDeleteBoardWarning(false);
         dispatch(setActiveBoard(undefined));
+        replace('/board');
     }
 
     return (
         <>
             <div id="menu-dropdown" ref={boardMenuRef}>
-                <MenuButton
+                <MenuToggleButton
                     onClick={() => setShowBoardMenu(prevState => !prevState)}
-                    disabled={isFetching}
-                    className="rounded-full p-[1rem] transition-all hover:bg-gray-200 disabled:cursor-not-allowed"
-                >
+                    disabled={isFetching || isError}
+                    className="rounded-full p-[1rem] transition-all hover:bg-gray-200 disabled:cursor-not-allowed">
                     <Image src={OptionsIcon} alt="options" />
-                </MenuButton>
-                <DropDownContainer additionalClassNames="absolute right-0 top-[6rem]" show={showBoardMenu}>
-                    <button
-                        onClick={handleEditCurrentBoard}
-                        className="w-full rounded-t-xl px-[1.6rem] pb-[0.8rem] pt-[1.6rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
-                    >
+                </MenuToggleButton>
+                <DropdownContainer className="absolute right-0 top-[6rem]" show={showBoardMenu}>
+                    <MenuActionButton onClick={handleEditCurrentBoard} className="rounded-t-xl ">
                         Edit Board
-                    </button>
+                    </MenuActionButton>
 
-                    <button
+                    <MenuActionButton
                         onClick={handleDeleteCurrentBoard}
-                        className="rounded-b-xl px-[1.6rem] pb-[1.6rem] pt-[0.8rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
-                    >
+                        className="rounded-b-xl pb-[1.6rem] pt-[0.8rem] text-red">
                         Delete Board
-                    </button>
-                </DropDownContainer>
+                    </MenuActionButton>
+                </DropdownContainer>
             </div>
-            <BoardModal showModal={showEditBoardModal} board={board} onClose={() => setShowEditBoardModal(false)} />
 
-            <DeletionWarning
-                show={showDeleteBoardWarning}
-                title={board?.title ?? ''}
-                type="board"
-                onClose={() => setShowDeleteBoardWarning(false)}
-                deleteFunction={deleteCurrentBoard}
-                isLoading={boardDeletion.isLoading}
+            <BoardModal
+                showModal={showEditBoardModal}
+                initialBoard={parsedBoard}
+                onClose={() => setShowEditBoardModal(false)}
             />
+            <WarningModal
+                show={showDeleteBoardWarning}
+                type="destructive"
+                onClose={() => setShowDeleteBoardWarning(false)}
+                onSubmit={deleteCurrentBoard}
+                isLoading={boardDeletion.isLoading}>
+                <WarningModal.Headline>Delete this Board?</WarningModal.Headline>
+                <WarningModal.Message>
+                    Are you sure you want to delete this board? This action will remove all stages and tasks as well and
+                    cannot be undone.
+                </WarningModal.Message>
+                <WarningModal.UserActionButtons submitLabel="Delete" cancelLabel="Cancel" />
+            </WarningModal>
         </>
     );
 };

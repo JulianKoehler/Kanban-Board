@@ -1,5 +1,5 @@
-import { useAppDispatch } from '@/redux/hooks';
-import { login } from '@/redux/slices/authSlice';
+import { useAppDispatch } from '@/services/redux/hooks';
+import { login } from '@/services/redux/slices/authSlice';
 import { UserInfoReturn } from '@/types/data/user';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';

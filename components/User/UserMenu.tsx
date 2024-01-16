@@ -1,18 +1,18 @@
-import React, { useRef, useState } from 'react';
-import Avatar from '../UI/Avatar';
-import DropDownContainer from '../UI/Dropdown/DropdownContainer';
 import useMenuHandler from '@/hooks/useMenuHandler';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { setActiveBoard } from '@/redux/slices/boardSlice';
-import { toast } from 'react-hot-toast';
-import { TiUserDelete } from 'react-icons/ti';
-import { SlLogout } from 'react-icons/sl';
-import { useRouter } from 'next/navigation';
-import DeletionWarning from '../UI/Modal/DeletionWarning';
-import { logout, selectUser } from '@/redux/slices/authSlice';
-import { restApi } from '@/redux/api';
+import { restApi } from '@/services/redux/api';
+import { HTTPExceptionResponse } from '@/services/redux/api/auth/types';
+import { useAppDispatch, useAppSelector } from '@/services/redux/hooks';
+import { logout, selectUser } from '@/services/redux/slices/authSlice';
+import { setActiveBoard } from '@/services/redux/slices/boardSlice';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import { HTTPExceptionResponse } from '@/redux/api/auth/types';
+import { useRouter } from 'next/navigation';
+import { useRef, useState } from 'react';
+import { toast } from 'react-hot-toast';
+import { SlLogout } from "react-icons/sl";
+import { TiUserDelete } from 'react-icons/ti';
+import Avatar from '../UI/Avatar';
+import DropdownContainer from '../UI/Dropdown/DropdownContainer';
+import DeletionWarning from '../UI/Modal/DeletionWarning';
 
 const UserMenu = () => {
     const dispatch = useAppDispatch();
@@ -52,20 +52,18 @@ const UserMenu = () => {
     return (
         <div id="dropdown-menu" ref={userMenuRef}>
             {user && <Avatar onClick={() => setShowUserMenu(prev => !prev)} user={userName} />}
-            <DropDownContainer show={showUserMenu} additionalClassNames="absolute right-0 top-[6rem]">
+            <DropdownContainer show={showUserMenu} className="absolute right-0 top-[6rem]">
                 <button
                     onClick={handleLogout}
-                    className="flex w-full items-center rounded-t-xl px-[1.6rem] pb-[0.8rem] pt-[1.6rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
+                    className="flex w-full items-center rounded-t-xl px-[1.6rem] pb-[0.8rem] pt-[1.6rem] text-left text-base font-medium text-grey-medium hover:bg-slate-100 dark:hover:bg-slate-800">
                     Logout <SlLogout className="ml-3 text-purple-main" />
                 </button>
                 <button
                     onClick={() => setShowDeleteAccountWarning(true)}
-                    className="flex items-center rounded-b-xl px-[1.6rem] pb-[1.6rem] pt-[0.8rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
+                    className="flex items-center rounded-b-xl px-[1.6rem] pb-[1.6rem] pt-[0.8rem] text-left text-base font-medium text-red hover:bg-slate-100 dark:hover:bg-slate-800">
                     Delete Account <TiUserDelete className="ml-3" />
                 </button>
-            </DropDownContainer>
+            </DropdownContainer>
 
             <DeletionWarning
                 show={showDeleteAccountWarning}

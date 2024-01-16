@@ -1,19 +1,19 @@
 'use client';
 
-import Button from '@/components/UI/Button';
+import Button from '@/components/UI/Button/Button';
 import AuthCard from '@/components/UI/Cards/AuthCard';
 import FormGroup from '@/components/UI/Formelements/FormGroup';
 import Input from '@/components/UI/InputFields/TextInput';
 import { LoadingSpinner_TailSpin } from '@/components/UI/LoadingSpinner';
 import logo from '@/public/assets/logo-dark.svg';
-import { restApi } from '@/redux/api';
+import { restApi } from '@/services/redux/api';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useRef } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 
-export default function NewPasswordPage({ searchParams }: { searchParams: Record<string, string>}) {
+export default function NewPasswordPage({ searchParams }: { searchParams: Record<string, string> }) {
     const router = useRouter();
     const passwordRef = useRef<HTMLInputElement>(null);
     const confirmedPasswordRef = useRef<HTMLInputElement>(null);
@@ -45,7 +45,7 @@ export default function NewPasswordPage({ searchParams }: { searchParams: Record
 
     useEffect(() => {
         if (result.isSuccess) router.push('/');
-    }, [result]);
+    }, [result, router]);
 
     return (
         <>
@@ -70,16 +70,15 @@ export default function NewPasswordPage({ searchParams }: { searchParams: Record
                 <form
                     method="post"
                     onSubmit={submitNewPasswordHandler}
-                    className="mt-12 flex w-full max-w-[36rem] flex-col gap-4"
-                >
-                    <FormGroup additionalClasses="gap-1">
+                    className="mt-12 flex w-full max-w-[36rem] flex-col gap-4">
+                    <FormGroup className="gap-1">
                         <label htmlFor="password" className="text-lg font-bold text-grey-medium">
                             New Password
                         </label>
 
                         <Input type="password" id="password" name="password" ref={passwordRef} />
                     </FormGroup>
-                    <FormGroup additionalClasses="gap-1">
+                    <FormGroup className="gap-1">
                         <label htmlFor="password_confirmed" className="text-lg font-bold text-grey-medium">
                             Confirm your new password
                         </label>
@@ -93,8 +92,7 @@ export default function NewPasswordPage({ searchParams }: { searchParams: Record
                     </FormGroup>
                     <Button
                         disabled={result.isLoading}
-                        className="mt-4 flex justify-center rounded-[0.8rem] py-4 text-lg capitalize"
-                    >
+                        className="mt-4 flex justify-center rounded-[0.8rem] py-4 text-lg capitalize">
                         {result.isLoading ? LoadingSpinner_TailSpin : 'Submit new password'}
                     </Button>
                 </form>

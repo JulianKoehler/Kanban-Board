@@ -1,10 +1,10 @@
-import Button from '@/components/UI/Button';
+import Button from '@/components/UI/Button/Button';
 import DeleteIcon from '@/components/UI/Icons/DeleteIcon';
 import Input from '@/components/UI/InputFields/TextInput';
-import { Dispatch, SetStateAction } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Subtask } from '@/types/data/subtask';
 import Tooltip from '@/components/UI/Tooltips/Tooltip';
+import { Subtask } from '@/types/data/subtask';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Dispatch, SetStateAction } from 'react';
 
 type SubtaskInputAreaProps = {
     subtasks: Subtask[];
@@ -72,23 +72,21 @@ const SubtaskInputArea = ({ subtasks, setSubtasks, isFormSubmitted }: SubtaskInp
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0, opacity: 0 }}
                             key={subtask.id}
-                            className="relative flex gap-[1.6rem] items-center"
-                        >
+                            className="relative flex items-center gap-[1.6rem]">
                             <Input
                                 value={subtask.title}
                                 className={isFormSubmitted && subtask.title.length < 1 ? 'input-error' : ''}
                                 onChange={handleSubtaskInput(index)}
                                 placeholder="e.g. Make coffee"
                             />
-                            <Tooltip message='Delete'>
+                            <Tooltip message="Delete">
                                 <motion.button
                                     initial={{ scale: 0, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     exit={{ scale: 0, opacity: 0 }}
                                     type="button"
                                     onClick={onDeleteSubtaskInput(index)}
-                                    className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red"
-                                >
+                                    className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red">
                                     <DeleteIcon />
                                 </motion.button>
                             </Tooltip>

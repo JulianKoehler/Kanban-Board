@@ -1,14 +1,19 @@
-import { restApi } from '@/redux/api';
+import { restApi } from '@/services/redux/api';
 import { useEffect } from 'react';
 import { useGetCurrentUser } from './useGetCurrentUser';
 
+/**
+ *
+ * @returns [queryResult, allBoards]
+ */
 export const useGetBoardList = () => {
-    const [getBoardList, boardListResult] = restApi.boards.useLazyGetBoardListQuery();
+    const [getBoardList, queryResult] = restApi.boards.useLazyGetBoardListQuery();
     const [user] = useGetCurrentUser();
+    const allBoards = [...(queryResult.data?.own_boards ?? []), ...(queryResult.data?.contributing ?? [])];
 
     useEffect(() => {
-        user && getBoardList();
+        user && getBoardList(undefined, true);
     }, [user]);
 
-    return [boardListResult] as const;
+    return [queryResult, allBoards] as const;
 };

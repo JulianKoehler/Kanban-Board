@@ -1,19 +1,19 @@
 'use client';
 
-import Button from '@/components/UI/Button';
+import Button from '@/components/UI/Button/Button';
 import AuthCard from '@/components/UI/Cards/AuthCard';
 import FormGroup from '@/components/UI/Formelements/FormGroup';
 import Input from '@/components/UI/InputFields/TextInput';
 import { LoadingSpinner_TailSpin } from '@/components/UI/LoadingSpinner';
 import logo from '@/public/assets/logo-dark.svg';
-import { restApi } from '@/redux/api';
+import { restApi } from '@/services/redux/api';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 
-const resetPassword = () => {
+const ResetPasswordPage = () => {
     const { push } = useRouter();
     const [sendPasswordResetRequest, result] = restApi.auth.useRequestPasswordResetMutation();
     const [email, setEmail] = useState('');
@@ -45,7 +45,7 @@ const resetPassword = () => {
         if (!result.isUninitialized && result.isSuccess) {
             push('/login');
         }
-    }, [result]);
+    }, [result, push]);
 
     return (
         <>
@@ -72,9 +72,8 @@ const resetPassword = () => {
                 <form
                     method="post"
                     onSubmit={forgotPasswordHandler}
-                    className="mt-12 flex w-full max-w-[36rem] flex-col gap-4"
-                >
-                    <FormGroup additionalClasses="gap-1 relative">
+                    className="mt-12 flex w-full max-w-[36rem] flex-col gap-4">
+                    <FormGroup className="relative gap-1">
                         <label htmlFor="email" className="text-lg font-bold text-grey-medium">
                             Your Email
                         </label>
@@ -92,4 +91,4 @@ const resetPassword = () => {
     );
 };
 
-export default resetPassword;
+export default ResetPasswordPage;

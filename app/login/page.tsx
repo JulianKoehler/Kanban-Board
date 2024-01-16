@@ -1,21 +1,21 @@
 'use client';
 
-import Button from '@/components/UI/Button';
+import Button from '@/components/UI/Button/Button';
 import AuthCard from '@/components/UI/Cards/AuthCard';
 import FormGroup from '@/components/UI/Formelements/FormGroup';
 import Input from '@/components/UI/InputFields/TextInput';
 import { LoadingSpinner_TailSpin } from '@/components/UI/LoadingSpinner';
 import LogoLightMode from '@/public/assets/logo-dark.svg';
 import LogoDarkMode from '@/public/assets/logo-light.svg';
-import { restApi } from '@/redux/api';
-import { HTTPExceptionResponse } from '@/redux/api/auth/types';
-import { login } from '@/redux/slices/authSlice';
+import { restApi } from '@/services/redux/api';
+import { HTTPExceptionResponse } from '@/services/redux/api/auth/types';
+import { login } from '@/services/redux/slices/authSlice';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { FormEvent, useEffect, useRef } from 'react';
+import { FormEvent, useEffect, useRef } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 
@@ -49,7 +49,7 @@ const Login = () => {
                     'Leider ist etwas schief gelaufen',
             );
         }
-    }, [isSuccess, isError]);
+    }, [isSuccess, isError, data]);
 
     return (
         <>
@@ -75,13 +75,13 @@ const Login = () => {
                 </Link>
                 <h1 className="my-10 text-3xl font-bold tracking-[-0.1rem]">Sign in with email</h1>
                 <form onSubmit={signInHandler} className="flex w-full max-w-[36rem] flex-col gap-4">
-                    <FormGroup additionalClasses="gap-1">
+                    <FormGroup className="gap-1">
                         <label htmlFor="email" className="text-lg font-bold text-grey-medium">
                             Your Email
                         </label>
                         <Input type="email" id="email" name="email" ref={emailRef} />
                     </FormGroup>
-                    <FormGroup additionalClasses="gap-1">
+                    <FormGroup className="gap-1">
                         <label htmlFor="password" className="text-lg font-bold text-grey-medium">
                             Password
                         </label>

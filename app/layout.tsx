@@ -1,5 +1,5 @@
-import '@/styles/globals.css';
 import RootProviders from '@/components/RootProviders';
+import '@/styles/globals.css';
 import { ReactNode } from 'react';
 
 type RootLayoutProps = {

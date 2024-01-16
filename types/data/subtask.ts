@@ -7,6 +7,6 @@ export type Subtask = {
     isNew?: boolean;
 };
 
-export type SubtaskResponse = Omit<Subtask, "markedForDeletion" | "isNew"> & {
+export type SubtaskResponse = Omit<Subtask, 'markedForDeletion' | 'isNew'> & {
     task_id: string;
-}
+};

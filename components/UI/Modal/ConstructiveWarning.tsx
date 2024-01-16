@@ -1,7 +1,6 @@
-import React from 'react';
-import Button from '../Button';
-import GenericModalContainer from './GenericModalContainer';
 import { LoadingSpinner_TailSpin as Tailspin } from '@/components/UI/LoadingSpinner';
+import Button from '../Button/Button';
+import GenericModalContainer from './GenericModalContainer';
 
 export type DeletionWarningProps = {
     title: string;
@@ -12,21 +11,9 @@ export type DeletionWarningProps = {
     show: boolean;
 };
 
-const ConstructiveWarning = ({
-    title,
-    message,
-    isLoading,
-    callbackFn,
-    onClose,
-    show,
-}: DeletionWarningProps) => {
-
+const ConstructiveWarning = ({ title, message, isLoading, callbackFn, onClose, show }: DeletionWarningProps) => {
     return (
-        <GenericModalContainer
-            isShowing={show}
-            additionalClassNames="w-[48rem] gap-[2.4rem]"
-            onClose={onClose}
-        >
+        <GenericModalContainer isShowing={show} className="w-[48rem] gap-[2.4rem]" onClose={onClose}>
             <h2 className="text-xl font-bold text-purple-main">{title}</h2>
             <p className="text-base font-medium text-grey-medium">{message}</p>
             <div className="flex w-full flex-col gap-[1.6rem] tablet:flex-row">

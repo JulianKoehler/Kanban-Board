@@ -1,19 +1,19 @@
 'use client';
 
-import Button from '@/components/UI/Button';
+import Button from '@/components/UI/Button/Button';
 import AuthCard from '@/components/UI/Cards/AuthCard';
 import FormGroup from '@/components/UI/Formelements/FormGroup';
 import Input from '@/components/UI/InputFields/TextInput';
 import { LoadingSpinner_TailSpin } from '@/components/UI/LoadingSpinner';
 import logo from '@/public/assets/logo-dark.svg';
-import { restApi } from '@/redux/api';
-import { HTTPExceptionResponse } from '@/redux/api/auth/types';
+import { restApi } from '@/services/redux/api';
+import { HTTPExceptionResponse } from '@/services/redux/api/auth/types';
 import { UserReturn } from '@/types/data/user';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { FormEvent, useRef, useEffect } from 'react';
+import { FormEvent, useEffect, useRef } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 
 const Signup = () => {
@@ -48,7 +48,7 @@ const Signup = () => {
             console.log('pups', error);
             toast.error(((error as FetchBaseQueryError).data as HTTPExceptionResponse).detail);
         }
-    }, [isLoading]);
+    }, [isLoading, router]);
 
     return (
         <>
@@ -70,26 +70,26 @@ const Signup = () => {
 
                 <h1 className="my-10 text-3xl font-bold tracking-[-0.1rem]">Sign up with email</h1>
                 <form method="post" onSubmit={signUpHandler} className="flex w-full max-w-[36rem] flex-col gap-4">
-                    <FormGroup additionalClasses="gap-1">
+                    <FormGroup className="gap-1">
                         <label htmlFor="user_name" className="text-lg font-bold text-grey-medium">
                             Your Name
                         </label>
                         <Input type="text" id="user_name" name="user_name" ref={userNameRef} />
                     </FormGroup>
-                    <FormGroup additionalClasses="gap-1">
+                    <FormGroup className="gap-1">
                         <label htmlFor="email" className="text-lg font-bold text-grey-medium">
                             Your Email
                         </label>
                         <Input type="email" id="email" name="email" ref={emailRef} />
                     </FormGroup>
-                    <FormGroup additionalClasses="gap-1">
+                    <FormGroup className="gap-1">
                         <label htmlFor="password" className="text-lg font-bold text-grey-medium">
                             Password
                         </label>
 
                         <Input type="password" id="password" name="password" ref={passwordRef} />
                     </FormGroup>
-                    <FormGroup additionalClasses="gap-1">
+                    <FormGroup className="gap-1">
                         <label htmlFor="password_confirmed" className="text-lg font-bold text-grey-medium">
                             Confirm your password
                         </label>
@@ -103,8 +103,7 @@ const Signup = () => {
                     </FormGroup>
                     <Button
                         disabled={isLoading}
-                        className="mt-4 flex justify-center rounded-[0.8rem] py-4 text-lg capitalize"
-                    >
+                        className="mt-4 flex justify-center rounded-[0.8rem] py-4 text-lg capitalize">
                         {isLoading ? LoadingSpinner_TailSpin : 'create account'}
                     </Button>
                 </form>

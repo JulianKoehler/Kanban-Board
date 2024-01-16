@@ -1,12 +1,11 @@
-import Image from 'next/image';
+import { useAppTheme } from '@/hooks/useAppTheme';
 import useViewport from '@/hooks/useViewport';
-import { useAppSelector } from '@/redux/hooks';
-import { selectShowSidebar } from '@/redux/slices/boardSlice';
 import LogoLightMode from '@/public/assets/logo-dark.svg';
 import LogoDarkMode from '@/public/assets/logo-light.svg';
 import LogoMobile from '@/public/assets/logo-mobile.svg';
-import { useAppTheme } from '@/hooks/useAppTheme';
-
+import { useAppSelector } from '@/services/redux/hooks';
+import { selectShowSidebar } from '@/services/redux/slices/boardSlice';
+import Image from 'next/image';
 
 const HeaderLogo = () => {
     const showSidebar = useAppSelector(selectShowSidebar);
