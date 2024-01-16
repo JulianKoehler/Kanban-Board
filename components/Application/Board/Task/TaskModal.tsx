@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import GenericModalContainer from '@/components/UI/Modal/GenericModalContainer';
 import Input from '@/components/UI/InputFields/TextInput';
 import Button from '@/components/UI/Button';
-import DropDown from '@/components/UI/DropDown/DropDown';
+import DropDown from '@/components/UI/Dropdown/Dropdown';
 import H5 from '@/components/UI/Headings/H5';
 import Form from '@/components/UI/Formelements/Form';
 import FormGroup from '@/components/UI/Formelements/FormGroup';

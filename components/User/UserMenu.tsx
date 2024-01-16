@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import Avatar from '../UI/Avatar';
-import DropDownContainer from '../UI/DropDown/DropDownContainer';
+import DropDownContainer from '../UI/Dropdown/DropdownContainer';
 import useMenuHandler from '@/hooks/useMenuHandler';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setActiveBoard } from '@/redux/slices/boardSlice';

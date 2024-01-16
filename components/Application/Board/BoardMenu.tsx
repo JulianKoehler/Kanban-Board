@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import useMenuHandler from '@/hooks/useMenuHandler';
 import OptionsIcon from '@/public/assets/icon-vertical-ellipsis.svg';
-import DropDownContainer from '@/components/UI/DropDown/DropDownContainer';
+import DropDownContainer from '@/components/UI/Dropdown/DropdownContainer';
 import BoardModal from './BoardModal';
 import DeletionWarning from '@/components/UI/Modal/DeletionWarning';
 import { toast } from 'react-hot-toast';

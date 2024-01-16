@@ -1,4 +1,4 @@
-import DropDownContainer from '@/components/UI/DropDown/DropDownContainer';
+import DropDownContainer from '@/components/UI/Dropdown/DropdownContainer';
 import useMenuHandler from '@/hooks/useMenuHandler';
 import { cn } from '@/util/combineStyles';
 import { useEffect, useRef, useState } from 'react';

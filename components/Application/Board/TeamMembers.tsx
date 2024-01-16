@@ -12,7 +12,7 @@ import Badge from '@/components/UI/Badge';
 import Tooltip from '@/components/UI/Tooltips/Tooltip';
 import DeleteIcon from '@/components/UI/Icons/DeleteIcon';
 import { AnimatePresence, motion } from 'framer-motion';
-import DropDownContainer from '@/components/UI/DropDown/DropDownContainer';
+import DropDownContainer from '@/components/UI/Dropdown/DropdownContainer';
 import Input from '@/components/UI/InputFields/TextInput';
 import Button from '@/components/UI/Button';
 import DeletionWarning from '@/components/UI/Modal/DeletionWarning';
