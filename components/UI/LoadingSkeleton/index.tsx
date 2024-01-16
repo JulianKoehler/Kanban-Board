@@ -1,17 +1,18 @@
-import React from 'react';
+'use client';
+
 import Skeleton from 'react-loading-skeleton';
 
-type LoadingSkeletonProps = {
+type BoardLoadingSkeletonProps = {
     count: number;
 };
 
-const LoadingSkeleton = ({ count }: LoadingSkeletonProps) => {
+const BoardLoadingSkeleton = ({ count }: BoardLoadingSkeletonProps) => {
     const columnCount = Array(count).fill(0);
 
     return (
         <div id="outmost-wrapper" className="flex h-full gap-[2.4rem] px-[1.6rem]">
-            {columnCount.map(_ => (
-                <div id="column-wrapper" className="w-[28rem]">
+            {columnCount.map((_, index) => (
+                <div key={index} id="column-wrapper" className="w-[28rem]">
                     <div id="top-section" className="flex gap-4">
                         <div id="circle" className="h-6 w-[1.5rem]">
                             <Skeleton circle />
@@ -29,4 +30,4 @@ const LoadingSkeleton = ({ count }: LoadingSkeletonProps) => {
     );
 };
 
-export default LoadingSkeleton;
+export default BoardLoadingSkeleton;

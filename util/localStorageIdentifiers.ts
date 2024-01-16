@@ -1,5 +1,5 @@
 enum localStorageIdentifiers {
-  activeBoard = "Active Board",
+    activeBoard = 'Active Board',
 }
 
 export default localStorageIdentifiers;

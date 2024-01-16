@@ -1,23 +1,23 @@
-import { useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
-import GenericModalContainer from '@/components/UI/Modal/GenericModalContainer';
-import Input from '@/components/UI/InputFields/TextInput';
-import Button from '@/components/UI/Button';
-import DropDown from '@/components/UI/Dropdown/Dropdown';
-import H5 from '@/components/UI/Headings/H5';
+import Button from '@/components/UI/Button/Button';
+import Dropdown from '@/components/UI/Dropdown/Dropdown';
 import Form from '@/components/UI/Formelements/Form';
 import FormGroup from '@/components/UI/Formelements/FormGroup';
-import checkFormValidity from '@/util/checkFormValidity';
+import H5 from '@/components/UI/Headings/H5';
+import Input from '@/components/UI/InputFields/TextInput';
 import { LoadingSpinner_TailSpin as TailSpin } from '@/components/UI/LoadingSpinner';
-import SubtaskInputArea from '../Subtask/SubtaskInputArea';
-import { useAppSelector } from '@/redux/hooks';
-import { selectActiveBoard } from '@/redux/slices/boardSlice';
-import { restApi } from '@/redux/api';
-import { Subtask } from '@/types/data/subtask';
+import GenericModalContainer from '@/components/UI/Modal/GenericModalContainer';
+import { restApi } from '@/services/redux/api';
+import { useAppSelector } from '@/services/redux/hooks';
+import { selectActiveBoard } from '@/services/redux/slices/boardSlice';
 import { Status } from '@/types/data/stages';
+import { Subtask } from '@/types/data/subtask';
 import { TaskCreate, TaskResponse, TaskUpdate } from '@/types/data/tasks';
-import { skipToken } from '@reduxjs/toolkit/query';
 import { UserInfoReturn } from '@/types/data/user';
+import checkFormValidity from '@/util/checkFormValidity';
+import { skipToken } from '@reduxjs/toolkit/query';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import SubtaskInputArea from '../Subtask/SubtaskInputArea';
 
 type TaskModalProps = {
     statusOptions: Status[];
@@ -56,8 +56,15 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
         });
     }
 
-    function handleAssignmentChange(_: string, __: string, user: typeof assignedUser) {
-        setAssignedUser(user);
+    function handleAssignmentChange(value: string, label: string) {
+        const assingedUser = teamMembers.find(user => user.id === value) ?? null;
+
+        if (!assignedUser) {
+            toast.error(`Assignment failed! User ${label} with ID ${value} not found.`);
+            return;
+        }
+
+        setAssignedUser(assingedUser);
     }
 
     function onChangeTitle(e: React.ChangeEvent<HTMLInputElement>) {
@@ -131,12 +138,8 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
         await response;
     }
 
-    
-    
     function initFormValues() {
         if (isEditMode) {
-            console.log(task.assigned_user);
-            
             setSubtasks(task.subtasks);
             setTitle(task.title);
             setDescription(task.description);
@@ -156,10 +159,10 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
 
     useEffect(() => {
         !showModal && initFormValues();
-    }, [showModal, task]);
+    }, [showModal, task, activeBoard]);
 
     return (
-        <GenericModalContainer isShowing={showModal} additionalClassNames="w-[48rem] max-h-[71rem]">
+        <GenericModalContainer isShowing={showModal} className="max-h-[71rem] w-[48rem]">
             <Form onSubmit={handleSubmit}>
                 <h2 className="text-xl font-bold">{task ? 'Edit Task' : 'Add New Task'}</h2>
                 <FormGroup>
@@ -198,23 +201,24 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
                 {activeBoard && (
                     <FormGroup>
                         <H5>Assigned User</H5>
-                        <DropDown
-                            onOptionChange={handleAssignmentChange}
-                            dropDownOptions={teamMembers.map(user => ({
-                                ...user,
-                                title: `${user?.first_name} ${user?.last_name}`,
-                            }))}
-                            currentOption={assignedUser ? assignedUserName : ''}
-                        />
+                        <Dropdown
+                            selected={assignedUser ? assignedUserName : ''}
+                            onChangeCallback={handleAssignmentChange}>
+                            {teamMembers.map(user => (
+                                <Dropdown.Option key={user?.id} value={user?.id}>
+                                    {user?.first_name + ' ' + user?.last_name}
+                                </Dropdown.Option>
+                            ))}
+                        </Dropdown>
                     </FormGroup>
                 )}
                 <FormGroup>
                     <H5>Status</H5>
-                    <DropDown
-                        onOptionChange={handleStatusChange}
-                        dropDownOptions={statusOptions}
-                        currentOption={task?.status?.title}
-                    />
+                    <Dropdown selected={task?.status?.title} onChangeCallback={handleStatusChange}>
+                        {statusOptions?.map(({ id, title }) => (
+                            <Dropdown.Option key={id} value={id}>{title}</Dropdown.Option>
+                        ))}
+                    </Dropdown>
                 </FormGroup>
                 <div className="flex gap-4">
                     <Button type="submit" variant="primary" className="flex justify-center">

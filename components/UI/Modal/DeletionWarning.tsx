@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import Button from '../Button';
-import GenericModalContainer from './GenericModalContainer';
 import { LoadingSpinner_TailSpin as Tailspin } from '@/components/UI/LoadingSpinner';
+import Button from '../Button/Button';
+import GenericModalContainer from './GenericModalContainer';
 
 export type DeletionWarningProps = {
     type: 'board' | 'task' | 'user' | 'board member';
@@ -12,14 +11,7 @@ export type DeletionWarningProps = {
     show: boolean;
 };
 
-const DeletionWarning = ({
-    type,
-    title,
-    isLoading,
-    deleteFunction,
-    onClose,
-    show,
-}: DeletionWarningProps) => {
+const DeletionWarning = ({ type, title, isLoading, deleteFunction, onClose, show }: DeletionWarningProps) => {
     function getWarningMessage() {
         switch (type) {
             case 'board':
@@ -29,16 +21,12 @@ const DeletionWarning = ({
             case 'user':
                 return 'Do you really want to delete your account? You will lose access to all of your boards, also the ones you created!';
             case 'board member':
-                return `Are you sure you want to remove ${title} from your board?`
-            }
+                return `Are you sure you want to remove ${title} from your board?`;
+        }
     }
 
     return (
-        <GenericModalContainer
-            isShowing={show}
-            additionalClassNames="w-[48rem] gap-[2.4rem]"
-            onClose={onClose}
-        >
+        <GenericModalContainer isShowing={show} className="w-[48rem] gap-[2.4rem]" onClose={onClose}>
             <h2 className="text-xl font-bold text-red">Delete this {type}?</h2>
             <p className="text-base font-medium text-grey-medium">{getWarningMessage()}</p>
             <div className="flex w-full flex-col gap-[1.6rem] tablet:flex-row">

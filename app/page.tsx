@@ -1,7 +1,7 @@
-import KanbanApplication from "@/components/Application/Kanban";
+import { redirect } from 'next/navigation';
 
 const ApplicationPage = () => {
-    return <KanbanApplication />;
+    redirect('/board');
 };
 
 export default ApplicationPage;

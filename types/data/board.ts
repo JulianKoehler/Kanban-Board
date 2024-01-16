@@ -1,5 +1,5 @@
 import { StageCreate, StageResponse, StageUpdate } from './stages';
-import { ContributorUpdate, UserInfoReturn } from './user';
+import { UserInfoReturn } from './user';
 
 export interface BoardBase {
     title: string;

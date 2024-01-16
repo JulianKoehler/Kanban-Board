@@ -1,6 +1,6 @@
 'use server';
 
-import { BASE_URL } from '@/redux/api/api';
+import { BASE_URL } from '@/services/redux/api/api';
 import { UserInfoReturn } from '@/types/data/user';
 
 type RequestCookie = {
@@ -24,8 +24,7 @@ export const getCurrentUser = async (token: RequestCookie | undefined) => {
     });
     const user: UserInfoReturn = await response.json();
 
-    console.log("fn: ", user);
-    
+    console.log('fn: ', user);
 
     return user;
 };

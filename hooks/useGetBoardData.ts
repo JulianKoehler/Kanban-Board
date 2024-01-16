@@ -1,18 +1,12 @@
-import { restApi } from '@/redux/api';
-import { useAppSelector } from '@/redux/hooks';
-import { selectActiveBoard } from '@/redux/slices/boardSlice';
-import { useEffect } from 'react';
+import { restApi } from '@/services/redux/api';
+import { skipToken } from '@reduxjs/toolkit/query';
+import { useSearchParams } from 'next/navigation';
 
 const useGetBoardData = () => {
-    const activeBoard = useAppSelector(selectActiveBoard);
-    const [getBoardData, { data: board, isFetching: isFetchingBoardData }] =
-        restApi.boards.useLazyGetBoardDataByIdQuery();
+    const id = useSearchParams().get('id');
+    const result = restApi.boards.useGetBoardDataByIdQuery(id ? id : skipToken);
 
-    useEffect(() => {
-        activeBoard && getBoardData(activeBoard.id);
-    }, [activeBoard]);
-
-    return [board, isFetchingBoardData] as const;
+    return result;
 };
 
 export default useGetBoardData;

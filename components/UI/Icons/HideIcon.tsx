@@ -1,5 +1,3 @@
-import React from 'react';
-
 const HideIcon = () => {
     return (
         <svg width="18" height="16" xmlns="http://www.w3.org/2000/svg">

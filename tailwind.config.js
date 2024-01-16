@@ -37,6 +37,9 @@ module.exports = {
                 dropDownArrowUp: "url('/assets/icon-chevron-up.svg')",
                 deleteIcon: "url('/assets/icon-cross.svg')",
             },
+            backgroundSize: {
+                sm: '1.2rem',
+            },
         },
         fontFamily: {
             plusJakartaSans: ['Plus Jakarta Sans', 'sans-serif'],

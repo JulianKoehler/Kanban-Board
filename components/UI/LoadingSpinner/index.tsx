@@ -1,4 +1,4 @@
-import { ThreeDots, TailSpin } from 'react-loader-spinner';
+import { TailSpin, ThreeDots } from 'react-loader-spinner';
 
 export const LoadingSpinner_ThreeDots = (
     <ThreeDots
