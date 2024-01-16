@@ -2,7 +2,7 @@ import { cn } from '@/util/combineStyles';
 import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
 
-type DropDownContainerProps = {
+type DropdownContainerProps = {
     children: React.ReactNode;
     show: boolean;
     className: string;
@@ -10,7 +10,7 @@ type DropDownContainerProps = {
 
 export type RefDiv = HTMLDivElement;
 
-const DropDownContainer = React.forwardRef<RefDiv, DropDownContainerProps>(
+const DropdownContainer = React.forwardRef<RefDiv, DropdownContainerProps>(
     ({ children, show, className, ...props }, ref) => {
         return (
             <AnimatePresence>
@@ -33,6 +33,6 @@ const DropDownContainer = React.forwardRef<RefDiv, DropDownContainerProps>(
     },
 );
 
-DropDownContainer.displayName = 'DropDownContainer';
+DropdownContainer.displayName = 'DropdownContainer';
 
-export default DropDownContainer;
+export default DropdownContainer;
