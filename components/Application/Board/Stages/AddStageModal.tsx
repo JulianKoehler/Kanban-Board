@@ -21,12 +21,15 @@ type AddStageModalProps = {
 const AddStageModal = ({ onClose, showModal }: AddStageModalProps) => {
     const activeBoard = useAppSelector(selectActiveBoard);
     const [createNewStage, result] = restApi.stages.useCreateStageMutation();
-    const { data: boardData } = restApi.boards.useGetBoardDataByIdQuery(activeBoard ? activeBoard.id : skipToken);
 
-    useGetBoardData()
+    const { data: boardData } = useGetBoardData();
+
     const [color, setColor] = useState('#67E2AE');
     const nameRef = useRef<HTMLInputElement>(null);
     const index = boardData?.stages?.length || 0;
+
+    console.log(index);
+    
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -52,7 +55,7 @@ const AddStageModal = ({ onClose, showModal }: AddStageModalProps) => {
     }
 
     return (
-        <GenericModalContainer isShowing={showModal} onClose={onClose} className="gap-12 w-[48rem]">
+        <GenericModalContainer isShowing={showModal} onClose={onClose} className="w-[48rem] gap-12">
             <h2 className="text-xl font-bold">New Stage</h2>
             <Form onSubmit={handleSubmit}>
                 <H5>Name</H5>
