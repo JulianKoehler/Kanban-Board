@@ -15,12 +15,13 @@ import { useInitBoardModal } from './BoardModal.hooks';
 import StageInputArea from './StageInputArea';
 import TeamMembers from './TeamMembers';
 import TitleInput from './TitleInput';
+import { useCurrentBoardIdContext } from '@/services/context/active-board/active-board-context';
 
 const BoardEditing = ({ showModal, onClose, initialBoard }: BoardModalProps) => {
     const { boardData, dispatchBoard } = useBoardModalContext();
     const { title, stages, contributors, owner } = boardData;
-    const boardId = useSearchParams().get('id') ?? '';
-    
+    const { currentBoardId } = useCurrentBoardIdContext();
+
     useInitBoardModal(dispatchBoard, showModal, initialBoard);
 
     const [updateBoard, { isLoading, isError }] = restApi.boards.useUpdateBoardMutation();
@@ -49,7 +50,7 @@ const BoardEditing = ({ showModal, onClose, initialBoard }: BoardModalProps) => 
                 markedForDeletion: user?.markedForDeletion,
             })),
         };
-        const response = updateBoard({ id: boardId, data: updatedBoardData }).unwrap();
+        const response = updateBoard({ id: currentBoardId, data: updatedBoardData }).unwrap();
 
         toast.promise(response, {
             loading: 'Sending...',
