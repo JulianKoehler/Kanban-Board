@@ -42,10 +42,7 @@ export const boardReducer = (state: BoardState, action: Actions): BoardState => 
 
             if (recentlyDeleted) {
                 const userIndex = contributors.findIndex(item => item.id === user.id);
-
                 contributors[userIndex] = { ...user, markedForDeletion: false, isNew: false };
-                console.log({ recentlyDeleted_true: contributors });
-
                 return { ...state, contributors };
             }
 
@@ -95,12 +92,13 @@ export const boardReducer = (state: BoardState, action: Actions): BoardState => 
 
         case ActionTypes.PROMOTE_TO_OWNER: {
             const { user } = action.payload;
-            const newState = { ...state };
 
-            newState.contributors.filter(contributor => contributor.id !== user.id);
-            const contributors = [newState.owner, ...newState.contributors];
+            const updatedContributors = [
+                state.owner,
+                ...state.contributors.filter(contributor => contributor.id !== user.id),
+            ];
 
-            return { ...newState, owner: user, contributors };
+            return { ...state, owner: user, contributors: updatedContributors };
         }
 
         case ActionTypes.SET_IS_FORM_SUBMITTED:

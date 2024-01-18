@@ -28,9 +28,6 @@ const AddStageModal = ({ onClose, showModal }: AddStageModalProps) => {
     const nameRef = useRef<HTMLInputElement>(null);
     const index = boardData?.stages?.length || 0;
 
-    console.log(index);
-    
-
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
 

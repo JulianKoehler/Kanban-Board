@@ -71,7 +71,9 @@ export const tasksApiSlice = api.injectEndpoints({
                 method: 'PATCH',
                 body: { assigned_user_id: assignedUserId },
             }),
-            invalidatesTags: ['BoardData'],
+            async onQueryStarted({ boardId }, { dispatch, queryFulfilled }) {
+                pessimisticUpdate.updateAssingedUser(queryFulfilled, dispatch, boardId);
+            },
         }),
         deleteTask: builder.mutation<TaskDeleteResponse, string>({
             query: id => ({

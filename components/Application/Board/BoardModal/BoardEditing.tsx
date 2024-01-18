@@ -2,20 +2,19 @@ import Button from '@/components/UI/Button/Button';
 import Form from '@/components/UI/Formelements/Form';
 import { LoadingSpinner_TailSpin as TailSpin } from '@/components/UI/LoadingSpinner';
 import GenericModalContainer from '@/components/UI/Modal/GenericModalContainer';
+import { useCurrentBoardIdContext } from '@/services/context/active-board/active-board-context';
 import { useBoardModalContext } from '@/services/context/board-modal/board-modal-context';
 import { ActionTypes } from '@/services/context/board-modal/types';
 import { restApi } from '@/services/redux/api';
 import { BoardUpdate } from '@/types/data/board';
 import checkFormValidity from '@/util/checkFormValidity';
-import { useSearchParams } from 'next/navigation';
 import { FormEvent } from 'react';
 import toast from 'react-hot-toast';
 import { BoardModalProps } from './BoardModal';
 import { useInitBoardModal } from './BoardModal.hooks';
 import StageInputArea from './StageInputArea';
-import TeamMembers from './TeamMembers';
+import TeamMembers from './TeamMembers/TeamMembers';
 import TitleInput from './TitleInput';
-import { useCurrentBoardIdContext } from '@/services/context/active-board/active-board-context';
 
 const BoardEditing = ({ showModal, onClose, initialBoard }: BoardModalProps) => {
     const { boardData, dispatchBoard } = useBoardModalContext();
@@ -73,7 +72,7 @@ const BoardEditing = ({ showModal, onClose, initialBoard }: BoardModalProps) => 
                 <h2 className="text-xl font-bold">Edit Board</h2>
                 <TitleInput />
                 <StageInputArea />
-                <TeamMembers isEditMode={false} />
+                <TeamMembers isEditMode={true} />
                 <Button type="submit" variant="primary" className="flex justify-center" disabled={isLoading}>
                     {isLoading ? TailSpin : 'Save changes'}
                 </Button>

@@ -1,7 +1,7 @@
 import { LoadingSpinner_TailSpin as Tailspin } from '@/components/UI/LoadingSpinner';
 import { ContextException } from '@/lib/exceptions';
 import { cn } from '@/util/combineStyles';
-import { PropsWithChildren, ReactNode, createContext, useContext, useState } from 'react';
+import { PropsWithChildren, ReactNode, createContext, useContext } from 'react';
 import Button, { MainButtonProps } from '../Button/Button';
 import GenericModalContainer from './GenericModalContainer';
 
@@ -47,11 +47,10 @@ interface WarningModalProps extends CommonProps {
 }
 
 const WarningModal = ({ show, type, onClose, onSubmit, isLoading, children }: WarningModalProps) => {
-    const [_type] = useState(type);
 
     return (
-        <WarningModalContext.Provider value={{ _type, onClose, onSubmit, isLoading }}>
-            <GenericModalContainer isShowing={show} className="w-[48rem] gap-[2.4rem]" onClose={onClose}>
+        <WarningModalContext.Provider value={{ _type: type, onClose, onSubmit, isLoading }}>
+            <GenericModalContainer isShowing={show} className="w-[52rem] gap-[2.4rem]" onClose={onClose}>
                 {children}
             </GenericModalContainer>
         </WarningModalContext.Provider>

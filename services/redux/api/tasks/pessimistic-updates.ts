@@ -111,9 +111,35 @@ async function deleteTask(
     }
 }
 
+async function updateAssingedUser(
+    queryFulfilled: TaskMutationQueryFulfilled<TaskResponse>,
+    dispatch: Dispatch,
+    boardId: string,
+) {
+    try {
+        const { data } = await queryFulfilled;
+
+        dispatch(
+            boardsApiSlice.util.updateQueryData('getBoardDataById', boardId, draft => {
+                const stageIndex = draft?.stages?.findIndex(stage => stage.id === data.status.id);
+                if (stageIndex === undefined) throw new Error('No stage found for this task.');
+
+                const taskIndex = draft?.stages[stageIndex].tasks.findIndex(task => task.id === data.id);
+                if (taskIndex === undefined) throw new Error('This task does not exist');
+
+                draft.stages[stageIndex].tasks[taskIndex].assigned_user = data.assigned_user;
+            }),
+        );
+    } catch (err) {
+        console.log(err);
+        dispatch(boardsApiSlice.util.invalidateTags(['BoardData']));
+    }
+}
+
 export const pessimisticUpdate = {
     createTask,
     updateTask,
     updateStage,
     deleteTask,
+    updateAssingedUser,
 };

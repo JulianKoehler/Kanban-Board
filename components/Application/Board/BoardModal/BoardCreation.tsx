@@ -2,31 +2,28 @@ import Button from '@/components/UI/Button/Button';
 import Form from '@/components/UI/Formelements/Form';
 import { LoadingSpinner_TailSpin as TailSpin } from '@/components/UI/LoadingSpinner';
 import GenericModalContainer from '@/components/UI/Modal/GenericModalContainer';
-import useQueryString from '@/hooks/useQueryString';
+import { useCurrentBoardIdContext } from '@/services/context/active-board/active-board-context';
 import { useBoardModalContext } from '@/services/context/board-modal/board-modal-context';
 import { ActionTypes } from '@/services/context/board-modal/types';
 import { restApi } from '@/services/redux/api';
 import { useAppDispatch } from '@/services/redux/hooks';
 import { setActiveBoard } from '@/services/redux/slices/boardSlice';
-import { BoardUpdate } from '@/types/data/board';
+import { BoardCreate } from '@/types/data/board';
 import checkFormValidity from '@/util/checkFormValidity';
-import { usePathname, useRouter } from 'next/navigation';
 import { FormEvent } from 'react';
 import toast from 'react-hot-toast';
 import { BoardModalProps } from './BoardModal';
 import { useInitBoardModal } from './BoardModal.hooks';
 import StageInputArea from './StageInputArea';
-import TeamMembers from './TeamMembers';
+import TeamMembers from './TeamMembers/TeamMembers';
 import TitleInput from './TitleInput';
 
 const BoardCreation = ({ showModal, onClose }: BoardModalProps) => {
     const dispatch = useAppDispatch();
-    const { push } = useRouter();
-    const pathname = usePathname();
-    const createQueryString = useQueryString();
 
+    const { setCurrentBoardId } = useCurrentBoardIdContext();
     const { boardData, dispatchBoard } = useBoardModalContext();
-    const { title, stages, contributors, owner } = boardData;    
+    const { title, stages, contributors, owner } = boardData;
 
     useInitBoardModal(dispatchBoard, showModal);
 
@@ -46,7 +43,7 @@ const BoardCreation = ({ showModal, onClose }: BoardModalProps) => {
 
         if (!isFormValid) return;
 
-        const newBoardData: BoardUpdate = {
+        const newBoardData: BoardCreate = {
             title,
             stages,
             owner: owner.id,
@@ -75,7 +72,7 @@ const BoardCreation = ({ showModal, onClose }: BoardModalProps) => {
                 id: newBoard.id,
             }),
         );
-        push(pathname + '?' + createQueryString('id', newBoard.id));
+        setCurrentBoardId(newBoard.id);
         onClose();
     }
 

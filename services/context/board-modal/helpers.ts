@@ -2,7 +2,7 @@ import { UserInfoReturn } from '@/types/data/user';
 import { Dispatch } from 'react';
 import { ActionTypes, Actions, BoardState } from './types';
 
-export function initFormValues(dispatch: Dispatch<Actions>, boardData: BoardState | undefined, user: UserInfoReturn) {
+export function initFormValues(dispatch: Dispatch<Actions>, boardData: BoardState | undefined, owner: UserInfoReturn) {
     if (!!boardData) {
         dispatch({ type: ActionTypes.SET_BOARD_TITLE, payload: { title: boardData.title } });
         dispatch({ type: ActionTypes.SET_INITIAL_STAGES, payload: { stages: boardData.stages } });
@@ -27,7 +27,7 @@ export function initFormValues(dispatch: Dispatch<Actions>, boardData: BoardStat
             },
         });
         dispatch({ type: ActionTypes.SET_INITIAL_CONTRIBUTORS, payload: { contributors: [] } });
-        dispatch({ type: ActionTypes.SET_INITIAL_OWNER, payload: { user } });
+        dispatch({ type: ActionTypes.SET_INITIAL_OWNER, payload: { user: owner } });
     }
     dispatch({ type: ActionTypes.SET_IS_FORM_SUBMITTED, payload: false });
 }

@@ -46,6 +46,7 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
     const isEditMode = !!task;
     const currentStageId = task?.status.id ?? statusOptions?.[0]?.id;
     const taskID = task?.id;
+
     const teamMembers = [board?.owner, ...(board?.contributors ?? [])] as UserInfoReturn[];
     const assignedUserName = `${assignedUser?.first_name} ${assignedUser?.last_name}`;
 
@@ -57,14 +58,14 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
     }
 
     function handleAssignmentChange(value: string, label: string) {
-        const assingedUser = teamMembers.find(user => user.id === value) ?? null;
+        const userToBeAssinged = teamMembers.find(user => user.id === value) ?? null;
 
-        if (!assignedUser) {
+        if (!userToBeAssinged) {
             toast.error(`Assignment failed! User ${label} with ID ${value} not found.`);
             return;
         }
 
-        setAssignedUser(assingedUser);
+        setAssignedUser(userToBeAssinged);
     }
 
     function onChangeTitle(e: React.ChangeEvent<HTMLInputElement>) {
@@ -216,7 +217,9 @@ const TaskModal = ({ onClose, showModal, statusOptions, task }: TaskModalProps) 
                     <H5>Status</H5>
                     <Dropdown selected={task?.status?.title} onChangeCallback={handleStatusChange}>
                         {statusOptions?.map(({ id, title }) => (
-                            <Dropdown.Option key={id} value={id}>{title}</Dropdown.Option>
+                            <Dropdown.Option key={id} value={id}>
+                                {title}
+                            </Dropdown.Option>
                         ))}
                     </Dropdown>
                 </FormGroup>

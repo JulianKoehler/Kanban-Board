@@ -45,7 +45,6 @@ const Signup = () => {
             router.push('/');
         }
         if (isError) {
-            console.log('pups', error);
             toast.error(((error as FetchBaseQueryError).data as HTTPExceptionResponse).detail);
         }
     }, [isLoading, router]);

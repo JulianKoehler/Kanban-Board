@@ -32,6 +32,7 @@ export interface TaskStageUpdate {
 export interface TaskUpdateAssignedUser {
     taskId: string;
     assignedUserId: string | null;
+    boardId: string;
 }
 
 export interface TaskResponse extends TaskBase {
