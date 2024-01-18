@@ -24,7 +24,5 @@ export const getCurrentUser = async (token: RequestCookie | undefined) => {
     });
     const user: UserInfoReturn = await response.json();
 
-    console.log('fn: ', user);
-
     return user;
 };

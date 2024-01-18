@@ -16,6 +16,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import BoardModal from './BoardModal/BoardModal';
+import { isErrorWithMessageFromBackend } from '@/types/type-guards/errors';
 
 const BoardMenu = () => {
     const dispatch = useAppDispatch();
@@ -53,7 +54,12 @@ const BoardMenu = () => {
         toast.promise(response, {
             loading: 'Sending...',
             success: `Your board has been deleted`,
-            error: err => `Could not delete your board: ${err.toString()}`,
+            error: err => {
+                if (isErrorWithMessageFromBackend(err)) {
+                    return err.data.detail;
+                }
+                return `Something went wrong. You board could not be deleted!`;
+            },
         });
 
         await response;

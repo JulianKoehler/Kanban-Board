@@ -25,6 +25,27 @@ async function updateBoard(
     }
 }
 
+async function updateBoardOwner(
+    queryFulfilled: BoardMutationQueryFulfilled<BoardDataResponse>,
+    dispatch: Dispatch,
+    boardId: string,
+    userId: string,
+) {
+    try {
+        const { data } = await queryFulfilled;
+
+        dispatch(
+            boardsApiSlice.util.updateQueryData('getBoardDataById', boardId ?? 'no_id', draft => {
+                draft.owner = data.owner;
+            }),
+        );
+    } catch (err) {
+        console.log(err);
+        dispatch(boardsApiSlice.util.invalidateTags(['BoardData']));
+    }
+}
+
 export const pessimisticUpdate = {
     updateBoard,
+    updateBoardOwner,
 };

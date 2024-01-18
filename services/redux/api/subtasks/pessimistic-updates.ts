@@ -21,7 +21,6 @@ async function markSubtask(
                 );
 
                 draft.stages[stageIdx].tasks[taskIdx].subtasks[subtaskIdx].is_completed = is_completed;
-                console.log(draft.stages[stageIdx].tasks[taskIdx].subtasks[subtaskIdx]);
             }),
         );
     } catch (err) {

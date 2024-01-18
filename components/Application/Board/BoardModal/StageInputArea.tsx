@@ -43,8 +43,8 @@ const StageInputArea = () => {
             <H5>Stages</H5>
             <div className="max-w- flex flex-col gap-[1.2rem]">
                 <AnimatePresence>
-                    {stages.map((stage, index) => {
-                        return stage.markedForDeletion ? null : (
+                    {stages.map((stage, index) =>
+                        stage.markedForDeletion ? null : (
                             <motion.div
                                 initial={{ scale: 0, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
@@ -79,8 +79,8 @@ const StageInputArea = () => {
                                     </p>
                                 )}
                             </motion.div>
-                        );
-                    })}
+                        ),
+                    )}
                 </AnimatePresence>
             </div>
             <Button variant="secondary" type="button" onClick={onAddNewStageInput}>

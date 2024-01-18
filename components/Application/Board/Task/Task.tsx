@@ -92,10 +92,11 @@ const Task = ({ currentBoard, task, index }: TaskProps) => {
     }
 
     async function handleChangeAssignedUser(userId: UserReturn['id']) {
-        await updateAssingedUser({ taskId: task.id, assignedUserId: userId });
+        await updateAssingedUser({ taskId: task.id, assignedUserId: userId, boardId: currentBoard.id });
 
         if (!assignmentResult.isLoading && assignmentResult.isError) {
             toast.error('Could not assign the task, please try again.');
+            console.error(assignmentResult.error);
         }
     }
 
