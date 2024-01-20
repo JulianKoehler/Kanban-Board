@@ -45,9 +45,7 @@ export type Actions =
       }
     | {
           type: ActionTypes.ADD_STAGE;
-          payload: {
-              stage: StageUpdate;
-          };
+          payload: { stage: StageUpdate};
       }
     | {
           type: ActionTypes.ADD_CONTRIBUTOR;

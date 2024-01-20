@@ -1,32 +1,28 @@
+import UserMenu from '@/components/Application/User/UserMenu';
 import Button from '@/components/UI/Button/Button';
-import UserMenu from '@/components/User/UserMenu';
 import useGetBoardData from '@/hooks/useGetBoardData';
 import useViewport from '@/hooks/useViewport';
 import AddIcon from '@/public/assets/icon-add-task-mobile.svg';
+import { useTaskModalContext } from '@/services/context/task-modal/task-modal-context';
+import { TaskModalType } from '@/services/context/task-modal/types';
 import { useAppSelector } from '@/services/redux/hooks';
 import { selectUser } from '@/services/redux/slices/authSlice';
 import { selectActiveBoard } from '@/services/redux/slices/boardSlice';
 import Image from 'next/image';
-import { useState } from 'react';
 import BoardMenu from '../Board/BoardMenu';
-import TaskModal from '../Board/Task/TaskModal';
+import TaskCreating from '../Board/Task/TaskModals/TaskCreating/TastCreating';
 
 const UserActions = () => {
     const activeBoard = useAppSelector(selectActiveBoard);
     const user = useAppSelector(selectUser);
     const { data: board, isFetching } = useGetBoardData();
     const [isMobile] = useViewport();
-
-    const [showAddNewTaskModal, setShowAddNewTaskModal] = useState(false);
+    const { setActiveModal } = useTaskModalContext();
 
     const stagesExist = board?.stages && board?.stages?.length > 0;
 
     function onAddNewTask() {
-        setShowAddNewTaskModal(true);
-    }
-
-    function onCloseNewTask() {
-        setShowAddNewTaskModal(false);
+        setActiveModal(TaskModalType.CREATING);
     }
 
     return (
@@ -45,12 +41,7 @@ const UserActions = () => {
                 {!!activeBoard && <BoardMenu />}
                 {!!user && <UserMenu />}
             </div>
-            <TaskModal
-                key={board?.id}
-                showModal={showAddNewTaskModal}
-                statusOptions={board?.stages!}
-                onClose={onCloseNewTask}
-            />
+            <TaskCreating />
         </>
     );
 };

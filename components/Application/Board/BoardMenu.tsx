@@ -79,7 +79,7 @@ const BoardMenu = () => {
                     <Image src={OptionsIcon} alt="options" />
                 </MenuToggleButton>
                 <DropdownContainer className="absolute right-0 top-[6rem]" show={showBoardMenu}>
-                    <MenuActionButton onClick={handleEditCurrentBoard} className="rounded-t-xl ">
+                    <MenuActionButton onClick={handleEditCurrentBoard} className="rounded-t-xl">
                         Edit Board
                     </MenuActionButton>
 

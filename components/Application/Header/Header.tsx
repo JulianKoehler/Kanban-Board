@@ -6,6 +6,7 @@ import BoardTitle from './BoardTitle';
 import HeaderLogo from './HeaderLogo';
 import MobileBoardSelector from './MobileBoardSelector';
 import UserActions from './UserActions';
+import { TaskModalProvider } from '@/services/context/task-modal/task-modal-context';
 
 const Header = () => {
     const [isMobile] = useViewport();
@@ -20,7 +21,9 @@ const Header = () => {
                 <HeaderLogo />
                 <BoardTitle />
                 <MobileBoardSelector />
-                <UserActions />
+                <TaskModalProvider>
+                    <UserActions />
+                </TaskModalProvider>
             </header>
         </>
     );

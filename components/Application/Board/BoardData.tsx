@@ -3,16 +3,22 @@ import Task from '@/components/Application/Board/Task/Task';
 import { BoardDataResponse } from '@/types/data/board';
 
 type BoardDataProps = {
-    data: BoardDataResponse;
+    data: BoardDataResponse | undefined;
 };
 
 const BoardData = ({ data }: BoardDataProps) => {
+    if (!data?.stages) {
+        return null;
+    }
+
+    const { stages } = data;
+
     return (
         <>
-            {data?.stages?.map(stage => (
+            {stages.map(stage => (
                 <Stage key={stage.id} stage={stage}>
-                    {stage.tasks?.map((task, idx) => (
-                        <Task key={task.id} currentBoard={data} task={task} index={idx} />
+                    {stage.tasks.map((task, idx) => (
+                        <Task key={task.id} task={task} index={idx} />
                     ))}
                 </Stage>
             ))}
