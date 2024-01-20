@@ -29,7 +29,6 @@ async function updateBoardOwner(
     queryFulfilled: BoardMutationQueryFulfilled<BoardDataResponse>,
     dispatch: Dispatch,
     boardId: string,
-    userId: string,
 ) {
     try {
         const { data } = await queryFulfilled;

@@ -42,7 +42,7 @@ const Dropdown = ({ children, className, onChangeCallback, selected, ...props }:
                 {...props}>
                 <div
                     onClick={() => setShowDropDown(prevState => !prevState)}
-                    className="flex min-h-[4.1rem] w-full cursor-pointer items-center justify-between rounded-md border-[0.1rem] border-lines-light px-[1.6rem] py-[0.8rem] hover:border-purple-main">
+                    className={cn("flex min-h-[4.1rem] w-full cursor-pointer items-center justify-between rounded-md border-[0.1rem] border-lines-light px-[1.6rem] py-[0.8rem] hover:border-purple-main", className)}>
                     <p className="max-w-[23rem] overflow-hidden text-ellipsis whitespace-nowrap text-base font-medium tablet:max-w-[37rem]">
                         {selectedOption}
                     </p>

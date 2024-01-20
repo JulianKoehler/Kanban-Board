@@ -33,7 +33,7 @@ const Board = () => {
     return (
         <>
             <BoardContainer>
-                <BoardData data={boardResult.data!} />
+                <BoardData data={boardResult.data} />
                 {hasAtLeastOneStage && <AddStageButton onClick={() => setShowAddStageModal(true)} />}
                 {!hasAtLeastOneStage && (
                     <NoBoardData

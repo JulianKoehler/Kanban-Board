@@ -8,11 +8,12 @@ import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { SlLogout } from "react-icons/sl";
+import { SlLogout } from 'react-icons/sl';
 import { TiUserDelete } from 'react-icons/ti';
-import Avatar from '../UI/Avatar';
-import DropdownContainer from '../UI/Dropdown/DropdownContainer';
-import DeletionWarning from '../UI/Modal/DeletionWarning';
+import Avatar from '../../UI/Avatar';
+import DropdownContainer from '../../UI/Dropdown/DropdownContainer';
+import DeletionWarning from '../../UI/Modal/DeletionWarning';
+import WarningModal from '@/components/UI/Modal/WarningModal';
 
 const UserMenu = () => {
     const dispatch = useAppDispatch();
@@ -65,14 +66,18 @@ const UserMenu = () => {
                 </button>
             </DropdownContainer>
 
-            <DeletionWarning
+            <WarningModal
                 show={showDeleteAccountWarning}
-                title={''}
-                type="user"
+                type="destructive"
                 onClose={() => setShowDeleteAccountWarning(false)}
-                deleteFunction={handleAccountDeletion}
-                isLoading={deleteUserResult.isLoading}
-            />
+                onSubmit={handleAccountDeletion}
+                isLoading={deleteUserResult.isLoading}>
+                <WarningModal.Headline>Delete this task?</WarningModal.Headline>
+                <WarningModal.Message>
+                    Are you sure you want to delete this task and its subtasks? This action cannot be reversed.
+                </WarningModal.Message>
+                <WarningModal.UserActionButtons submitLabel="Delete" cancelLabel="Cancel" />
+            </WarningModal>
         </div>
     );
 };

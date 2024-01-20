@@ -1,108 +1,77 @@
 import Button from '@/components/UI/Button/Button';
+import FormGroup from '@/components/UI/Formelements/FormGroup';
+import H5 from '@/components/UI/Headings/H5';
 import DeleteIcon from '@/components/UI/Icons/DeleteIcon';
 import Input from '@/components/UI/InputFields/TextInput';
 import Tooltip from '@/components/UI/Tooltips/Tooltip';
-import { Subtask } from '@/types/data/subtask';
+import { useTaskModalContext } from '@/services/context/task-modal/task-modal-context';
+import { TaskActionTypes } from '@/services/context/task-modal/types';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Dispatch, SetStateAction } from 'react';
 
-type SubtaskInputAreaProps = {
-    subtasks: Subtask[];
-    setSubtasks: Dispatch<SetStateAction<Subtask[]>>;
-    isFormSubmitted: boolean;
-};
+const SubtaskInputArea = () => {
+    const { dispatchTask, taskData } = useTaskModalContext();
+    const { subtasks, isFormSubmitted } = taskData;
 
-const SubtaskInputArea = ({ subtasks, setSubtasks, isFormSubmitted }: SubtaskInputAreaProps) => {
     function handleSubtaskInput(index: number) {
         return (e: React.ChangeEvent<HTMLInputElement>) => {
-            setSubtasks(prevSubtasks => {
-                const subtasks = [...prevSubtasks!];
-
-                subtasks[index] = {
-                    ...subtasks[index],
-                    title: e.target.value,
-                };
-
-                return subtasks;
-            });
+            dispatchTask({ type: TaskActionTypes.SET_SUBTASK_TITLE, payload: { title: e.target.value, index } });
         };
     }
 
     function onDeleteSubtaskInput(index: number) {
         return () => {
-            setSubtasks(prevSubtasks => {
-                const subtasks = [...prevSubtasks];
-
-                subtasks[index] = {
-                    ...subtasks[index],
-                    markedForDeletion: true,
-                };
-
-                // Remove newly created subtasks directly in the frontend before submitting them to the API
-                if (subtasks[index]?.isNew) {
-                    subtasks.splice(index, 1);
-                }
-
-                return subtasks;
-            });
+            dispatchTask({ type: TaskActionTypes.DELETE_SUBTASK, payload: { index } });
         };
     }
 
-    // Id will be set after submit by Postgresql
     function onAddNewSubtaskInput() {
-        setSubtasks(prevSubtasks => [
-            ...prevSubtasks,
-            {
-                index: subtasks.length,
-                title: '',
-                is_completed: false,
-                id: '',
-                isNew: true,
-            },
-        ]);
+        dispatchTask({ type: TaskActionTypes.ADD_SUBTASK });
     }
 
     return (
-        <>
-            <AnimatePresence>
-                {subtasks.map((subtask, index) => {
-                    return subtask.markedForDeletion ? null : (
-                        <motion.div
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0, opacity: 0 }}
-                            key={subtask.id}
-                            className="relative flex items-center gap-[1.6rem]">
-                            <Input
-                                value={subtask.title}
-                                className={isFormSubmitted && subtask.title.length < 1 ? 'input-error' : ''}
-                                onChange={handleSubtaskInput(index)}
-                                placeholder="e.g. Make coffee"
-                            />
-                            <Tooltip message="Delete">
-                                <motion.button
-                                    initial={{ scale: 0, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    exit={{ scale: 0, opacity: 0 }}
-                                    type="button"
-                                    onClick={onDeleteSubtaskInput(index)}
-                                    className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red">
-                                    <DeleteIcon />
-                                </motion.button>
-                            </Tooltip>
-                            {subtask.title.length < 1 && isFormSubmitted && (
-                                <p className="absolute bottom-[0.9rem] right-[4.6rem] text-base font-medium text-red">
-                                    Can't be empty
-                                </p>
-                            )}
-                        </motion.div>
-                    );
-                })}
-            </AnimatePresence>
-            <Button variant="secondary" type="button" onClick={onAddNewSubtaskInput}>
-                + Add New Subtask
-            </Button>
-        </>
+        <FormGroup>
+            <H5>Subtasks</H5>
+            <div className="max-w- flex flex-col gap-[1.2rem]">
+                <AnimatePresence>
+                    {subtasks.map((subtask, index) => {
+                        return subtask.markedForDeletion ? null : (
+                            <motion.div
+                                initial={{ scale: 0.7, opacity: 0.4 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
+                                key={subtask.id}
+                                className="relative flex items-center gap-[1.6rem]">
+                                <Input
+                                    value={subtask.title}
+                                    className={isFormSubmitted && subtask.title.length < 1 ? 'input-error' : ''}
+                                    onChange={handleSubtaskInput(index)}
+                                    placeholder="e.g. Make coffee"
+                                />
+                                <Tooltip message="Delete">
+                                    <motion.button
+                                        initial={{ scale: 0, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        exit={{ scale: 0, opacity: 0 }}
+                                        type="button"
+                                        onClick={onDeleteSubtaskInput(index)}
+                                        className="aspect-square w-[1.485rem] fill-grey-medium transition-colors duration-200 hover:fill-red">
+                                        <DeleteIcon />
+                                    </motion.button>
+                                </Tooltip>
+                                {subtask.title.length < 1 && isFormSubmitted && (
+                                    <p className="absolute bottom-[0.9rem] right-[4.6rem] text-base font-medium text-red">
+                                        Can't be empty
+                                    </p>
+                                )}
+                            </motion.div>
+                        );
+                    })}
+                </AnimatePresence>
+                <Button variant="secondary" type="button" onClick={onAddNewSubtaskInput}>
+                    + Add New Subtask
+                </Button>
+            </div>
+        </FormGroup>
     );
 };
 
