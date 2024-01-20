@@ -28,6 +28,7 @@ const TaskCreating = () => {
     const { data: board } = restApi.boards.useGetBoardDataByIdQuery(currentBoardId ?? skipToken);
 
     const teamMembers = [board?.owner, ...(board?.contributors ?? [])] as UserInfoReturn[];
+    const initialStatus = useInitialStatus();
 
     useEffect(() => {
         updateResult.isSuccess && onClose();
@@ -41,8 +42,6 @@ const TaskCreating = () => {
     function onClose() {
         setActiveModal(null);
     }
-
-    const initialStatus = useInitialStatus();
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();

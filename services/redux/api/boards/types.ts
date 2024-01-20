@@ -6,9 +6,8 @@ import { BaseQueryFn, FetchArgs, FetchBaseQueryError, FetchBaseQueryMeta } from 
 export type BoardMutationQueryFulfilled<T> = PromiseWithKnownReason<
     {
         data: T;
-        meta: FetchBaseQueryMeta | undefined;
+        meta: {} | undefined;
     },
-    QueryFulfilledRejectionReason<BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>>
->;
+    QueryFulfilledRejectionReason<BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError>>>
 
 export type Dispatch = ThunkDispatch<any, any, AnyAction>;
