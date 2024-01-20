@@ -1,5 +1,4 @@
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError, createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { redirect } from 'next/navigation';
 
 export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
