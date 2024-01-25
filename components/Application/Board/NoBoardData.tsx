@@ -1,6 +1,7 @@
 import Button from '@/components/UI/Button/Button';
 import { useGetBoardList } from '@/hooks/useGetBoardList';
 import WelcomeImage from '@/public/assets/empty.png';
+import { useCurrentBoardIdContext } from '@/services/context/active-board/active-board-context';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
@@ -13,7 +14,8 @@ type NoBoardDataProps = {
 
 const NoBoardData = ({ setShowAddStageModal, setShowCreateBoardModal }: NoBoardDataProps) => {
     const [{ isUninitialized }, allBoards] = useGetBoardList();
-    const isBoardSelected = !!useSearchParams().get('id');
+    const { currentBoardId } = useCurrentBoardIdContext();
+    const isBoardSelected = !!currentBoardId;    
 
     const userHasBoards = allBoards.length > 0;
 
