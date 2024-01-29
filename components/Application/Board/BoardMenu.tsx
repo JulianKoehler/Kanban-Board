@@ -17,6 +17,7 @@ import { useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import BoardModal from './BoardModal/BoardModal';
 import { isErrorWithMessageFromBackend } from '@/types/type-guards/errors';
+import { useCurrentBoardIdContext } from '@/services/context/active-board/active-board-context';
 
 const BoardMenu = () => {
     const dispatch = useAppDispatch();
@@ -26,7 +27,7 @@ const BoardMenu = () => {
     const [showEditBoardModal, setShowEditBoardModal] = useState(false);
     const [showDeleteBoardWarning, setShowDeleteBoardWarning] = useState(false);
 
-    const currentBoardId = useSearchParams().get('id');
+    const { currentBoardId } = useCurrentBoardIdContext();
     const { data: board, isFetching, isError } = useGetBoardData();
     const [deleteBoard, boardDeletion] = restApi.boards.useDeleteBoardMutation();
 
