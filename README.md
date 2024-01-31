@@ -16,21 +16,22 @@ email: test@account.com
 
 password: Welcome123
 
-This is my current and biggest private project, in which I invested by far the most time compared to all the other projects. The work is still in progress.
+This is my current and biggest portfolio project, in which I invested by far the most time compared to all the other projects. I am actively working on it in my free time to add more features and improve my skills.
 
-It is basically an application for managing tasks based on the Kanban concept. I learned really a lot along this project, which I started in March 2023, even before my first Job as a developer and am totally aware of the fact that some parts of the codebase may need some refactoring. WORK IN PROGRESS =)
+It is an application for managing projects and tasks based on the Kanban concept. I learned really a lot along this project, which I started in March 2023, even before my first Job as a developer and did a big code refactoring lately.
 
 What is currently possible:
 
 * Creating your own user account with your protected boards
 * Complete CRUD functionality for boards, columns, tasks and subtasks
 * Select between dark and light theme
-
-What is planned for the future:
-
 * Collaboration: Giving other users permission to work on your boards
 * Consequently searching for other users either with name or ID to add them to your boards
 * Assign Tasks to specific users
+
+What is planned for the future:
+
+* Comment Section within the Task Modal to communicate with other team members. Maybe even with a WebSocket.
 
 Also checkout the Roadmap at the very bottom where I list my smaller updates planned to enhance the codebase and the existing features!
 
@@ -90,8 +91,9 @@ Start the server
 
 ## Roadmap
 
-- User Collaboration
-- Update the codebase on Next 14 and utilizing the App Router
+- Providing a warning to the User when he wants to delete a stage since this will delete all tasks
+- Task prioritie
+- Implementing a blocked flag for a task when currently being edited by team member
 - Unit tests for both frontend and backend
 
 
