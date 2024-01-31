@@ -6,10 +6,9 @@ import TaskModal from './TaskModals/TaskModal';
 
 type TaskProps = {
     task: TaskResponse;
-    index: number;
 };
 
-const Task = ({ task, index }: TaskProps) => {
+const Task = ({ task }: TaskProps) => {
     const parsedTaskData: TaskState = {
         id: task.id,
         title: task.title,
@@ -18,11 +17,11 @@ const Task = ({ task, index }: TaskProps) => {
         assignedUser: task.assigned_user,
         status: task.status,
         isFormSubmitted: false,
-    };
+    };    
 
     return (
         <TaskModalProvider taskData={parsedTaskData}>
-            <TaskCard index={index} />
+            <TaskCard />
             <TaskModal />
         </TaskModalProvider>
     );

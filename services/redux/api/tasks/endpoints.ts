@@ -8,6 +8,7 @@ import {
 } from '@/types/data/tasks';
 import { api } from '../api';
 import { pessimisticUpdate } from './pessimistic-updates';
+import { optimisticUpdates } from './optimistic-updates';
 
 export const tasksApiSlice = api.injectEndpoints({
     endpoints: builder => ({
@@ -62,7 +63,7 @@ export const tasksApiSlice = api.injectEndpoints({
                 body: { new_stage_id: newStageId },
             }),
             async onQueryStarted({ taskId, prevStageId, newStageId, boardId }, { dispatch, queryFulfilled }) {
-                pessimisticUpdate.updateStage(queryFulfilled, dispatch, boardId, taskId, prevStageId, newStageId);
+                optimisticUpdates.updateStage(queryFulfilled, dispatch, boardId, taskId, prevStageId, newStageId);
             },
         }),
         updateAssingedUser: builder.mutation<TaskResponse, TaskUpdateAssignedUser>({
