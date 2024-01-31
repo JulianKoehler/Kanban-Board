@@ -21,7 +21,7 @@ async function createTask(
     }
 }
 
-async function updateTask(
+async function updateTask( 
     queryFulfilled: TaskMutationQueryFulfilled<TaskResponse>,
     dispatch: Dispatch,
     task: TaskUpdate,
@@ -51,34 +51,6 @@ async function updateTask(
                     const indexOfUpdatedTask = draft.stages[newStageIndex].tasks.findIndex(task => task.id === id);
                     draft.stages[newStageIndex].tasks[indexOfUpdatedTask] = data;
                 }
-            }),
-        );
-    } catch (err) {
-        console.log(err);
-        dispatch(boardsApiSlice.util.invalidateTags(['BoardData']));
-    }
-}
-
-async function updateStage(
-    queryFulfilled: TaskMutationQueryFulfilled<TaskResponse>,
-    dispatch: Dispatch,
-    boardId: string,
-    taskId: string,
-    prevStageId: string,
-    newStageId: string,
-) {
-    try {
-        const { data } = await queryFulfilled;
-
-        dispatch(
-            boardsApiSlice.util.updateQueryData('getBoardDataById', boardId, draft => {
-                const prevStageIndex = draft.stages.findIndex(stage => stage.id === prevStageId);
-                const newStageIndex = draft.stages.findIndex(stage => stage.id === newStageId);
-
-                draft.stages[prevStageIndex].tasks = draft.stages[prevStageIndex].tasks?.filter(
-                    task => task.id !== taskId,
-                );
-                draft.stages[newStageIndex].tasks.push(data);
             }),
         );
     } catch (err) {
@@ -139,7 +111,6 @@ async function updateAssingedUser(
 export const pessimisticUpdate = {
     createTask,
     updateTask,
-    updateStage,
     deleteTask,
     updateAssingedUser,
 };
