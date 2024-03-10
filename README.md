@@ -44,12 +44,13 @@ Known current limitations:
 
 **Client:** TypeScript, React (NextJS), Redux, TailwindCSS
 
-Currently the codebase is running on Next14 but still on pages Router. The plan is to switch to app Router and also refactor the code design, make the components way smaller and modular.
+The codebase is running on Next14 leveraging the app router.
+Currently the client components are very high in the component tree due to hook usage. The plan is to check the possibility of using more server components although most of the action is happening client side.
 The data fetching is being managed by RTK Query since it offers a great package with all different kind of fetching states, caching and integration to an existing RTK Store.
 
 **Server:** Python, fastAPI, Postgresql, SQLAlchemy as ORM
 
-Finally I coded my very own backend system for this app. The results are amazing, even when having a huge board with lots of stages and tasks the loading time is reduced heavily. I realized that SQL is way more efficient in this case than trying to model relational data with NoSQL. Also I am able to connect the user data according to the requirements which was not possible with the Firestore.
+Finally I coded my very own backend system for this app. The results are amazing, even when having a huge board with lots of stages and tasks the loading time is reduced heavily. I realized that SQL is way more efficient in this case than trying to model relational data with NoSQL which is used by Firebase. Also I am able to connect and request the user data according to the requirements which was not possible with the Firestore.
 
 
 ## Deployment
@@ -60,6 +61,7 @@ Vercel
 **Server**
 Linux VM Droplet on Digital Ocean,
 Nginx as Reverse Proxy in combination with Cerbot for SSL communication
+Everything running in a docker container
 
 
 ## Run Locally
@@ -91,9 +93,9 @@ Start the server
 
 ## Roadmap
 
-- Providing a warning to the User when he wants to delete a stage since this will delete all tasks
-- Task prioritie
-- Implementing a blocked flag for a task when currently being edited by team member
+- Provide a warning to the User when deleting a stage since this will delete all tasks
+- Priority system for tasks
+- Implementing a blocking mechanism for a task when currently being edited by another team member
 - Unit tests for both frontend and backend
 
 
@@ -101,4 +103,4 @@ Start the server
 
 The biggest thing that I learned is that bringing in a new big libgrary like RTK Query can have bigger consequences to the rest of your code as one might initially think. I gained a lot of performance and code quality but had to refactor a lot of code to make it work.
 
-I also learned a lot about abstraction. There are situations where it makes sense to create resuable abstractions but there are also cases where code might look very similar but performas different logic.
+I also learned a lot about abstraction. There are situations where it makes sense to create resuable abstractions but there are also cases where code might look very similar but performs different logic.

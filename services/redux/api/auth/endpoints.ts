@@ -41,6 +41,7 @@ export const authApiSlice = api.injectEndpoints({
                 url: 'logout',
                 method: 'POST',
             }),
+            invalidatesTags: ['BoardList'],
         }),
         requestPasswordReset: builder.mutation<HTTPExceptionResponse | null, PasswordRequestReset>({
             query: email => ({
