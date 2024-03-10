@@ -15,7 +15,7 @@ import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FormEvent, useEffect, useRef } from 'react';
+import { FormEvent, useRef } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 
@@ -31,25 +31,22 @@ const Login = () => {
     async function signInHandler(e: FormEvent) {
         e.preventDefault();
 
-        await sendLoginRequest({
-            email: emailRef.current!.value,
-            password: passwordRef.current!.value,
-        });
-    }
+        try {
+            await sendLoginRequest({
+                email: emailRef.current!.value,
+                password: passwordRef.current!.value,
+            });
 
-    useEffect(() => {
-        if (isSuccess) {
             dispatch(login(data!));
             push('/');
-        }
-        if (isError) {
+        } catch (error) {
             console.error(error);
             toast.error(
-                ((error as FetchBaseQueryError).data as HTTPExceptionResponse).detail ??
-                    'Leider ist etwas schief gelaufen',
+                ((error as FetchBaseQueryError).data as HTTPExceptionResponse)?.detail ??
+                    'The service is currently unavailable. Please try again later.',
             );
         }
-    }, [isSuccess, isError, data]);
+    }
 
     return (
         <>
