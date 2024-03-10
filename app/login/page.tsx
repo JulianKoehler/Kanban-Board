@@ -26,7 +26,7 @@ const Login = () => {
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
 
-    const [sendLoginRequest, { data, error, isLoading, isError, isSuccess }] = restApi.auth.useLoginMutation();
+    const [sendLoginRequest, { data, isLoading }] = restApi.auth.useLoginMutation();
 
     async function signInHandler(e: FormEvent) {
         e.preventDefault();
@@ -39,12 +39,13 @@ const Login = () => {
 
             dispatch(login(data!));
             push('/');
-        } catch (error) {
-            console.error(error);
-            toast.error(
-                ((error as FetchBaseQueryError).data as HTTPExceptionResponse)?.detail ??
-                    'The service is currently unavailable. Please try again later.',
-            );
+        } catch (err) {
+            console.error(err);
+            let errorMessage = 'The service is currently unavailable. Please try again later.';
+            if ((err as FetchBaseQueryError)?.data) {
+                errorMessage = ((err as FetchBaseQueryError).data as HTTPExceptionResponse)?.detail
+            }
+            toast.error(errorMessage);
         }
     }
 

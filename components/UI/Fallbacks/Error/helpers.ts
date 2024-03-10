@@ -13,4 +13,5 @@ export const errorMessageMap = {
     [HttpStatusCode.Forbidden]: 'You are not allowed to access this resource. Please contact the owner of this board.',
     [HttpStatusCode.NotFound]: 'Ooops! We are sorry, we could not find any board matching this URL.',
     [HttpStatusCode.UnprocessableEntity]: 'The provided board ID does not match our ID pattern. Please check.',
+    [HttpStatusCode.BadGateway]: 'The service is currently unavailable, please try later.'
 };
